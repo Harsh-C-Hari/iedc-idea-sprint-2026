@@ -1,25 +1,38 @@
 /**
- * About.jsx — section 2.
+ * About.jsx — section 2 with reveals (T15).
  *
  * Layout (plan section D):
  *   • Cream intro: headline wide, copy offset
  *   • Near-black manifesto: QUESTION. IMAGINE. EXPERIMENT. CREATE. — four oversized lines
  *   • Cream journey: DISCOVER, IDEATE, DEVELOP, PRESENT — four numbered stages
- *     (horizontal rule with nodes on desktop, vertical list on mobile)
  *
- * Order: cream → dark → cream  (plan section D)
- * All copy verbatim from data/content.js (plan section H).
+ * Motion (plan section D, T15):
+ *   • Manifesto words toggle to lime and scale up as they cross viewport centre
+ *     (toggleClass, not scrub — plan section D). Reduced motion: no toggle.
+ *   • Journey stages become active one by one as they enter viewport.
+ *   • About intro headline and body: simple fade reveals via useReveal.
+ *   • No pinning. Content visible if GSAP fails.
  */
+import { useRef } from 'react'
+import { useGSAP } from '@gsap/react'
 import SectionShell from '../components/ui/SectionShell.jsx'
 import { aboutIntro, manifesto, journey } from '../data/content.js'
+import useReveal from '../motion/useReveal.js'
+import { gsap, ScrollTrigger } from '../motion/gsap.js'
+
+const REDUCED =
+  typeof window !== 'undefined'
+    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    : false
 
 /** ── Intro sub-section (cream) ── */
-function AboutIntro() {
+function AboutIntro({ revealRef }) {
   return (
-    <div className="px-5 md:px-8 lg:px-16 py-20 lg:py-28">
+    <div ref={revealRef} className="px-5 md:px-8 lg:px-16 py-20 lg:py-28">
       <div className="max-w-6xl mx-auto lg:grid lg:grid-cols-2 lg:gap-16 items-start">
         <h2
           id="about-heading"
+          data-reveal="fade"
           className="font-[family-name:var(--font-display)]
                      text-[clamp(2rem,5vw,4rem)] leading-[1.05] tracking-[-0.025em]
                      text-[var(--color-near-black)] col-span-1"
@@ -27,6 +40,8 @@ function AboutIntro() {
           {aboutIntro.headline}
         </h2>
         <p
+          data-reveal="fade"
+          data-reveal-delay="0.1"
           className="font-[family-name:var(--font-body)] text-[1rem] md:text-[1.125rem]
                      leading-relaxed text-[var(--color-near-black)] opacity-70
                      mt-6 lg:mt-0 col-span-1"
@@ -40,8 +55,51 @@ function AboutIntro() {
 
 /** ── Manifesto sub-section (dark) ── */
 function Manifesto() {
+  const ref = useRef(null)
+
+  useGSAP(() => {
+    if (REDUCED) return
+    const words = ref.current?.querySelectorAll('[data-manifesto-word]')
+    if (!words?.length) return
+
+    words.forEach((word) => {
+      // Add lime + scale class when word centre crosses viewport centre
+      ScrollTrigger.create({
+        trigger: word,
+        start: 'center center',
+        end: 'center 20%',
+        onEnter: () => {
+          gsap.to(word, { color: 'var(--color-lime)', scale: 1.03, duration: 0.4, ease: 'power2.out' })
+        },
+        onLeave: () => {
+          gsap.to(word, { color: 'var(--color-cream)', scale: 1, duration: 0.4, ease: 'power2.out' })
+        },
+        onEnterBack: () => {
+          gsap.to(word, { color: 'var(--color-lime)', scale: 1.03, duration: 0.4, ease: 'power2.out' })
+        },
+        onLeaveBack: () => {
+          gsap.to(word, { color: 'var(--color-cream)', scale: 1, duration: 0.4, ease: 'power2.out' })
+        },
+      })
+
+      // Reveal on first scroll into view (clip from left)
+      gsap.set(word, { clipPath: 'inset(0 100% 0 0)' })
+      gsap.to(word, {
+        clipPath: 'inset(0 0% 0 0)',
+        duration: 0.7,
+        ease: 'power4.out',
+        scrollTrigger: {
+          trigger: word,
+          start: 'top 85%',
+          once: true,
+        },
+      })
+    })
+  }, { scope: ref, dependencies: [] })
+
   return (
     <div
+      ref={ref}
       className="bg-[var(--color-near-black)] text-[var(--color-cream)]
                  px-5 md:px-8 lg:px-16 py-20 lg:py-28"
     >
@@ -53,10 +111,11 @@ function Manifesto() {
           {manifesto.map((word) => (
             <li
               key={word}
-              data-reveal="manifesto-word"
+              data-manifesto-word
               className="font-[family-name:var(--font-display)]
                          text-[clamp(2.5rem,8vw,7rem)] leading-[1.0] tracking-[-0.03em]
-                         text-[var(--color-cream)]"
+                         text-[var(--color-cream)]
+                         origin-left will-change-transform"
             >
               {word}
             </li>
@@ -69,8 +128,32 @@ function Manifesto() {
 
 /** ── Journey sub-section (cream) ── */
 function Journey() {
+  const ref = useRef(null)
+
+  useGSAP(() => {
+    if (REDUCED) return
+    const stages = ref.current?.querySelectorAll('[data-journey-stage]')
+    if (!stages?.length) return
+
+    stages.forEach((stage, i) => {
+      gsap.set(stage, { opacity: 0, y: 24 })
+      gsap.to(stage, {
+        opacity: 1,
+        y: 0,
+        duration: 0.6,
+        ease: 'power3.out',
+        delay: i * 0.08,
+        scrollTrigger: {
+          trigger: stage,
+          start: 'top 88%',
+          once: true,
+        },
+      })
+    })
+  }, { scope: ref, dependencies: [] })
+
   return (
-    <div className="px-5 md:px-8 lg:px-16 py-20 lg:py-28">
+    <div ref={ref} className="px-5 md:px-8 lg:px-16 py-20 lg:py-28">
       <div className="max-w-6xl mx-auto">
         <h3
           className="font-[family-name:var(--font-body)] text-xs uppercase tracking-widest
@@ -79,7 +162,6 @@ function Journey() {
           The journey
         </h3>
 
-        {/* Desktop: horizontal with connecting rule; Mobile: vertical list */}
         <ol
           aria-label="Event journey stages"
           className="list-none p-0 m-0
@@ -89,7 +171,7 @@ function Journey() {
           {journey.map((stage, i) => (
             <li
               key={stage.title}
-              data-reveal="journey-stage"
+              data-journey-stage
               className="relative"
             >
               {/* Connector line between stages (desktop only) */}
@@ -136,6 +218,9 @@ function Journey() {
 }
 
 export default function About() {
+  // useReveal for the intro section only (manifesto + journey have bespoke timelines)
+  const introRevealRef = useReveal({ skip: ['manifesto-word', 'journey-stage'] })
+
   return (
     <SectionShell
       id="about"
@@ -143,7 +228,7 @@ export default function About() {
       theme="light"
       className="p-0"
     >
-      <AboutIntro />
+      <AboutIntro revealRef={introRevealRef} />
       <Manifesto />
       <Journey />
     </SectionShell>

@@ -17,10 +17,17 @@
  * Large spark placeholder — art added in T13.
  */
 import { useRef } from 'react'
+import { useGSAP } from '@gsap/react'
 import SectionShell from '../components/ui/SectionShell.jsx'
 import nav from '../data/nav.js'
 import eventConfig from '../config/eventConfig.js'
 import { footerHeadline } from '../data/content.js'
+import { gsap } from '../motion/gsap.js'
+
+const REDUCED =
+  typeof window !== 'undefined'
+    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    : false
 
 /** Back to top button */
 function BackToTop() {
@@ -51,9 +58,35 @@ function BackToTop() {
 }
 
 export default function Footer() {
+  const footerRef = useRef(null)
+
+  // Headline clip reveal (plan section D, T15)
+  useGSAP(() => {
+    if (REDUCED) return
+    const el = footerRef.current
+    if (!el) return
+    const lines = el.querySelectorAll('[data-footer-line]')
+    if (!lines.length) return
+    lines.forEach((line, i) => {
+      gsap.set(line, { clipPath: 'inset(0 100% 0 0)' })
+      gsap.to(line, {
+        clipPath: 'inset(0 0% 0 0)',
+        duration: 0.8,
+        ease: 'power4.out',
+        delay: i * 0.1,
+        scrollTrigger: {
+          trigger: el,
+          start: 'top 80%',
+          once: true,
+        },
+      })
+    })
+  }, { scope: footerRef, dependencies: [] })
+
   return (
     <footer
       id="footer"
+      ref={footerRef}
       className="bg-[var(--color-near-black)] text-[var(--color-cream)]
                  px-5 md:px-8 lg:px-16 pt-20 pb-10 overflow-hidden"
       role="contentinfo"
@@ -69,10 +102,12 @@ export default function Footer() {
                        text-[var(--color-cream)]"
           >
             {footerHeadline.map((line, i) => (
-              <span key={i} className="block">
-                {i === 1
-                  ? <span className="text-[var(--color-orange)]">{line}</span>
-                  : line}
+              <span key={i} data-footer-line className="block overflow-hidden">
+                <span className="block">
+                  {i === 1
+                    ? <span className="text-[var(--color-orange)]">{line}</span>
+                    : line}
+                </span>
               </span>
             ))}
           </p>

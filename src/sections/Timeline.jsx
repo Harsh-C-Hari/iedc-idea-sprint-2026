@@ -1,5 +1,5 @@
 /**
- * Timeline.jsx — section 4.
+ * Timeline.jsx — section 4 with reveals and rail scrub (T15).
  *
  * Data from data/schedule.js — 7 items Day 1, 4 items Day 2 (11 total).
  *
@@ -10,10 +10,24 @@
  *   Mobile: single left rail
  *   Each day is an <ol> with <time> elements.
  *
- * Shows "Schedule subject to change" note (plan section D).
+ * Motion (plan section D, T15):
+ *   • Rail scaleY scrubbed to scroll progress through each panel (no pinning)
+ *   • Items slide+fade in as they enter viewport
+ *   • Time markers scale 0.9→1 and gain accent colour
+ *   • Day headings reveal (clip)
+ *   • Reduced motion: no animation, content visible
+ *   • No pinning anywhere
  */
+import { useRef } from 'react'
+import { useGSAP } from '@gsap/react'
 import SectionShell from '../components/ui/SectionShell.jsx'
 import schedule from '../data/schedule.js'
+import { gsap, ScrollTrigger } from '../motion/gsap.js'
+
+const REDUCED =
+  typeof window !== 'undefined'
+    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    : false
 
 /** Single timeline item */
 function TimelineItem({ item, side, day }) {
@@ -21,6 +35,7 @@ function TimelineItem({ item, side, day }) {
 
   return (
     <li
+      data-timeline-item
       className={`
         relative flex items-start gap-4
         lg:items-center
@@ -36,6 +51,7 @@ function TimelineItem({ item, side, day }) {
       >
         <time
           dateTime={item.time}
+          data-timeline-time
           className={`
             font-[family-name:var(--font-display)]
             text-[clamp(2rem,4vw,3rem)] leading-none tracking-[-0.025em]
@@ -71,12 +87,81 @@ function TimelineItem({ item, side, day }) {
   )
 }
 
-/** One day panel */
+/** One day panel with its own motion scope */
 function DayPanel({ day }) {
   const isDay1 = day.day === 1
+  const panelRef = useRef(null)
+  const railRef  = useRef(null)
+
+  useGSAP(() => {
+    if (REDUCED) return
+    const panel = panelRef.current
+    const rail  = railRef.current
+    if (!panel || !rail) return
+
+    // Rail scaleY scrubbed to scroll progress through panel (no pinning)
+    gsap.set(rail, { scaleY: 0, transformOrigin: 'top center' })
+    gsap.to(rail, {
+      scaleY: 1,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: panel,
+        start: 'top 80%',
+        end: 'bottom 60%',
+        scrub: 0.5,
+      },
+    })
+
+    // Day heading reveal (clip)
+    const heading = panel.querySelector('[data-timeline-heading]')
+    if (heading) {
+      gsap.set(heading, { clipPath: 'inset(0 100% 0 0)' })
+      gsap.to(heading, {
+        clipPath: 'inset(0 0% 0 0)',
+        duration: 0.8,
+        ease: 'power4.out',
+        scrollTrigger: { trigger: heading, start: 'top 85%', once: true },
+      })
+    }
+
+    // Timeline items — slide + fade
+    const items = panel.querySelectorAll('[data-timeline-item]')
+    items.forEach((item, i) => {
+      gsap.set(item, { opacity: 0, y: 20 })
+      gsap.to(item, {
+        opacity: 1,
+        y: 0,
+        duration: 0.55,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: item,
+          start: 'top 88%',
+          once: true,
+        },
+        delay: i * 0.05,
+      })
+    })
+
+    // Time markers scale + colour pop
+    const times = panel.querySelectorAll('[data-timeline-time]')
+    times.forEach((time) => {
+      gsap.set(time, { scale: 0.9, transformOrigin: 'left center' })
+      gsap.to(time, {
+        scale: 1,
+        duration: 0.5,
+        ease: 'back.out(1.4)',
+        scrollTrigger: {
+          trigger: time,
+          start: 'top 88%',
+          once: true,
+        },
+      })
+    })
+  }, { scope: panelRef, dependencies: [] })
 
   return (
     <div
+      ref={panelRef}
       className={`
         px-5 md:px-8 lg:px-16 py-20 lg:py-28
         ${isDay1
@@ -88,13 +173,12 @@ function DayPanel({ day }) {
         {/* Day header */}
         <div className="mb-12 lg:mb-16">
           <span
-            className={`
-              font-[family-name:var(--font-body)] text-xs uppercase tracking-widest opacity-50 block mb-2
-            `}
+            className="font-[family-name:var(--font-body)] text-xs uppercase tracking-widest opacity-50 block mb-2"
           >
             Day {day.day} · {day.date}
           </span>
           <h3
+            data-timeline-heading
             className="font-[family-name:var(--font-display)]
                        text-[clamp(1.75rem,4vw,3.5rem)] leading-tight tracking-[-0.025em]"
           >
@@ -104,13 +188,14 @@ function DayPanel({ day }) {
 
         {/* Rail + items */}
         <div className="relative">
-          {/* Vertical rail line */}
+          {/* Vertical rail line — scrub target */}
           <div
+            ref={railRef}
             aria-hidden="true"
             className={`
               absolute left-[0.4375rem] lg:left-1/2 top-0 bottom-0 w-px
-              -translate-x-1/2 opacity-20
-              ${isDay1 ? 'bg-[var(--color-lime)]' : 'bg-[var(--color-near-black)]'}
+              -translate-x-1/2
+              ${isDay1 ? 'bg-[var(--color-lime)] opacity-30' : 'bg-[var(--color-near-black)] opacity-20'}
             `}
           />
 
