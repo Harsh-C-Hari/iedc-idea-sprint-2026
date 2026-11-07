@@ -20,7 +20,6 @@ import Challenge from './sections/Challenge.jsx'
 import Registration from './sections/Registration.jsx'
 import Venue from './sections/Venue.jsx'
 import Footer from './sections/Footer.jsx'
-import SectionWipe from './motion/SectionWipe.jsx'
 import eventConfig from './config/eventConfig.js'
 import schedule from './data/schedule.js'
 import prompts from './data/prompts.js'
@@ -64,39 +63,12 @@ export default function App() {
 
       <main id="main-content" tabIndex={-1}>
         <Hero />
-
         <About />
-
-        {/* Boundary 1: About → IdeaSpark (cream → dark) */}
-        <SectionWipe
-          id="about-ideaspark"
-          fromColor="var(--color-cream)"
-          toColor="var(--color-near-black)"
-          accentColor="var(--color-lime)"
-        />
-
         <IdeaSpark />
         <Timeline />
         <Challenge />
-
-        {/* Boundary 2: Challenge → Registration (cream → dark) */}
-        <SectionWipe
-          id="challenge-registration"
-          fromColor="var(--color-cream)"
-          toColor="var(--color-near-black)"
-          accentColor="var(--color-orange)"
-        />
-
         <Registration />
         <Venue />
-
-        {/* Boundary 3: Venue → Footer (cream → dark) */}
-        <SectionWipe
-          id="venue-footer"
-          fromColor="var(--color-cream)"
-          toColor="var(--color-near-black)"
-          accentColor="var(--color-lime)"
-        />
       </main>
 
       <Footer />
