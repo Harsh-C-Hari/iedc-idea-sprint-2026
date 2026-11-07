@@ -114,7 +114,7 @@ export default function Footer() {
         </div>
 
         {/* Footer nav + info grid */}
-        <div className="border-t border-[var(--color-cream)] border-opacity-10 pt-10
+        <div className="border-t border-[var(--color-cream)]/10 pt-10
                         grid grid-cols-1 md:grid-cols-3 gap-10">
 
           {/* Wordmark + event */}
@@ -194,7 +194,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-10 pt-6 border-t border-[var(--color-cream)] border-opacity-10
+        <div className="mt-10 pt-6 border-t border-[var(--color-cream)]/10
                         flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <p className="font-[family-name:var(--font-body)] text-xs text-[var(--color-cream)] opacity-30">
             © 2026 IEDC BOOTCAMP CEC. All rights reserved.

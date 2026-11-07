@@ -5,11 +5,18 @@
  *   • Opened by a disclosure button with aria-expanded.
  *   • Esc or any link click closes it and returns focus to the trigger button.
  *   • Traps focus while open.
+ *
+ * Phase 1 fixes:
+ *   • #d4901f replaced with --color-orange-hover
+ *   • Removed the `hidden` attribute (caused transition to never animate — the
+ *     element was removed from layout before the opacity transition could start).
+ *     Replaced with visibility + pointer-events toggling so the CSS transition works.
+ *   • Focus ring is cream (dark section).
  */
 import { useEffect, useRef } from 'react'
 import nav from '../../data/nav.js'
 
-export default function MobileMenu({ isOpen, onClose, triggerRef }) {
+export default function MobileMenu({ id, isOpen, onClose, triggerRef }) {
   const menuRef = useRef(null)
 
   /* Close on Escape */
@@ -46,17 +53,21 @@ export default function MobileMenu({ isOpen, onClose, triggerRef }) {
 
   return (
     <div
+      id={id}
       ref={menuRef}
       role="dialog"
       aria-modal="true"
       aria-label="Navigation menu"
-      hidden={!isOpen}
+      data-theme="dark"
+      /* Keep in DOM always so transition animates; toggle via visibility + pointer-events */
       className={`
         fixed inset-0 z-[var(--z-modal)]
         bg-[var(--color-near-black)] text-[var(--color-cream)]
         flex flex-col justify-center items-center gap-8
-        transition-opacity duration-[var(--duration-normal)]
-        ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}
+        transition-all duration-[var(--duration-normal)]
+        ${isOpen
+          ? 'opacity-100 visible pointer-events-auto'
+          : 'opacity-0 invisible pointer-events-none'}
       `}
     >
       <nav aria-label="Mobile navigation">
@@ -66,7 +77,11 @@ export default function MobileMenu({ isOpen, onClose, triggerRef }) {
               <a
                 href={href}
                 onClick={handleLinkClick}
-                className="font-[family-name:var(--font-display)] text-4xl text-[var(--color-cream)] no-underline hover:text-[var(--color-orange)] focus-visible:outline-[var(--color-cream)] transition-colors"
+                tabIndex={isOpen ? undefined : -1}
+                className="font-[family-name:var(--font-display)] text-4xl text-[var(--color-cream)] no-underline
+                           hover:text-[var(--color-orange)]
+                           focus-visible:outline-[var(--color-cream)]
+                           transition-colors"
               >
                 {label}
               </a>
@@ -79,7 +94,12 @@ export default function MobileMenu({ isOpen, onClose, triggerRef }) {
       <a
         href="#registration"
         onClick={handleLinkClick}
-        className="mt-4 px-8 py-4 bg-[var(--color-orange)] text-[var(--color-near-black)] font-[family-name:var(--font-body)] font-semibold uppercase tracking-wide rounded-[var(--radius-sm)] text-base min-h-[48px] flex items-center hover:bg-[#d4901f] transition-colors"
+        tabIndex={isOpen ? undefined : -1}
+        className="mt-4 px-8 py-4 bg-[var(--color-orange)] text-[var(--color-near-black)]
+                   font-[family-name:var(--font-body)] font-semibold uppercase tracking-wide
+                   rounded-[var(--radius-sm)] text-base min-h-[48px] flex items-center
+                   hover:bg-[var(--color-orange-hover)]
+                   transition-colors focus-visible:outline-[var(--color-cream)]"
       >
         Register
       </a>

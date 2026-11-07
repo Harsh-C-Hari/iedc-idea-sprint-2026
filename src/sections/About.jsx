@@ -157,7 +157,7 @@ function Journey() {
       <div className="max-w-6xl mx-auto">
         <h3
           className="font-[family-name:var(--font-body)] text-xs uppercase tracking-widest
-                     opacity-50 mb-10"
+                     opacity-65 mb-10"
         >
           The journey
         </h3>

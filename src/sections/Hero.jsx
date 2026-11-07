@@ -271,10 +271,11 @@ export default function Hero() {
           {/* h1 — dominant, clip-reveal only */}
           <h1
             id="hero-heading"
+            tabIndex={-1}
             className="font-[family-name:var(--font-display)]
                        leading-[1.0] tracking-[-0.025em]
                        text-[var(--color-near-black)]
-                       max-w-[18ch] mt-6 lg:mt-10"
+                       max-w-[18ch] mt-6 lg:mt-10 focus:outline-none"
             style={{ fontSize: 'clamp(1.65rem, 6.2vw, 5.25rem)' }}
           >
             {['24 HOURS.', 'ONE IDEA.', 'ENDLESS', 'POSSIBILITIES.'].map((word) => (

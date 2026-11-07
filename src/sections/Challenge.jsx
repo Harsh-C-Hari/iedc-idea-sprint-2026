@@ -35,7 +35,7 @@ function StepCard({ step, offset }) {
     <div
       data-challenge-step
       className={`
-        p-6 md:p-8 border border-[var(--color-near-black)] border-opacity-10
+        p-6 md:p-8 border border-[var(--color-near-black)]/10
         rounded-[var(--radius-md)]
         ${offset ? 'lg:mt-12' : ''}
       `}
@@ -116,7 +116,7 @@ function FactStrip() {
             </span>
             <span
               className="font-[family-name:var(--font-body)] text-xs uppercase tracking-widest
-                         text-[var(--color-cream)] opacity-40"
+                         text-[var(--color-cream)] opacity-65"
             >
               {label}
             </span>
@@ -199,7 +199,7 @@ function TravellingSpark({ gridRef }) {
                  opacity-40 lg:opacity-60"
       style={{ top: 0, left: 0 }}
     >
-      <Spark size={48} color="lime" />
+      <Spark size={48} color="orange" />
     </div>
   )
 }

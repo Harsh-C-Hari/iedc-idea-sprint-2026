@@ -1,19 +1,17 @@
 /**
  * Registration.jsx — section 6.
  *
- * Layout (plan section D):
- *   Desktop: 5/7 split — sticky identity panel left, form right.
- *   Mobile: single column, Stepper text + progress bar, 48px+ inputs.
- *
- * Steps: Team (0) → Participants (1) → Review (2).
- * Submit is the action on Review (plan section F, spec ambiguities).
- *
- * Preview mode (plan section B):
- *   Nothing is sent. Review says plainly not yet connected.
- *   Offers "Copy summary". Never shows a success screen.
- *
- * Status gate: if registration.status is not 'open' or 'preview',
- *   the form is replaced by a clear closed / opening-soon message (plan section D).
+ * Phase 1 fixes:
+ *   • All text in dark section now uses --fg / --fg-muted / --line tokens
+ *   • ErrorSummary restyled for dark section (dark-red surface, cream text)
+ *   • Preview notice restyled for dark section (dark-amber surface, cream text)
+ *   • "Copy summary" button uses cream fill with near-black text (was invisible bg-near-black on dark)
+ *   • ErrorSummary keyed by field, not message; each item is a link that focuses its input
+ *   • focus-visible rings use --focus-ring token (cream on dark)
+ *   • ReviewStep "Edit" links use cream colour on dark
+ *   • v3 border-opacity-* removed; replaced with --line token
+ *   • Success state added for endpoint mode (preview mode never shows success)
+ *   • tabIndex=-1 on h1 (for back-to-top focus)
  */
 import { useRef } from 'react'
 import SectionShell from '../components/ui/SectionShell.jsx'
@@ -37,37 +35,35 @@ function IdentityPanel({ deadlineISO }) {
   return (
     <div className="lg:sticky lg:top-20 flex flex-col gap-6">
       <div>
-        <p className="font-[family-name:var(--font-body)] text-xs uppercase tracking-widest opacity-50 mb-2">
+        <p className="font-[family-name:var(--font-body)] text-xs uppercase tracking-widest mb-2"
+           style={{ color: 'var(--fg-muted)' }}>
           Register
         </p>
         <h2
           id="registration-heading"
           className="font-[family-name:var(--font-display)]
-                     text-[clamp(2rem,4vw,3rem)] leading-tight tracking-[-0.025em]
-                     text-[var(--color-cream)]"
+                     text-[clamp(2rem,4vw,3rem)] leading-tight tracking-[-0.025em]"
+          style={{ color: 'var(--fg)' }}
         >
           IDEA SPRINT 2026
         </h2>
       </div>
 
       <ul className="list-none p-0 m-0 flex flex-col gap-3">
-        <li className="font-[family-name:var(--font-body)] text-sm text-[var(--color-cream)] opacity-70">
-          {eventConfig.college}
-        </li>
-        <li className="font-[family-name:var(--font-body)] text-sm text-[var(--color-cream)] opacity-70">
-          20–21 November 2026
-        </li>
-        <li className="font-[family-name:var(--font-body)] text-sm text-[var(--color-cream)] opacity-70">
-          Team size: {eventConfig.team.min}–{eventConfig.team.max} members
-        </li>
-        {deadline && (
-          <li className="font-[family-name:var(--font-body)] text-sm text-[var(--color-cream)] opacity-70">
-            Register by: {deadline}
-            {eventConfig.provisional_deadlineISO && (
-              <span className="ml-1 opacity-50">(provisional)</span>
-            )}
+        {[
+          eventConfig.college,
+          '20–21 November 2026',
+          `Team size: ${eventConfig.team.min}–${eventConfig.team.max} members`,
+          ...(deadline
+            ? [`Register by: ${deadline}${eventConfig.provisional_deadlineISO ? ' (provisional)' : ''}`]
+            : []),
+        ].map((item) => (
+          <li key={item}
+              className="font-[family-name:var(--font-body)] text-sm"
+              style={{ color: 'var(--fg-muted)' }}>
+            {item}
           </li>
-        )}
+        ))}
       </ul>
     </div>
   )
@@ -75,23 +71,41 @@ function IdentityPanel({ deadlineISO }) {
 
 /* ── Error summary (focus target on failed Next) ───────────────────── */
 function ErrorSummary({ errors, summaryRef }) {
-  const list = Object.values(errors).filter(Boolean)
-  if (!list.length) return null
+  const entries = Object.entries(errors).filter(([, v]) => v)
+  if (!entries.length) return null
+
   return (
     <div
       ref={summaryRef}
       tabIndex={-1}
       role="alert"
       aria-live="assertive"
-      className="p-4 bg-red-50 border border-red-200 rounded-[var(--radius-sm)] mb-6 focus:outline-none"
+      className="p-4 rounded-[var(--radius-sm)] mb-6 focus:outline-none"
+      style={{
+        backgroundColor: 'rgb(185 28 28 / 0.18)',
+        border: '1px solid rgb(248 113 113 / 0.35)',
+      }}
     >
-      <p className="font-[family-name:var(--font-body)] text-sm font-semibold text-red-700 mb-2">
+      <p className="font-[family-name:var(--font-body)] text-sm font-semibold mb-2"
+         style={{ color: 'var(--fg)' }}>
         Please fix the following:
       </p>
       <ul className="list-disc pl-4">
-        {list.map((e) => (
-          <li key={e} className="font-[family-name:var(--font-body)] text-xs text-red-600">
-            {e}
+        {entries.map(([field, msg]) => (
+          <li key={field} className="font-[family-name:var(--font-body)] text-xs">
+            {/* Each error is a link that focuses its input */}
+            <a
+              href={`#${field.replace(/_/g, '-')}`}
+              onClick={(e) => {
+                e.preventDefault()
+                const el = document.getElementById(field.replace(/_/g, '-'))
+                el?.focus()
+              }}
+              className="underline focus-visible:outline-[var(--focus-ring,var(--color-cream))]"
+              style={{ color: '#fca5a5' }}
+            >
+              {msg}
+            </a>
           </li>
         ))}
       </ul>
@@ -122,8 +136,8 @@ function TeamStep({ state, setTeamName, setTeamSize, touch }) {
       />
 
       <fieldset className="border-0 p-0 m-0">
-        <legend className="font-[family-name:var(--font-body)] text-xs font-semibold uppercase tracking-wider
-                           text-[var(--color-near-black)] mb-3">
+        <legend className="font-[family-name:var(--font-body)] text-xs font-semibold uppercase tracking-wider mb-3"
+                style={{ color: 'var(--fg)' }}>
           Team size <span aria-hidden="true" className="text-[var(--color-orange)]">*</span>
         </legend>
         <div className="flex flex-wrap gap-3">
@@ -143,10 +157,12 @@ function TeamStep({ state, setTeamName, setTeamSize, touch }) {
                   font-[family-name:var(--font-display)] text-lg
                   border-2 rounded-[var(--radius-sm)]
                   transition-colors duration-[var(--duration-fast)] cursor-pointer
-                  ${teamSize === n
-                    ? 'bg-[var(--color-near-black)] text-[var(--color-cream)] border-[var(--color-near-black)]'
-                    : 'border-[var(--color-near-black)] border-opacity-20 text-[var(--color-near-black)] hover:border-opacity-60'}
                 `}
+                style={
+                  teamSize === n
+                    ? { backgroundColor: 'var(--fg)', color: 'var(--field-bg)', borderColor: 'var(--fg)' }
+                    : { backgroundColor: 'transparent', color: 'var(--fg)', borderColor: 'var(--line)' }
+                }
               >
                 {n}
               </span>
@@ -171,10 +187,12 @@ function ParticipantsStep({ state, setParticipantField, touch }) {
 
         return (
           <div key={i} className="flex flex-col gap-4">
-            <h3 className="font-[family-name:var(--font-display)] text-base tracking-wide text-[var(--color-near-black)]">
+            <h3 className="font-[family-name:var(--font-display)] text-base tracking-wide"
+                style={{ color: 'var(--fg)' }}>
               Participant {i + 1}
               {isLeader && (
-                <span className="ml-2 font-[family-name:var(--font-body)] text-xs font-normal uppercase tracking-widest opacity-50">
+                <span className="ml-2 font-[family-name:var(--font-body)] text-xs font-normal uppercase tracking-widest"
+                      style={{ color: 'var(--fg-muted)' }}>
                   · TEAM LEAD
                 </span>
               )}
@@ -283,15 +301,47 @@ function ReviewStep({ state, goToStep, onSubmit, submitting, submitResult }) {
     return lines.join('\n')
   }
 
+  /* Success state (endpoint mode only — preview never shows this) */
+  if (!isPreview && submitResult?.ok) {
+    return (
+      <div className="flex flex-col items-center gap-6 py-10 text-center">
+        <div className="w-16 h-16 rounded-full flex items-center justify-center"
+             style={{ backgroundColor: 'var(--color-lime)' }}>
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <path d="M7 17l6 6L25 10" stroke="#171717" strokeWidth="2.5"
+                  strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+        <h3 className="font-[family-name:var(--font-display)] text-2xl"
+            style={{ color: 'var(--fg)' }}>
+          Registration received!
+        </h3>
+        <p className="font-[family-name:var(--font-body)] text-sm max-w-[40ch]"
+           style={{ color: 'var(--fg-muted)' }}>
+          We have your details for <strong style={{ color: 'var(--fg)' }}>{teamName}</strong>.
+          Look out for a confirmation email.
+        </p>
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-col gap-8">
       {/* Preview mode notice — plainly honest, never fake */}
       {isPreview && (
-        <div className="p-4 bg-amber-50 border border-amber-200 rounded-[var(--radius-sm)]">
-          <p className="font-[family-name:var(--font-body)] text-sm text-amber-800 font-semibold mb-1">
+        <div
+          className="p-4 rounded-[var(--radius-sm)]"
+          style={{
+            backgroundColor: 'rgb(120 90 20 / 0.22)',
+            border: '1px solid rgb(251 191 36 / 0.30)',
+          }}
+        >
+          <p className="font-[family-name:var(--font-body)] text-sm font-semibold mb-1"
+             style={{ color: 'var(--fg)' }}>
             Registrations are not yet connected to a destination.
           </p>
-          <p className="font-[family-name:var(--font-body)] text-xs text-amber-700">
+          <p className="font-[family-name:var(--font-body)] text-xs"
+             style={{ color: 'var(--fg-muted)' }}>
             The form is fully working but submissions are not being saved yet.
             Use "Copy summary" to keep your details and check back when registration opens.
           </p>
@@ -301,19 +351,21 @@ function ReviewStep({ state, goToStep, onSubmit, submitting, submitResult }) {
       {/* Team block */}
       <div>
         <div className="flex justify-between items-center mb-3">
-          <h3 className="font-[family-name:var(--font-body)] text-xs uppercase tracking-widest opacity-50">
+          <h3 className="font-[family-name:var(--font-body)] text-xs uppercase tracking-widest"
+              style={{ color: 'var(--fg-muted)' }}>
             Team
           </h3>
           <button
             type="button"
             onClick={() => goToStep(0)}
-            className="font-[family-name:var(--font-body)] text-xs text-[var(--color-orange)] underline
-                       focus-visible:outline-[var(--color-near-black)]"
+            className="font-[family-name:var(--font-body)] text-xs underline
+                       focus-visible:outline-[var(--focus-ring,var(--color-cream))]"
+            style={{ color: 'var(--color-orange)' }}
           >
             Edit
           </button>
         </div>
-        <p className="font-[family-name:var(--font-body)] text-sm text-[var(--color-near-black)]">
+        <p className="font-[family-name:var(--font-body)] text-sm" style={{ color: 'var(--fg)' }}>
           <strong>{teamName}</strong> · {teamSize} member{teamSize > 1 ? 's' : ''}
         </p>
       </div>
@@ -321,26 +373,29 @@ function ReviewStep({ state, goToStep, onSubmit, submitting, submitResult }) {
       {/* Participants block */}
       <div>
         <div className="flex justify-between items-center mb-3">
-          <h3 className="font-[family-name:var(--font-body)] text-xs uppercase tracking-widest opacity-50">
+          <h3 className="font-[family-name:var(--font-body)] text-xs uppercase tracking-widest"
+              style={{ color: 'var(--fg-muted)' }}>
             Participants
           </h3>
           <button
             type="button"
             onClick={() => goToStep(1)}
-            className="font-[family-name:var(--font-body)] text-xs text-[var(--color-orange)] underline
-                       focus-visible:outline-[var(--color-near-black)]"
+            className="font-[family-name:var(--font-body)] text-xs underline
+                       focus-visible:outline-[var(--focus-ring,var(--color-cream))]"
+            style={{ color: 'var(--color-orange)' }}
           >
             Edit
           </button>
         </div>
         <ul className="list-none p-0 m-0 flex flex-col gap-3">
           {participants.slice(0, teamSize).map((p, i) => (
-            <li key={i} className="font-[family-name:var(--font-body)] text-sm text-[var(--color-near-black)]">
+            <li key={i} className="font-[family-name:var(--font-body)] text-sm"
+                style={{ color: 'var(--fg)' }}>
               <span className="font-semibold">{p.name}</span>
-              {i === 0 && <span className="ml-2 text-xs opacity-50">TEAM LEAD</span>}
+              {i === 0 && <span className="ml-2 text-xs" style={{ color: 'var(--fg-muted)' }}>TEAM LEAD</span>}
               <br />
-              <span className="opacity-60">{p.email} · {p.phone}</span>
-              {p.semester && <span className="opacity-60"> · {p.semester}{p.division ? ` / ${p.division}` : ''}</span>}
+              <span style={{ color: 'var(--fg-muted)' }}>{p.email} · {p.phone}</span>
+              {p.semester && <span style={{ color: 'var(--fg-muted)' }}> · {p.semester}{p.division ? ` / ${p.division}` : ''}</span>}
             </li>
           ))}
         </ul>
@@ -349,15 +404,17 @@ function ReviewStep({ state, goToStep, onSubmit, submitting, submitResult }) {
       {/* Actions */}
       <div className="flex flex-col sm:flex-row gap-3 pt-2">
         {isPreview ? (
+          /* Copy summary — cream fill with near-black text, visible on dark section */
           <button
             type="button"
             onClick={() => copy(buildSummary())}
             className="flex-1 px-6 py-3 min-h-[48px] flex items-center justify-center
                        font-[family-name:var(--font-body)] text-sm font-semibold uppercase tracking-wide
-                       bg-[var(--color-near-black)] text-[var(--color-cream)]
+                       bg-[var(--color-cream)] text-[var(--color-near-black)]
                        rounded-[var(--radius-sm)]
-                       hover:bg-[#2a2420] transition-colors duration-[var(--duration-fast)]
-                       focus-visible:outline-[var(--color-near-black)]"
+                       hover:bg-[#e0d9cb]
+                       transition-colors duration-[var(--duration-fast)]
+                       focus-visible:outline-[var(--focus-ring,var(--color-cream))]"
           >
             {copied ? 'Copied!' : 'Copy summary'}
           </button>
@@ -378,7 +435,8 @@ function ReviewStep({ state, goToStep, onSubmit, submitting, submitResult }) {
       {submitResult && !submitResult.ok && !submitResult.preview && (
         <p
           role="alert"
-          className="font-[family-name:var(--font-body)] text-xs text-red-600 mt-2"
+          className="font-[family-name:var(--font-body)] text-xs mt-2"
+          style={{ color: '#fca5a5' }}
         >
           {submitResult.error}
         </p>
@@ -392,11 +450,13 @@ function StatusGate({ status }) {
   if (status === 'opening-soon') {
     return (
       <div className="py-16 text-center">
-        <p className="font-[family-name:var(--font-display)] text-2xl text-[var(--color-cream)] mb-4">
+        <p className="font-[family-name:var(--font-display)] text-2xl mb-4"
+           style={{ color: 'var(--fg)' }}>
           Registration opens soon.
         </p>
         {eventConfig.registration.deadlineISO && (
-          <p className="font-[family-name:var(--font-body)] text-sm text-[var(--color-cream)] opacity-60">
+          <p className="font-[family-name:var(--font-body)] text-sm"
+             style={{ color: 'var(--fg-muted)' }}>
             Check back for the opening date.
           </p>
         )}
@@ -405,10 +465,12 @@ function StatusGate({ status }) {
   }
   return (
     <div className="py-16 text-center">
-      <p className="font-[family-name:var(--font-display)] text-2xl text-[var(--color-cream)] mb-4">
+      <p className="font-[family-name:var(--font-display)] text-2xl mb-4"
+         style={{ color: 'var(--fg)' }}>
         Registration is closed.
       </p>
-      <p className="font-[family-name:var(--font-body)] text-sm text-[var(--color-cream)] opacity-60">
+      <p className="font-[family-name:var(--font-body)] text-sm"
+         style={{ color: 'var(--fg-muted)' }}>
         Thank you for your interest in IDEA SPRINT 2026.
       </p>
     </div>
@@ -468,7 +530,8 @@ export default function Registration() {
               tabIndex={-1}
               className="font-[family-name:var(--font-display)]
                          text-[clamp(1.5rem,3vw,2.5rem)] leading-tight tracking-[-0.025em]
-                         text-[var(--color-cream)] mb-8 focus:outline-none"
+                         mb-8 focus:outline-none"
+              style={{ color: 'var(--fg)' }}
             >
               {state.step === 0 && 'Your team'}
               {state.step === 1 && 'Participant details'}
@@ -515,9 +578,9 @@ export default function Registration() {
                   <button
                     type="button"
                     onClick={() => goToStep(state.step - 1)}
-                    className="font-[family-name:var(--font-body)] text-sm text-[var(--color-cream)]
-                               opacity-60 hover:opacity-100 underline
-                               focus-visible:outline-[var(--color-cream)]"
+                    className="font-[family-name:var(--font-body)] text-sm underline
+                               hover:opacity-100 focus-visible:outline-[var(--focus-ring,var(--color-cream))]"
+                    style={{ color: 'var(--fg-muted)' }}
                   >
                     ← Back
                   </button>

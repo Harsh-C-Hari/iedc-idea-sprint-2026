@@ -116,7 +116,8 @@ function SceneArea({ promptSeed }) {
 
 // ── Main section ─────────────────────────────────────────────────────────────
 export default function IdeaSpark() {
-  const [selectedKey, setSelectedKey] = useState(null)
+  // Preselect first category so Generate is never in a blocked/muddy disabled state
+  const [selectedKey, setSelectedKey] = useState(CATEGORIES[0]?.key ?? null)
   const [prompt, setPrompt]           = useState(null)
   const [promptSeed, setPromptSeed]   = useState(0)
   const bagsRef = useRef({})
@@ -209,7 +210,7 @@ export default function IdeaSpark() {
                         cursor-pointer
                         ${selectedKey === key
                           ? 'bg-[var(--color-lime)] text-[var(--color-near-black)] border-[var(--color-lime)]'
-                          : 'text-[var(--color-cream)] border-[var(--color-cream)] border-opacity-30 hover:border-opacity-80'}
+                          : 'text-[var(--color-cream)] border-[var(--color-cream)]/30 hover:border-[var(--color-cream)]/80'}
                       `}
                     >
                       {label}
@@ -219,9 +220,9 @@ export default function IdeaSpark() {
               </div>
             </fieldset>
 
-            {/* Generate button */}
+            {/* Generate button — outline-light when disabled so it's readable on dark */}
             <Button
-              variant="orange"
+              variant={selectedKey ? 'orange' : 'outline-light'}
               size="lg"
               onClick={handleGenerate}
               disabled={!selectedKey}
@@ -239,8 +240,8 @@ export default function IdeaSpark() {
             >
               {prompt ? (
                 <div
-                  className="p-6 border border-[var(--color-cream)] border-opacity-15
-                             rounded-[var(--radius-md)] bg-[var(--color-cream)] bg-opacity-5"
+                  className="p-6 border border-[var(--color-cream)]/15
+                             rounded-[var(--radius-md)] bg-[var(--color-cream)]/5"
                 >
                   <p
                     className="font-[family-name:var(--font-body)] text-[1.0625rem] leading-relaxed
@@ -267,9 +268,9 @@ export default function IdeaSpark() {
                       onClick={handleGenerate}
                       className="px-5 py-2 min-h-[44px] flex items-center
                                  font-[family-name:var(--font-body)] text-sm font-medium
-                                 text-[var(--color-cream)] border border-[var(--color-cream)] border-opacity-30
+                                 text-[var(--color-cream)] border border-[var(--color-cream)]/30
                                  rounded-[var(--radius-sm)]
-                                 hover:border-opacity-80 transition-colors duration-[var(--duration-fast)]
+                                 hover:border-[var(--color-cream)]/80 transition-colors duration-[var(--duration-fast)]
                                  focus-visible:outline-[var(--color-cream)]"
                     >
                       Another one

@@ -55,14 +55,14 @@ function MapFacade() {
   const linkLabel = mapsUrl ? 'Open in Google Maps' : 'Search on Google Maps'
 
   return (
-    <div className="rounded-[var(--radius-md)] overflow-hidden border border-[var(--color-near-black)] border-opacity-10">
+    <div className="rounded-[var(--radius-md)] overflow-hidden border border-[var(--color-near-black)]/10">
       {/* Map area */}
       <div className="relative bg-[var(--color-cream)] aspect-[4/3] max-h-[400px]">
         {!loaded ? (
           /* Static facade */
           <div
             className="absolute inset-0 flex flex-col items-center justify-center gap-4
-                       bg-[var(--color-near-black)] bg-opacity-5"
+                       bg-[var(--color-near-black)]/5"
           >
             <LocationPin />
             <div className="text-center px-4">
@@ -104,7 +104,7 @@ function MapFacade() {
       </div>
 
       {/* Footer link */}
-      <div className="px-4 py-3 bg-white border-t border-[var(--color-near-black)] border-opacity-5">
+      <div className="px-4 py-3 bg-white border-t border-[var(--color-near-black)]/5">
         <a
           href={linkUrl}
           target="_blank"

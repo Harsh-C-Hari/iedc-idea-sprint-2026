@@ -24,7 +24,7 @@ const schedule = [
       { time: '7:00 PM', title: 'Ideation sprint begins' },
       { time: '8:00 PM', title: 'Dinner' },
       { time: '10:00 PM', title: 'Music session' },
-      { time: '11:00 PM', title: 'Overnight hacking continues' },
+      { time: '11:00 PM', title: 'Overnight ideation continues' },
     ],
   },
   {

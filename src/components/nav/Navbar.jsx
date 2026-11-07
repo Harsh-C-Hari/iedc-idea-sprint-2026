@@ -2,13 +2,19 @@
  * Navbar.jsx — fixed minimal navigation bar.
  *
  * Layout (plan section D):
- *   • IEDC BOOTCAMP CEC wordmark — left
- *   • Section links — centre, hidden below 1024 px
+ *   • IEDC BOOTCAMP CEC wordmark — left (shortened to "IEDC CEC" below sm to
+ *     avoid crowding the Register button at 390px)
+ *   • Section links — centre, hidden below 1024px
  *   • Register button — right, always visible including on mobile
  *
  * Behaviour:
  *   • Mobile menu toggle with aria-expanded
  *   • Smooth scroll via CSS; anchors use scroll-margin-top
+ *
+ * Phase 1 fixes:
+ *   • #d4901f replaced with --color-orange-hover
+ *   • Focus ring uses --focus-ring token (cream on dark background)
+ *   • Mobile wordmark shortened below sm to prevent crowding
  */
 import { useState, useRef } from 'react'
 import nav from '../../data/nav.js'
@@ -25,17 +31,20 @@ export default function Navbar() {
     <>
       <header
         role="banner"
+        data-theme="dark"
         className="fixed top-0 inset-x-0 z-[var(--z-nav)] h-16 flex items-center px-5 md:px-8
                    bg-[var(--color-near-black)] text-[var(--color-cream)]"
       >
-        {/* Wordmark */}
+        {/* Wordmark — "IEDC CEC" on mobile to avoid crowding the Register button */}
         <a
           href="#hero"
           aria-label="IEDC BOOTCAMP CEC — back to top"
           className="font-[family-name:var(--font-display)] text-sm tracking-widest uppercase
-                     text-[var(--color-cream)] no-underline shrink-0 focus-visible:outline-[var(--color-cream)]"
+                     text-[var(--color-cream)] no-underline shrink-0
+                     focus-visible:outline-[var(--color-cream)]"
         >
-          IEDC BOOTCAMP CEC
+          <span className="sm:hidden">IEDC CEC</span>
+          <span className="hidden sm:inline">IEDC BOOTCAMP CEC</span>
         </a>
 
         {/* Desktop nav — centre */}
@@ -66,13 +75,14 @@ export default function Navbar() {
                        tracking-wide px-5 py-2 min-h-[40px] flex items-center
                        bg-[var(--color-orange)] text-[var(--color-near-black)]
                        rounded-[var(--radius-sm)]
-                       hover:bg-[#d4901f] transition-colors duration-[var(--duration-fast)]
+                       hover:bg-[var(--color-orange-hover)]
+                       transition-colors duration-[var(--duration-fast)]
                        focus-visible:outline-[var(--color-cream)]"
           >
             Register
           </a>
 
-          {/* Hamburger — only below 1024 px */}
+          {/* Hamburger — only below 1024px */}
           <button
             ref={triggerRef}
             type="button"

@@ -56,7 +56,8 @@ function TimelineItem({ item, side, day }) {
             font-[family-name:var(--font-display)]
             text-[clamp(2rem,4vw,3rem)] leading-none tracking-[-0.025em]
             block mb-1
-            ${isDay1 ? 'text-[var(--color-lime)]' : 'text-[var(--color-orange)]'}
+            ${isDay1 ? 'text-[var(--color-lime)]' : 'text-[var(--color-near-black)]'}
+            /* Day 2 times are near-black (not orange — orange on cream fails contrast at this font size) */
           `}
         >
           {item.time}
@@ -239,7 +240,7 @@ export default function Timeline() {
       <div className="bg-[var(--color-cream)] px-5 md:px-8 lg:px-16 py-6">
         <p
           className="font-[family-name:var(--font-body)] text-xs text-[var(--color-near-black)]
-                     opacity-40 italic max-w-4xl mx-auto"
+                     opacity-65 italic max-w-4xl mx-auto"
         >
           Schedule subject to change — times will be confirmed by organizers.
         </p>

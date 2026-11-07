@@ -55,15 +55,16 @@
    Palette rules (section A):
      • Orange never carries text on cream — use for fills/shapes, near-black labels on orange buttons
      • Lime only on near-black or as fill behind near-black text
-     • Form borders and focus rings are near-black
+     • Form borders and focus rings driven by --line token (theme-aware)
    -------------------------------------------------------------------------- */
 
 @theme {
   /* --- Colour palette --- */
-  --color-cream:      #F2EBDD;   /* warm cream — primary light background */
-  --color-near-black: #171717;   /* near-black — primary dark background + body text on cream */
-  --color-orange:     #F05A28;   /* orange — fills, shapes, button backgrounds (near-black labels) */
-  --color-lime:       #D9F36A;   /* lime — only on near-black surfaces or as fill behind near-black text */
+  --color-cream:        #F2EBDD;   /* warm cream — primary light background */
+  --color-near-black:   #171717;   /* near-black — primary dark background + body text on cream */
+  --color-orange:       #F05A28;   /* orange — fills, shapes, button backgrounds (near-black labels) */
+  --color-orange-hover: #FF7140;   /* lighter orange hover — near-black text ≥ 4.5:1 on this */
+  --color-lime:         #D9F36A;   /* lime — only on near-black surfaces or as fill behind near-black text */
 
   /* Semantic aliases */
   --color-bg-light:   var(--color-cream);
@@ -112,20 +113,93 @@
 }
 
 /* --------------------------------------------------------------------------
-   Base styles
-   Content is visible by default; animation is an enhancement (plan section H).
+   Semantic theme tokens — switched by [data-theme] on SectionShell.
+   Components use --fg, --fg-muted, --line, --field-bg instead of
+   hard-coded palette values, so they work on either light or dark sections.
    -------------------------------------------------------------------------- */
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
+[data-theme="light"] {
+  --fg:        #171717;
+  --fg-muted:  rgb(23 23 23 / 0.68);
+  --line:      rgb(23 23 23 / 0.18);
+  --field-bg:  #ffffff;
+  --focus-ring: #171717;
 }
 
-html {
-  /* Smooth scroll — disabled under reduced motion (plan section D) */
-  scroll-behavior: smooth;
+[data-theme="dark"] {
+  --fg:        #F2EBDD;
+  --fg-muted:  rgb(242 235 221 / 0.68);
+  --line:      rgb(242 235 221 / 0.25);
+  --field-bg:  rgb(242 235 221 / 0.07);
+  --focus-ring: #F2EBDD;
 }
+
+/* --------------------------------------------------------------------------
+   @layer base — these styles are inside a layer so Tailwind v4 utilities
+   (which live inside @layer utilities) always win over them.
+   Previously unlayered → utilities always lost → invisible button text,
+   broken spacing. Fixed in Phase 1.1.
+   -------------------------------------------------------------------------- */
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    /* Smooth scroll — disabled under reduced motion (plan section D) */
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: var(--text-body-md);
+    line-height: 1.6;
+    background-color: var(--color-cream);
+    color: var(--color-near-black);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  /* Images never overflow their container and have no layout shift */
+  img,
+  svg,
+  video {
+    display: block;
+    max-width: 100%;
+  }
+
+  /* Headings */
+  h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 400; /* Archivo Black has one weight — never font-bold */
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  a {
+    color: inherit;
+  }
+
+  /* Tabular nums for Countdown (plan section F — prevents layout shift) */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Reduced-motion global — OUTSIDE @layer base so it always applies
+   -------------------------------------------------------------------------- */
 
 @media (prefers-reduced-motion: reduce) {
   html {
@@ -141,64 +215,15 @@ html {
   }
 }
 
-body {
-  margin: 0;
-  font-family: var(--font-body);
-  font-size: var(--text-body-md);
-  line-height: 1.6;
-  background-color: var(--color-cream);
-  color: var(--color-near-black);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
-}
-
-/* Images never overflow their container and have no layout shift */
-img,
-svg,
-video {
-  display: block;
-  max-width: 100%;
-}
-
-/* Headings */
-h1, h2, h3, h4, h5, h6 {
-  margin: 0;
-  font-family: var(--font-display);
-  font-weight: 400; /* Archivo Black has one weight — never font-bold */
-  line-height: 1.05;
-  letter-spacing: -0.02em;
-}
-
-p {
-  margin: 0;
-}
-
-a {
-  color: inherit;
-}
-
-/* Tabular nums for Countdown (plan section F — prevents layout shift) */
-.tabular-nums {
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0;
-}
-
 /* --------------------------------------------------------------------------
-   Focus styles
-   Near-black focus ring on all interactive elements (plan sections A and G).
-   Visible always; not just :focus-visible — covers mouse users who tab through.
+   Focus styles — theme-aware.
+   The ring colour comes from --focus-ring, set per [data-theme].
+   This covers both light and dark sections without dead selectors.
    -------------------------------------------------------------------------- */
 
 :focus-visible {
-  outline: 3px solid var(--color-near-black);
+  outline: 3px solid var(--focus-ring, var(--color-near-black));
   outline-offset: 3px;
-}
-
-/* On dark backgrounds, flip the ring to cream */
-.bg-dark :focus-visible,
-[data-theme="dark"] :focus-visible {
-  outline-color: var(--color-cream);
 }
 
 /* Remove outline on non-keyboard focus (mouse click) */
@@ -207,15 +232,15 @@ a {
 }
 
 /* --------------------------------------------------------------------------
-   Scroll margin — anchors land below the fixed navbar (filled in T4)
+   Scroll margin — anchors land below the fixed navbar
    -------------------------------------------------------------------------- */
 
 [id] {
-  scroll-margin-top: 4rem; /* adjusted to match navbar height in T4 */
+  scroll-margin-top: 4rem;
 }
 
 /* --------------------------------------------------------------------------
-   Utility: skip link (filled in T4)
+   Utility: skip link
    -------------------------------------------------------------------------- */
 
 .skip-link {

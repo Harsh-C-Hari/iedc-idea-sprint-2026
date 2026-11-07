@@ -83,8 +83,9 @@ const eventConfig = {
 
   /**
    * Semester options for the registration form.
-   * Provisional: S1–S8 even semesters (plan section F Q3).
-   * Confirm the exact list with organizers.
+   * Provisional: S1, S3, S5, S7 (odd semesters only — confirm with organizers).
+   * Comment was previously incorrect ("S1–S8 even semesters").
+   * Confirm the exact list with organizers before going live.
    */
   semesters: ['S1', 'S3', 'S5', 'S7'],
   provisional_semesters: true,
