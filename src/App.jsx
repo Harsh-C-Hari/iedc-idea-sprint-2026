@@ -2,9 +2,9 @@
  * App.jsx — root component.
  *
  * Renders:
- *   skip link → Navbar → <main> with 8 section placeholders → (sections added T5–T12)
+ *   skip link → Navbar → <main> (Hero through Venue) → Footer
  *
- * Phase 0 data-wiring check printed to console only (removed in T5).
+ * Phase 0 data-wiring check printed to console only in DEV.
  */
 import './styles/index.css'
 import Navbar from './components/nav/Navbar.jsx'
@@ -15,6 +15,7 @@ import Timeline from './sections/Timeline.jsx'
 import Challenge from './sections/Challenge.jsx'
 import Registration from './sections/Registration.jsx'
 import Venue from './sections/Venue.jsx'
+import Footer from './sections/Footer.jsx'
 import eventConfig from './config/eventConfig.js'
 import schedule from './data/schedule.js'
 import prompts from './data/prompts.js'
@@ -60,8 +61,9 @@ export default function App() {
         <Challenge />
         <Registration />
         <Venue />
-        {/* T12 Footer added next */}
       </main>
+
+      <Footer />
     </>
   )
 }
