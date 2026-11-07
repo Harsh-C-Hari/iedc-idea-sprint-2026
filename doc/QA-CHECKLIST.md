@@ -1,5 +1,5 @@
 # QA Checklist — IDEA SPRINT 2026
-_Plan section G · Audited 2026-11-07 · Build `3084716`_
+_Plan section G · Audited 2026-11-07 · Build `9719e46`_
 
 ---
 
@@ -111,12 +111,44 @@ _Plan section G · Audited 2026-11-07 · Build `3084716`_
 
 | Item | Status |
 |------|--------|
-| OG image is SVG — some social crawlers (LinkedIn, Slack) may not render SVG preview cards | ⚠️ Deferred to T22 — raster PNG fallback |
+| OG image is SVG — some social crawlers (LinkedIn, Slack) may not render SVG preview cards | ⚠️ Deferred — raster PNG fallback |
 | `doc/IDEA-SPRINT-SPEC.md` does not exist — spec audit (Phase 3 follow-up #5) cannot be completed | ⚠️ Blocked on file creation |
-| Lighthouse scores: not yet measured in this session — awaiting user report for T22 | ⏳ Pending |
 | No end-to-end browser test (Playwright/Cypress) — manual audit performed | ℹ️ Out of scope for current phase |
 
 ---
 
-_Last updated: 2026-11-07 · Auditor: Antigravity (automated code audit)_
+## I. T22 — Performance / LCP Optimisation
+
+_Lighthouse baseline (dev server, 2026-11-07): Performance 61 · FCP 2.7 s · LCP 5.0 s_
+
+**Root cause identified:** The loader overlay (`position:fixed; z-index:9999`) blocked all content
+for ~1.68 s. Hero's entrance timeline started at mount (t=0) but immediately set `h1` to
+`clipPath: inset(0 0 100% 0)`, making the LCP element invisible to the browser until after the
+loader cleared AND the clip-path animation completed (~0.94 s later).
+
+**Fixes applied (commit `9719e46`):**
+
+| # | Fix | File |
+|---|-----|------|
+| I1 | Loader GSAP durations compressed ~40 %: total wipe-out at 0.75 s instead of 1.25 s | `src/motion/Loader.jsx` |
+| I2 | `removeShell()` now dispatches `CustomEvent('loader:done')` after shell fades out | `src/motion/Loader.jsx` |
+| I3 | Hero entrance waits for `loader:done` before setting any `gsap.set()` hidden states | `src/sections/Hero.jsx` |
+| I4 | h1 words stay at their natural visible state during load → LCP-eligible while loader runs | `src/sections/Hero.jsx` |
+| I5 | Hero entrance itself tightened to ~0.9 s total (was ~1.2 s) | `src/sections/Hero.jsx` |
+| I6 | CSS safety hide reduced from `2.0 s` to `1.1 s` | `index.html` |
+| I7 | CSS fallback animation timings updated to match new GSAP schedule | `index.html` |
+| I8 | Reduced-motion path dispatches `loader:done` immediately so Hero starts at once | `src/motion/Loader.jsx` |
+
+**Expected improvement:**
+- Loader clears at ~1.0 s (was ~1.68 s)
+- h1 is LCP-eligible during loader (no clip-path until `loader:done`)
+- FCP target: < 1.5 s · LCP target: < 2.5 s · Performance target: > 80
+
+> **Note:** The Lighthouse baseline was measured on the **dev server** (`localhost:5173`). Re-run
+> on `npm run preview` (port 4173) for a production-accurate score. Dev server adds 1–2 s overhead
+> due to unbundled ESM requests.
+
+---
+
+_Last updated: 2026-11-07 · T22 · Auditor: Antigravity (automated code audit)_
 
