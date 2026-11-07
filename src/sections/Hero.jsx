@@ -49,9 +49,9 @@ export default function Hero() {
     if (!el || REDUCED) return
 
     function runEntrance() {
+      const wordmark = el.querySelector('[data-hero="wordmark"]')
       const sparkEl = el.querySelector('[data-hero="spark"]')
       const h1Words = el.querySelectorAll('[data-hero="h1-word"]')
-      const taglineEl = el.querySelector('[data-hero="tagline"]')
       const supportEl = el.querySelector('[data-hero="support"]')
       const countdownEl = el.querySelector('[data-hero="countdown"]')
       const ctaEl = el.querySelector('[data-hero="cta"]')
@@ -60,16 +60,18 @@ export default function Hero() {
 
       // Set hidden start states only after loader exits (keeps h1 LCP-eligible)
       // h1Words use clip-path only — never opacity:0 (plan constraint)
+      gsap.set(wordmark, { opacity: 0, y: -16 })
       gsap.set(sparkEl, { opacity: 0, scale: 0.5, transformOrigin: 'center center' })
       gsap.set(h1Words, { clipPath: 'inset(0 0 100% 0)', y: 6 })
-      gsap.set([taglineEl, supportEl, countdownEl, ctaEl, metaEl], { opacity: 0, y: 12 })
+      gsap.set([supportEl, countdownEl, ctaEl, metaEl], { opacity: 0, y: 12 })
       gsap.set(fragEls, { opacity: 0, scale: 0.6, transformOrigin: 'center center' })
 
       const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
+      tl.to(wordmark, { opacity: 1, y: 0, duration: 0.30 }, 0)
       tl.to(sparkEl, { opacity: 1, scale: 1, duration: 0.35, ease: 'back.out(1.6)' }, 0.05)
       tl.to(h1Words, { clipPath: 'inset(0 0 0% 0)', y: 0, duration: 0.35, stagger: 0.055 }, 0.08)
       tl.to(fragEls, { opacity: 1, scale: 1, duration: 0.45, stagger: 0.05, ease: 'back.out(1.3)' }, 0.28)
-      tl.to([taglineEl, supportEl, countdownEl, ctaEl, metaEl],
+      tl.to([supportEl, countdownEl, ctaEl, metaEl],
         { opacity: 1, y: 0, duration: 0.35, stagger: 0.05 }, 0.36)
     }
 
@@ -140,117 +142,13 @@ export default function Hero() {
           >
             <Cube size={42} color="#F05A28" opacity={0.15} />
           </div>
-        </div>
 
-        {/* ════ MAIN TWO-COLUMN CONTENT GRID ════ */}
-        <div className="relative z-10 max-w-6xl w-full mx-auto grid grid-cols-1 lg:grid-cols-12 lg:gap-12 items-center flex-1 my-auto">
-
-          {/* ── Left Column: Headline, Tagline, Copy, Countdown, CTAs, Meta ── */}
-          <div className="lg:col-span-7 flex flex-col justify-center">
-
-            {/* Visual Headline (Single h1) */}
-            <h1
-              id="hero-heading"
-              tabIndex={-1}
-              className="font-[family-name:var(--font-display)]
-                         leading-[0.92] tracking-[-0.035em]
-                         text-[var(--color-near-black)]
-                         focus:outline-none"
-              style={{ fontSize: 'clamp(2.5rem, 5.8vw, 5.25rem)' }}
-            >
-              <span className="block overflow-hidden">
-                <span data-hero="h1-word" className="inline-flex items-center gap-2 sm:gap-3.5">
-                  IDEA SPRINT
-                  <span aria-hidden="true" data-hero="spark" className="inline-block transform -translate-y-1">
-                    <Spark size={40} color="orange" className="hidden sm:inline-block" />
-                    <Spark size={28} color="orange" className="sm:hidden inline-block" />
-                  </span>
-                </span>
-              </span>
-              <span className="block overflow-hidden">
-                <span
-                  data-hero="h1-word"
-                  className="block text-[var(--color-near-black)] opacity-85"
-                >
-                  2026
-                </span>
-              </span>
-            </h1>
-
-            {/* Tagline — smaller real text */}
-            <p
-              data-hero="tagline"
-              className="font-[family-name:var(--font-display)]
-                         text-[clamp(0.85rem,1.6vw,1.15rem)] tracking-tight uppercase
-                         text-[var(--color-near-black)] opacity-85 mt-2 lg:mt-3"
-            >
-              24 Hours. One Idea. Endless Possibilities.
-            </p>
-
-            {/* Supporting Copy */}
-            <p
-              data-hero="support"
-              className="font-[family-name:var(--font-body)]
-                         text-[clamp(0.875rem,1.3vw,1rem)] leading-relaxed
-                         text-[var(--color-near-black)] opacity-70
-                         max-w-[44ch] mt-2 sm:mt-3"
-            >
-              {heroSupporting}
-            </p>
-
-            {/* Countdown */}
-            <div data-hero="countdown" className="mt-4 sm:mt-5">
-              <Countdown />
-            </div>
-
-            {/* Action CTAs */}
-            <div data-hero="cta" className="mt-5 sm:mt-6 flex flex-row gap-3">
-              <Button
-                as="a"
-                href="#registration"
-                variant="primary"
-                size="lg"
-                disabled={ctaDisabled(status)}
-                aria-disabled={ctaDisabled(status)}
-                className="w-auto"
-              >
-                {ctaLabel(status)}
-              </Button>
-              <Button
-                as="a"
-                href="#about"
-                variant="outline"
-                size="lg"
-                className="w-auto"
-              >
-                Explore
-              </Button>
-            </div>
-
-            {/* Event Metadata Row */}
-            <ul
-              data-hero="meta"
-              aria-label="Event details"
-              className="mt-4 sm:mt-5 flex flex-wrap gap-x-5 gap-y-1.5 list-none p-0 m-0"
-            >
-              {heroMeta.map((item) => (
-                <li
-                  key={item}
-                  className="font-[family-name:var(--font-body)] text-xs uppercase tracking-widest
-                             text-[var(--color-near-black)] opacity-60"
-                >
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* ── Right Column: Composed Geometric Cluster (Desktop only) ── */}
+          {/* Floating 3D Geometric Cluster (Right side background, desktop) */}
           <div
             aria-hidden="true"
-            className="hidden lg:flex lg:col-span-5 items-center justify-center relative w-full pointer-events-none select-none"
+            className="hidden lg:flex items-center justify-center absolute right-[2%] xl:right-[6%] top-1/2 -translate-y-1/2 pointer-events-none select-none z-0"
           >
-            <div className="relative w-full max-w-[360px] aspect-square flex items-center justify-center">
+            <div className="relative w-[340px] xl:w-[400px] aspect-square flex items-center justify-center">
               {/* Central primary Spark */}
               <div
                 data-hero="frag"
@@ -306,7 +204,135 @@ export default function Hero() {
               </div>
             </div>
           </div>
+        </div>
 
+        {/* ════ CONTENT — static (no cursor parallax, no transform) ════ */}
+        <div className="relative z-10 max-w-6xl w-full mx-auto my-auto">
+          {/* Wordmark "IDEA SPRINT 2026" */}
+          <div className="relative mb-2 lg:mb-0">
+            <p
+              aria-label="IDEA SPRINT 2026"
+              data-hero="wordmark"
+              className="font-[family-name:var(--font-display)]
+                         leading-[0.88] tracking-[-0.04em]
+                         select-none pointer-events-none"
+              style={{
+                fontSize: 'clamp(2.8rem, 15vw, 11rem)',
+                WebkitTextStroke: '2px rgba(23,23,23,0.6)',
+                color: 'rgba(23,23,23,0.12)',
+              }}
+            >
+              <span className="block">IDEA</span>
+              <span className="block relative">
+                SPRINT
+                {/* Spark at IDEA/SPRINT transition */}
+                <span
+                  aria-hidden="true"
+                  data-hero="spark"
+                  className="absolute"
+                  style={{
+                    right: 'clamp(-2rem, -3vw, -4rem)',
+                    top: '0',
+                    transform: 'translateY(-35%)',
+                  }}
+                >
+                  <Spark size={72} color="orange" className="hidden sm:block" />
+                  <Spark size={48} color="orange" className="sm:hidden" />
+                </span>
+              </span>
+              <span
+                className="block text-[var(--color-near-black)] opacity-85"
+                style={{ fontSize: '0.5em', letterSpacing: '-0.02em' }}
+              >
+                2026
+              </span>
+            </p>
+          </div>
+
+          {/* h1 — dominant, clip-reveal only. NEVER from opacity:0. */}
+          <h1
+            id="hero-heading"
+            tabIndex={-1}
+            className="font-[family-name:var(--font-display)]
+                       leading-[1.0] tracking-[-0.025em]
+                       text-[var(--color-near-black)]
+                       max-w-[18ch] mt-6 lg:mt-10 focus:outline-none"
+            style={{ fontSize: 'clamp(1.65rem, 6.2vw, 5.25rem)' }}
+          >
+            {['24 HOURS.', 'ONE IDEA.', 'ENDLESS', 'POSSIBILITIES.'].map((word) => (
+              <span key={word} className="block overflow-hidden">
+                <span data-hero="h1-word" className="block">{word}</span>
+              </span>
+            ))}
+          </h1>
+
+          {/* Decorative near-layer fragments (overlapping type) — static, no parallax */}
+          <div aria-hidden="true" className="pointer-events-none select-none">
+            <div data-hero="frag" className="absolute hidden lg:block"
+              style={{ top: '54%', left: 'clamp(14rem, 32vw, 28rem)' }}>
+              <Ring size={52} color="#F05A28" opacity={0.22} />
+            </div>
+            <div data-hero="frag" className="absolute hidden sm:block"
+              style={{ top: '72%', left: 'clamp(10rem, 28vw, 24rem)' }}>
+              <Disc size={22} color="#D9F36A" opacity={0.30} />
+            </div>
+          </div>
+
+          {/* Supporting copy */}
+          <p
+            data-hero="support"
+            className="font-[family-name:var(--font-body)] text-[1rem] md:text-[1.125rem]
+                       leading-relaxed text-[var(--color-near-black)] opacity-70
+                       max-w-[48ch] mt-6"
+          >
+            {heroSupporting}
+          </p>
+
+          {/* Countdown */}
+          <div data-hero="countdown" className="mt-8">
+            <Countdown />
+          </div>
+
+          {/* CTAs */}
+          <div data-hero="cta" className="mt-8 flex flex-col sm:flex-row gap-4">
+            <Button
+              as="a"
+              href="#registration"
+              variant="primary"
+              size="lg"
+              disabled={ctaDisabled(status)}
+              aria-disabled={ctaDisabled(status)}
+              className="w-full sm:w-auto"
+            >
+              {ctaLabel(status)}
+            </Button>
+            <Button
+              as="a"
+              href="#about"
+              variant="outline"
+              size="lg"
+              className="w-full sm:w-auto"
+            >
+              Explore
+            </Button>
+          </div>
+
+          {/* Metadata row */}
+          <ul
+            data-hero="meta"
+            aria-label="Event details"
+            className="mt-10 flex flex-wrap gap-x-6 gap-y-2 list-none p-0 m-0"
+          >
+            {heroMeta.map((item) => (
+              <li
+                key={item}
+                className="font-[family-name:var(--font-body)] text-xs uppercase tracking-widest
+                           text-[var(--color-near-black)] opacity-50"
+              >
+                {item}
+              </li>
+            ))}
+          </ul>
         </div>
       </SectionShell>
     </div>
