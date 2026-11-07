@@ -26,8 +26,13 @@ const REDUCED =
     ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
     : false
 
+let shellRemoved = false
+
 /** Fade out, remove the loader shell, then fire 'loader:done' so Hero can start its entrance. */
 function removeShell() {
+  if (shellRemoved) return
+  shellRemoved = true
+
   const el = document.getElementById('loader')
   if (!el) {
     window.dispatchEvent(new CustomEvent('loader:done'))

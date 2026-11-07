@@ -245,8 +245,9 @@ export default function IdeaSpark() {
                              rounded-[var(--radius-md)] bg-[var(--color-cream)]/5"
                 >
                   <p
+                    key={promptSeed}
                     className="font-[family-name:var(--font-body)] text-[1.0625rem] leading-relaxed
-                               text-[var(--color-cream)] mb-6"
+                               text-[var(--color-cream)] mb-6 animate-[fadeSlideIn_0.35s_cubic-bezier(0.16,1,0.3,1)]"
                   >
                     {prompt}
                   </p>

@@ -79,11 +79,12 @@ function FactStrip() {
     if (REDUCED) return
     const items = stripRef.current?.querySelectorAll('[data-fact-item]')
     if (!items?.length) return
-    items.forEach((item) => {
+    items.forEach((item, i) => {
       gsap.set(item, { clipPath: 'inset(0 100% 0 0)' })
       gsap.to(item, {
         clipPath: 'inset(0 0% 0 0)',
-        duration: 0.7,
+        duration: 0.65,
+        delay: i * 0.09,
         ease: 'power4.out',
         scrollTrigger: {
           trigger: item,
@@ -149,33 +150,40 @@ function TravellingSpark({ gridRef }) {
 
       // Sample positions: centre-top of each card relative to grid
       function getPos(card) {
+        if (!grid || !card) return { x: 0, y: 0 }
         const gr = grid.getBoundingClientRect()
         const cr = card.getBoundingClientRect()
         return {
           x: cr.left - gr.left + cr.width / 2 - 24, // 24 = half spark size 48
-          y: cr.top - gr.top - 56,                   // just above the card
+          y: cr.top - gr.top - 60,                   // safely above the card
         }
       }
 
-      // We define 4 keyframe positions (one per step card).
-      // The scrub animates through them as the grid scrolls past.
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: grid,
           start: 'top 70%',
           end: 'bottom 60%',
           scrub: 1.2,
+          invalidateOnRefresh: true,
         },
       })
 
-      const positions = Array.from(cards).map(getPos)
+      // Dynamic function-based values re-evaluate on refresh/resize
+      gsap.set(spark, {
+        x: () => getPos(cards[0]).x,
+        y: () => getPos(cards[0]).y,
+        opacity: 1,
+      })
 
-      // Start at card 0 position
-      gsap.set(spark, { x: positions[0].x, y: positions[0].y, opacity: 1 })
-
-      // Animate through 1 → 2 → 3
-      positions.slice(1).forEach((pos) => {
-        tl.to(spark, { x: pos.x, y: pos.y, ease: 'power1.inOut', duration: 1 })
+      cards.forEach((card, idx) => {
+        if (idx === 0) return
+        tl.to(spark, {
+          x: () => getPos(card).x,
+          y: () => getPos(card).y,
+          ease: 'power1.inOut',
+          duration: 1,
+        })
       })
 
       return () => {

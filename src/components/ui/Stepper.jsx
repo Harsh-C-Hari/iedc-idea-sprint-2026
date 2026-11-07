@@ -57,8 +57,11 @@ export default function Stepper({ step }) {
           aria-valuemax={total}
         >
           <div
-            className="h-full bg-[var(--color-orange)] rounded-full transition-all duration-[var(--duration-normal)]"
-            style={{ width: `${((step + 1) / total) * 100}%` }}
+            className="h-full bg-[var(--color-orange)] rounded-full origin-left transition-transform duration-[var(--duration-normal)] ease-out"
+            style={{
+              width: '100%',
+              transform: `scaleX(${(step + 1) / total})`,
+            }}
           />
         </div>
       </div>

@@ -14,13 +14,16 @@ import { pad2 } from '../../lib/time.js'
 import eventConfig from '../../config/eventConfig.js'
 
 function Unit({ value, label }) {
+  const formatted = pad2(value)
   return (
-    <div className="flex flex-col items-center min-w-[3.5rem]">
+    <div className="flex flex-col items-center min-w-[3.5rem] overflow-hidden">
       <span
+        key={formatted}
         className="tabular-nums font-[family-name:var(--font-display)]
-                   text-[clamp(2rem,6vw,3.5rem)] leading-none text-[var(--color-near-black)]"
+                   text-[clamp(2rem,6vw,3.5rem)] leading-none text-[var(--color-near-black)]
+                   inline-block animate-[digitRoll_0.25s_cubic-bezier(0.16,1,0.3,1)]"
       >
-        {pad2(value)}
+        {formatted}
       </span>
       <span className="font-[family-name:var(--font-body)] text-[0.65rem] uppercase tracking-widest opacity-60 mt-1">
         {label}

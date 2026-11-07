@@ -252,6 +252,30 @@
 }
 
 /* --------------------------------------------------------------------------
+   Reveal initial states — avoids flash of content (FOUC) before GSAP runs
+   Applies only when JS is active and reduced-motion is not requested.
+   -------------------------------------------------------------------------- */
+.js:not(.reduced-motion) [data-reveal="fade"] {
+  opacity: 0;
+  transform: translateY(24px);
+}
+.js:not(.reduced-motion) [data-reveal="slide-left"] {
+  opacity: 0;
+  transform: translateX(-40px);
+}
+.js:not(.reduced-motion) [data-reveal="slide-right"] {
+  opacity: 0;
+  transform: translateX(40px);
+}
+.js:not(.reduced-motion) [data-reveal="scale"] {
+  opacity: 0;
+  transform: scale(0.88);
+}
+.js:not(.reduced-motion) [data-reveal="clip"] {
+  clip-path: inset(0 0 100% 0);
+}
+
+/* --------------------------------------------------------------------------
    Scroll margin — anchors land below the fixed navbar
    -------------------------------------------------------------------------- */
 
@@ -281,6 +305,36 @@
 
 .skip-link:focus {
   top: 1rem;
+}
+
+/* --------------------------------------------------------------------------
+   Registration step slide+fade animation (Phase 2.10)
+   -------------------------------------------------------------------------- */
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Countdown digit roll animation (Phase 2.13)
+   -------------------------------------------------------------------------- */
+
+@keyframes digitRoll {
+  from {
+    opacity: 0.4;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* --------------------------------------------------------------------------

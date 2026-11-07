@@ -496,7 +496,20 @@ export default function Registration() {
 
   async function handleNext() {
     const ok = tryNext(errorSummaryRef)
-    if (ok) setTimeout(() => stepHeadingRef.current?.focus(), 50)
+    if (ok) {
+      setTimeout(() => {
+        stepHeadingRef.current?.focus()
+        stepHeadingRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 50)
+    }
+  }
+
+  function handleBack() {
+    goToStep(state.step - 1)
+    setTimeout(() => {
+      stepHeadingRef.current?.focus()
+      stepHeadingRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 50)
   }
 
   async function handleSubmit() {
@@ -550,8 +563,11 @@ export default function Registration() {
             {/* Error summary (focus target on failed Next) */}
             <ErrorSummary errors={state.errors} summaryRef={errorSummaryRef} />
 
-            {/* Step content */}
-            <div>
+            {/* Step content with smooth slide+fade */}
+            <div
+              key={state.step}
+              className="animate-[fadeSlideIn_0.35s_cubic-bezier(0.16,1,0.3,1)]"
+            >
               {state.step === 0 && (
                 <TeamStep
                   state={state}
@@ -584,7 +600,7 @@ export default function Registration() {
                 {state.step > 0 ? (
                   <button
                     type="button"
-                    onClick={() => goToStep(state.step - 1)}
+                    onClick={handleBack}
                     className="font-[family-name:var(--font-body)] text-sm underline
                                hover:opacity-100 focus-visible:outline-[var(--focus-ring,var(--color-cream))]"
                     style={{ color: 'var(--fg-muted)' }}

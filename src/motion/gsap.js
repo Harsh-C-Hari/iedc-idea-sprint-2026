@@ -30,6 +30,29 @@ if (typeof document !== 'undefined') {
 /** Shared matchMedia context — add conditions per section */
 export const mm = gsap.matchMedia()
 
+/** Shared motion design tokens (Phase 2.7) */
+export const motionTokens = {
+  duration: {
+    fast: 0.15,
+    normal: 0.3,
+    slow: 0.6,
+    enter: 0.8,
+  },
+  ease: {
+    outExpo: 'power4.out',
+    outBack: 'back.out(1.4)',
+    inOut: 'power2.inOut',
+    linear: 'none',
+  },
+}
+
+/** Check if reduced motion is preferred dynamically */
+export function isReducedMotion() {
+  return typeof window !== 'undefined'
+    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    : false
+}
+
 /** Convenience re-exports */
 export { gsap, ScrollTrigger }
 export default gsap

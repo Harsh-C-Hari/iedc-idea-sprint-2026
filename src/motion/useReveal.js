@@ -80,29 +80,35 @@ export default function useReveal({ skip = [] } = {}) {
     if (!ref.current) return
 
     const selector = '[data-reveal]'
-    const elements = ref.current.querySelectorAll(selector)
+    const elements = Array.from(ref.current.querySelectorAll(selector)).filter(
+      (el) => !skip.includes(el.dataset.reveal)
+    )
     if (!elements.length) return
 
-    elements.forEach((el) => {
-      const type = el.dataset.reveal
-      if (skip.includes(type)) return  // let bespoke timeline handle it
+    if (REDUCED) {
+      elements.forEach((el) => gsap.set(el, { opacity: 1, x: 0, y: 0, scale: 1 }))
+      return
+    }
 
-      const delay = parseFloat(el.dataset.revealDelay ?? '0')
-      const from = fromVars(type)
-      const to = {
-        ...toVars(type),
-        delay,
-        scrollTrigger: {
-          trigger: el,
-          start: 'top 88%',
-          once: true,
-        },
-      }
-
-      if (Object.keys(from).length) {
-        gsap.set(el, from)
-      }
-      gsap.to(el, to)
+    // ScrollTrigger.batch batches elements entering together for smooth staggers
+    ScrollTrigger.batch(elements, {
+      start: 'top 88%',
+      once: true,
+      onEnter: (batch) => {
+        batch.forEach((el, i) => {
+          const type = el.dataset.reveal
+          const delay = parseFloat(el.dataset.revealDelay ?? '0')
+          const from = fromVars(type)
+          const to = {
+            ...toVars(type),
+            delay: delay || i * 0.08,
+          }
+          if (Object.keys(from).length) {
+            gsap.set(el, from)
+          }
+          gsap.to(el, to)
+        })
+      },
     })
   }, { scope: ref, dependencies: [] })
 
