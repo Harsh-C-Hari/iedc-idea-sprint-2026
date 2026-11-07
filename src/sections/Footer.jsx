@@ -113,9 +113,9 @@ export default function Footer() {
           </p>
         </div>
 
-        {/* Footer nav + info grid */}
+        {/* Footer nav + info layout */}
         <div className="border-t border-[var(--color-cream)]/10 pt-10
-                        grid grid-cols-1 md:grid-cols-3 gap-10">
+                        flex flex-col md:flex-row justify-between items-start gap-10">
 
           {/* Wordmark + event */}
           <div className="flex flex-col gap-3">
@@ -131,65 +131,70 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Nav links */}
-          <nav aria-label="Footer navigation">
-            <ul className="list-none p-0 m-0 flex flex-col gap-3">
-              {nav.map(({ label, href }) => (
-                <li key={href}>
+          {/* Nav links + optional social/contact (aligned to the right end) */}
+          <div className="flex flex-col md:flex-row gap-10 md:ml-auto md:text-right">
+            {/* Social + contact — hidden when null (plan section H) */}
+            {(eventConfig.social.instagram || eventConfig.social.linkedin || eventConfig.contact.email) && (
+              <div className="flex flex-col gap-3 md:items-end">
+                {eventConfig.social.instagram && (
                   <a
-                    href={href}
+                    href={eventConfig.social.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="font-[family-name:var(--font-body)] text-sm
-                               text-[var(--color-cream)] opacity-60
-                               hover:opacity-100 no-underline
-                               transition-opacity duration-[var(--duration-fast)]
+                               text-[var(--color-cream)] opacity-60 hover:opacity-100
+                               no-underline transition-opacity duration-[var(--duration-fast)]
                                focus-visible:outline-[var(--color-cream)]"
                   >
-                    {label}
+                    Instagram ↗
                   </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
+                )}
+                {eventConfig.social.linkedin && (
+                  <a
+                    href={eventConfig.social.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-[family-name:var(--font-body)] text-sm
+                               text-[var(--color-cream)] opacity-60 hover:opacity-100
+                               no-underline transition-opacity duration-[var(--duration-fast)]
+                               focus-visible:outline-[var(--color-cream)]"
+                  >
+                    LinkedIn ↗
+                  </a>
+                )}
+                {eventConfig.contact.email && (
+                  <a
+                    href={`mailto:${eventConfig.contact.email}`}
+                    className="font-[family-name:var(--font-body)] text-sm
+                               text-[var(--color-cream)] opacity-60 hover:opacity-100
+                               no-underline transition-opacity duration-[var(--duration-fast)]
+                               focus-visible:outline-[var(--color-cream)]"
+                  >
+                    {eventConfig.contact.email}
+                  </a>
+                )}
+              </div>
+            )}
 
-          {/* Social + contact — hidden when null (plan section H) */}
-          <div className="flex flex-col gap-3">
-            {eventConfig.social.instagram && (
-              <a
-                href={eventConfig.social.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-[family-name:var(--font-body)] text-sm
-                           text-[var(--color-cream)] opacity-60 hover:opacity-100
-                           no-underline transition-opacity duration-[var(--duration-fast)]
-                           focus-visible:outline-[var(--color-cream)]"
-              >
-                Instagram ↗
-              </a>
-            )}
-            {eventConfig.social.linkedin && (
-              <a
-                href={eventConfig.social.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-[family-name:var(--font-body)] text-sm
-                           text-[var(--color-cream)] opacity-60 hover:opacity-100
-                           no-underline transition-opacity duration-[var(--duration-fast)]
-                           focus-visible:outline-[var(--color-cream)]"
-              >
-                LinkedIn ↗
-              </a>
-            )}
-            {eventConfig.contact.email && (
-              <a
-                href={`mailto:${eventConfig.contact.email}`}
-                className="font-[family-name:var(--font-body)] text-sm
-                           text-[var(--color-cream)] opacity-60 hover:opacity-100
-                           no-underline transition-opacity duration-[var(--duration-fast)]
-                           focus-visible:outline-[var(--color-cream)]"
-              >
-                {eventConfig.contact.email}
-              </a>
-            )}
+            {/* Nav links */}
+            <nav aria-label="Footer navigation">
+              <ul className="list-none p-0 m-0 flex flex-col md:items-end gap-3">
+                {nav.map(({ label, href }) => (
+                  <li key={href}>
+                    <a
+                      href={href}
+                      className="font-[family-name:var(--font-body)] text-sm
+                                 text-[var(--color-cream)] opacity-60
+                                 hover:opacity-100 no-underline
+                                 transition-opacity duration-[var(--duration-fast)]
+                                 focus-visible:outline-[var(--color-cream)]"
+                    >
+                      {label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
           </div>
         </div>
 
