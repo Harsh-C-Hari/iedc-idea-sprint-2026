@@ -1,5 +1,5 @@
 /**
- * Challenge.jsx — section 5 with reveals (T15).
+ * Challenge.jsx — section 5 with reveals (T15) + travelling Spark (T18).
  *
  * Layout (plan section D):
  *   • Two-line headline with supporting headline and copy
@@ -7,19 +7,22 @@
  *   • Near-black fact strip: 24 HOURS, TEAM SIZE 1–4, ELIGIBILITY, ONE IDEA
  *     — values read from eventConfig so one edit updates both here and the form
  *
- * Motion (plan section D, T15):
+ * Motion (plan section D, T15 + T18):
  *   • Staggered step card reveals (fade + slide up)
  *   • Fact strip values clip-reveal
  *   • Headline clip reveal
+ *   • Travelling Spark (T18): scrubbed between step positions on desktop,
+ *     static decorative at top on mobile.
  *   • Reduced motion safe. Content visible if GSAP fails.
  *   • No pinning.
  */
 import { useRef } from 'react'
 import { useGSAP } from '@gsap/react'
 import SectionShell from '../components/ui/SectionShell.jsx'
+import Spark from '../components/art/Spark.jsx'
 import { steps } from '../data/content.js'
 import eventConfig from '../config/eventConfig.js'
-import { gsap } from '../motion/gsap.js'
+import { gsap, ScrollTrigger } from '../motion/gsap.js'
 
 const REDUCED =
   typeof window !== 'undefined'
@@ -124,8 +127,86 @@ function FactStrip() {
   )
 }
 
+/**
+ * TravellingSpark (T18) — desktop only.
+ * A small Spark scrubbed across the step grid as the user scrolls.
+ * On mobile: rendered as a static decorative element at the top of the grid.
+ */
+function TravellingSpark({ gridRef }) {
+  const sparkRef = useRef(null)
+
+  useGSAP(() => {
+    if (REDUCED) return
+    const spark = sparkRef.current
+    const grid = gridRef.current
+    if (!spark || !grid) return
+
+    // Desktop only via matchMedia
+    const mm = gsap.matchMedia()
+    mm.add('(min-width: 1024px)', () => {
+      const cards = grid.querySelectorAll('[data-challenge-step]')
+      if (cards.length < 4) return
+
+      // Sample positions: centre-top of each card relative to grid
+      function getPos(card) {
+        const gr = grid.getBoundingClientRect()
+        const cr = card.getBoundingClientRect()
+        return {
+          x: cr.left - gr.left + cr.width / 2 - 24, // 24 = half spark size 48
+          y: cr.top - gr.top - 56,                   // just above the card
+        }
+      }
+
+      // We define 4 keyframe positions (one per step card).
+      // The scrub animates through them as the grid scrolls past.
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: grid,
+          start: 'top 70%',
+          end: 'bottom 60%',
+          scrub: 1.2,
+        },
+      })
+
+      const positions = Array.from(cards).map(getPos)
+
+      // Start at card 0 position
+      gsap.set(spark, { x: positions[0].x, y: positions[0].y, opacity: 1 })
+
+      // Animate through 1 → 2 → 3
+      positions.slice(1).forEach((pos) => {
+        tl.to(spark, { x: pos.x, y: pos.y, ease: 'power1.inOut', duration: 1 })
+      })
+
+      return () => {
+        // cleanup matchMedia context
+      }
+    })
+  }, { scope: sparkRef, dependencies: [] })
+
+  return (
+    /*
+     * aria-hidden — purely decorative.
+     * On mobile: static, opacity-40, centred at top of grid.
+     * On desktop: positioned absolutely (transforms applied by GSAP).
+     */
+    <div
+      ref={sparkRef}
+      aria-hidden="true"
+      className="pointer-events-none select-none
+                 lg:absolute lg:z-10
+                 flex justify-center mb-6 lg:mb-0
+                 opacity-40 lg:opacity-60"
+      style={{ top: 0, left: 0 }}
+    >
+      <Spark size={48} color="lime" />
+    </div>
+  )
+}
+
 export default function Challenge() {
   const outerRef = useRef(null)
+  const gridRef = useRef(null)
 
   // Staggered step cards + headline reveal
   useGSAP(() => {
@@ -189,8 +270,11 @@ export default function Challenge() {
           </p>
         </div>
 
-        {/* Steps grid — 2×2 offset on desktop */}
-        <div className="max-w-6xl mx-auto">
+        {/* Steps grid — 2×2 offset on desktop — relative for Spark positioning */}
+        <div className="max-w-6xl mx-auto relative" ref={gridRef}>
+          {/* Travelling Spark — decorative, desktop scrubbed */}
+          <TravellingSpark gridRef={gridRef} />
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:gap-8">
             {steps.map((step, i) => (
               <StepCard key={step.number} step={step} offset={i === 1 || i === 3} />
