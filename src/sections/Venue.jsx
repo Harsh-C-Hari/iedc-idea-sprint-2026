@@ -17,7 +17,6 @@
  * Caption:
  *   • Single space after period, no duplicate "5th Floor", opacity-70 for WCAG AA.
  */
-import { useState } from 'react'
 import SectionShell from '../components/ui/SectionShell.jsx'
 import eventConfig from '../config/eventConfig.js'
 
@@ -44,86 +43,65 @@ function LocationPin({ color = 'var(--color-orange)' }) {
   )
 }
 
-/** Map facade — no iframe until clicked */
+/** Map facade — clickable preview opens Google Maps */
 function MapFacade() {
-  const [loaded, setLoaded] = useState(false)
   const mapImage = eventConfig.venue.mapImage
-  const mapEmbedUrl = eventConfig.venue.mapEmbedUrl
   const mapsUrl  = eventConfig.venue.mapsUrl
   const linkUrl  = mapsUrl ?? SEARCH_URL
   const linkLabel = mapsUrl ? 'Open in Google Maps' : 'Search on Google Maps'
 
   return (
-    <div className="rounded-[var(--radius-md)] overflow-hidden border border-[var(--color-near-black)]/12 bg-white shadow-xs w-full">
-      {/* Map area: full width aspect-[4/3] without right-edge gap */}
-      <div className="relative bg-[var(--color-cream)] w-full aspect-[4/3] overflow-hidden">
-        {!loaded ? (
-          /* Static facade */
-          <div className="absolute inset-0 w-full h-full">
-            {mapImage ? (
-              <picture>
-                <source srcSet="/images/cec-map.webp" type="image/webp" />
-                <img
-                  src={`/images/${mapImage}`}
-                  alt="Map showing College of Engineering Chengannur"
-                  width="1200"
-                  height="900"
-                  loading="lazy"
-                  decoding="async"
-                  className="w-full h-full object-cover"
-                />
-              </picture>
-            ) : (
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-[var(--color-near-black)]/5">
-                <div className="text-center px-4">
-                  <p className="font-[family-name:var(--font-body)] text-sm font-semibold text-[var(--color-near-black)] mb-1">
-                    {eventConfig.venue.college}
-                  </p>
-                  <p className="font-[family-name:var(--font-body)] text-xs text-[var(--color-near-black)] opacity-60">
-                    {eventConfig.venue.room}
-                  </p>
-                </div>
+    <div className="group rounded-[var(--radius-md)] overflow-hidden border border-[var(--color-near-black)]/12 bg-white shadow-xs hover:shadow-md transition-shadow duration-300 w-full">
+      {/* Clickable map area: opens Google Maps in a new tab */}
+      <a
+        href={linkUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`Open ${eventConfig.venue.college} in Google Maps`}
+        className="relative block bg-[var(--color-cream)] w-full aspect-[4/3] overflow-hidden cursor-pointer focus-visible:outline-[var(--color-near-black)] focus-visible:outline-offset-2"
+      >
+        <div className="absolute inset-0 w-full h-full">
+          {mapImage ? (
+            <picture>
+              <source srcSet="/images/cec-map.webp" type="image/webp" />
+              <img
+                src={`/images/${mapImage}`}
+                alt="Map showing College of Engineering Chengannur"
+                width="1200"
+                height="900"
+                loading="lazy"
+                decoding="async"
+                className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025] motion-reduce:transform-none"
+              />
+            </picture>
+          ) : (
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-[var(--color-near-black)]/5">
+              <div className="text-center px-4">
+                <p className="font-[family-name:var(--font-body)] text-sm font-semibold text-[var(--color-near-black)] mb-1">
+                  {eventConfig.venue.college}
+                </p>
+                <p className="font-[family-name:var(--font-body)] text-xs text-[var(--color-near-black)] opacity-60">
+                  {eventConfig.venue.room}
+                </p>
               </div>
-            )}
-
-            {/* Animated LocationPin + "Map preview" chip */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10">
-              <LocationPin />
-              <span className="mt-2 px-2.5 py-1 font-[family-name:var(--font-body)] text-[11px] font-medium tracking-wide bg-[var(--color-near-black)]/85 text-[var(--color-cream)] rounded-full backdrop-blur-xs shadow-xs">
-                Map preview
-              </span>
             </div>
+          )}
 
-            {/* "Load interactive map" button — shown only if mapEmbedUrl is set */}
-            {mapEmbedUrl && (
-              <div className="absolute bottom-4 inset-x-0 flex justify-center z-20">
-                <button
-                  type="button"
-                  onClick={() => setLoaded(true)}
-                  className="px-5 py-2 min-h-[44px] flex items-center
-                             font-[family-name:var(--font-body)] text-sm font-semibold
-                             bg-[var(--color-near-black)] text-[var(--color-cream)]
-                             rounded-[var(--radius-sm)] shadow-md
-                             hover:bg-[#2a2420] transition-colors duration-[var(--duration-fast)]
-                             focus-visible:outline-[var(--color-near-black)]"
-                >
-                  Load interactive map
-                </button>
-              </div>
-            )}
+          {/* Animated LocationPin + interactive "Open on Google Maps" chip */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10">
+            <LocationPin />
+            <span
+              className="mt-2 px-3 py-1 font-[family-name:var(--font-body)] text-[11px] font-medium tracking-wide
+                         bg-[var(--color-near-black)]/85 text-[var(--color-cream)] rounded-full backdrop-blur-xs shadow-xs
+                         group-hover:bg-[var(--color-orange)] group-hover:text-[var(--color-near-black)]
+                         transition-colors duration-200 flex items-center gap-1.5 border border-white/10"
+            >
+              <span>Open on Google Maps</span>
+              <span aria-hidden="true" className="text-xs">↗</span>
+            </span>
           </div>
-        ) : (
-          /* Iframe — ONLY injected after user clicks */
-          <iframe
-            title="College of Engineering Chengannur — Google Maps"
-            src={mapEmbedUrl}
-            className="absolute inset-0 w-full h-full border-0"
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            allowFullScreen
-          />
-        )}
-      </div>
+        </div>
+      </a>
 
       {/* Footer link */}
       <div className="px-4 py-3 bg-white border-t border-[var(--color-near-black)]/10 flex items-center justify-between">
@@ -137,6 +115,9 @@ function MapFacade() {
         >
           {linkLabel} ↗
         </a>
+        <span className="font-[family-name:var(--font-body)] text-[11px] text-[var(--color-near-black)] opacity-50 uppercase tracking-wider font-medium">
+          Click map to open
+        </span>
       </div>
     </div>
   )
