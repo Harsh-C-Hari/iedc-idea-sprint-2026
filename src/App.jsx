@@ -13,6 +13,7 @@ import About from './sections/About.jsx'
 import IdeaSpark from './sections/IdeaSpark.jsx'
 import Timeline from './sections/Timeline.jsx'
 import Challenge from './sections/Challenge.jsx'
+import Registration from './sections/Registration.jsx'
 import eventConfig from './config/eventConfig.js'
 import schedule from './data/schedule.js'
 import prompts from './data/prompts.js'
@@ -56,7 +57,8 @@ export default function App() {
         <IdeaSpark />
         <Timeline />
         <Challenge />
-        {/* T10–T12 sections added next */}
+        <Registration />
+        {/* T11–T12 sections added next */}
       </main>
     </>
   )
