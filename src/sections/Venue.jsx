@@ -177,16 +177,40 @@ export default function Venue() {
           <div className="mb-10 lg:mb-0">
             {/* Campus photo or geometric panel */}
             {eventConfig.venue.photo ? (
-              <picture>
-                <img
-                  src={`/images/${eventConfig.venue.photo}`}
-                  alt={`${eventConfig.venue.college} campus`}
-                  width="800"
-                  height="450"
-                  loading="lazy"
-                  className="w-full rounded-[var(--radius-md)] mb-8 object-cover aspect-[16/9]"
-                />
-              </picture>
+              <div className="rounded-[var(--radius-md)] overflow-hidden border border-[var(--color-near-black)]/10 mb-8 bg-white shadow-xs">
+                <div className="relative aspect-[2.35/1] overflow-hidden bg-[var(--color-near-black)]/5">
+                  <picture>
+                    <source srcSet="/images/cec-campus.webp" type="image/webp" />
+                    <img
+                      src={`/images/${eventConfig.venue.photo}`}
+                      alt={`${eventConfig.venue.college} campus`}
+                      width="1024"
+                      height="435"
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-full object-cover object-center"
+                    />
+                  </picture>
+                  {/* Subtle location tag pill overlay */}
+                  <span
+                    className="absolute bottom-3 left-3 px-2.5 py-1
+                               font-[family-name:var(--font-body)] text-[11px] font-medium tracking-wide
+                               bg-[var(--color-near-black)]/75 text-[var(--color-cream)]
+                               rounded-[var(--radius-full)] backdrop-blur-xs shadow-xs"
+                  >
+                    Main Block · Chengannur
+                  </span>
+                </div>
+                <div className="px-4 py-3 bg-white border-t border-[var(--color-near-black)]/5 flex items-center justify-between">
+                  <span className="font-[family-name:var(--font-body)] text-xs text-[var(--color-near-black)] opacity-70 font-medium">
+                    {eventConfig.venue.college}
+                  </span>
+                  <span className="font-[family-name:var(--font-body)] text-[11px] text-[var(--color-near-black)] opacity-50 uppercase tracking-widest flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-orange)] inline-block" aria-hidden="true" />
+                    Host Campus
+                  </span>
+                </div>
+              </div>
             ) : (
               <div className="mb-8">
                 <GeometricPanel />

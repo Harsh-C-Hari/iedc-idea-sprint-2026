@@ -116,10 +116,9 @@ const eventConfig = {
 
     /**
      * Campus photo path (relative to /public/images/).
-     * null until organizers supply a photo (plan section F Q4).
-     * Fallback: geometric panel from Fragments.
+     * cec-campus.jpg with webp alternative in public/images/.
      */
-    photo: null,
+    photo: 'cec-campus.jpg',
   },
 
   social: {
