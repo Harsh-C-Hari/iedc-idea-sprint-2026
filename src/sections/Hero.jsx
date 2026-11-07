@@ -1,21 +1,24 @@
 /**
- * Hero.jsx — section 1 with GSAP entrance (T14).
+ * Hero.jsx — section 1 with GSAP entrance.
+ *
+ * Phase 1.6 fix 1: cursor parallax REMOVED entirely.
+ *   - layerMidRef (which wrapped h1, copy, countdown, CTAs) no longer moves.
+ *   - layerFarRef only moves on SCROLL (y-shift, decorative fragments only).
+ *   - layerNearRef (decorative fragments crossing type) is kept static.
+ *   - No text, button, countdown or link moves with the cursor — ever.
  *
  * Layout (plan section D):
  *   • h1: "24 HOURS. ONE IDEA. ENDLESS POSSIBILITIES." — dominant, highest contrast
- *     Words revealed with clipPath + translateY — NEVER from opacity:0 (plan T13/T14).
  *   • "IDEA SPRINT 2026" — oversized visible wordmark (p), tonal outlined.
- *     Spark sits at the IDEA/SPRINT visual transition.
  *   • Fragments in two layers (behind type and crossing boundaries)
  *   • Supporting copy, Countdown, two CTAs, metadata row
- *   • Mobile: 4 fragments, full-width CTA, wordmark stacks, no parallax
+ *   • Mobile: 4 fragments, full-width CTA, wordmark stacks
  *
  * Motion (plan section D, T14):
- *   • Entrance ≤ 1.2 s: wordmark fade, h1 words clip-reveal staggered,
+ *   • Entrance ≤ 1.0 s: wordmark fade, h1 words clip-reveal staggered,
  *     fragments scale in, then copy/countdown/CTA fade up
- *   • Ambient float: CSS keyframe animations on 3 fragments (transform only)
- *   • Desktop-only cursor parallax: 3 layers via gsap.quickTo (~12 px max)
- *   • Light scroll-scrubbed artwork shift (y only)
+ *   • Ambient float: CSS keyframe animations on decorative fragments (transform only)
+ *   • Scroll-scrubbed far-layer y shift (decorative fragments only, not text)
  *   • Fail-safe: content visible by default; GSAP sets hidden states itself
  *   • Reduced motion: durations 0, start states skipped
  */
@@ -28,7 +31,7 @@ import Spark from '../components/art/Spark.jsx'
 import { Cube, Ring, Disc, Sphere } from '../components/art/Fragments.jsx'
 import eventConfig from '../config/eventConfig.js'
 import { heroSupporting, heroMeta } from '../data/content.js'
-import { gsap, ScrollTrigger } from '../motion/gsap.js'
+import { gsap } from '../motion/gsap.js'
 
 function ctaLabel(status) {
   if (status === 'open' || status === 'preview') return 'Register Now'
@@ -46,108 +49,61 @@ const REDUCED =
 
 export default function Hero() {
   const status = eventConfig.registration.status
-
-  // Outer ref for useGSAP scope and scroll trigger
   const outerRef = useRef(null)
-  // Refs for 3-layer cursor parallax
+  // layerFarRef: decorative fragments only — scroll-scrubbed y shift
   const layerFarRef = useRef(null)
-  const layerMidRef = useRef(null)
-  const layerNearRef = useRef(null)
 
-  // ── Entrance timeline ───────────────────────────────────────────────────
-  // T22: Wait for 'loader:done' before hiding and revealing hero elements.
-  // This keeps h1 visible (LCP-eligible) while the loader is active, then
-  // plays a quick entrance once the loader shell has cleared.
+  // ── Entrance timeline ─────────────────────────────────────────────────────
+  // Waits for 'loader:done' so h1 is LCP-eligible during loader phase.
   useGSAP(() => {
     const el = outerRef.current
-    if (!el) return
-
-    if (REDUCED) {
-      return // content already visible via CSS defaults
-    }
+    if (!el || REDUCED) return
 
     function runEntrance() {
-      const wordmark   = el.querySelector('[data-hero="wordmark"]')
-      const sparkEl    = el.querySelector('[data-hero="spark"]')
-      const h1Words    = el.querySelectorAll('[data-hero="h1-word"]')
-      const supportEl  = el.querySelector('[data-hero="support"]')
+      const wordmark = el.querySelector('[data-hero="wordmark"]')
+      const sparkEl = el.querySelector('[data-hero="spark"]')
+      const h1Words = el.querySelectorAll('[data-hero="h1-word"]')
+      const supportEl = el.querySelector('[data-hero="support"]')
       const countdownEl = el.querySelector('[data-hero="countdown"]')
-      const ctaEl      = el.querySelector('[data-hero="cta"]')
-      const metaEl     = el.querySelector('[data-hero="meta"]')
-      const fragEls    = el.querySelectorAll('[data-hero="frag"]')
+      const ctaEl = el.querySelector('[data-hero="cta"]')
+      const metaEl = el.querySelector('[data-hero="meta"]')
+      const fragEls = el.querySelectorAll('[data-hero="frag"]')
 
-      // Set hidden start states only now (after loader exits) so h1 is LCP-eligible
-      // during the loader phase. h1Words use clip-path only (no opacity).
-      gsap.set(wordmark,  { opacity: 0, y: -16 })
-      gsap.set(sparkEl,   { opacity: 0, scale: 0.5, transformOrigin: 'center center' })
-      gsap.set(h1Words,   { clipPath: 'inset(0 0 100% 0)', y: 6 })
+      // Set hidden start states only after loader exits (keeps h1 LCP-eligible)
+      // h1Words use clip-path only — never opacity:0 (plan constraint)
+      gsap.set(wordmark, { opacity: 0, y: -16 })
+      gsap.set(sparkEl, { opacity: 0, scale: 0.5, transformOrigin: 'center center' })
+      gsap.set(h1Words, { clipPath: 'inset(0 0 100% 0)', y: 6 })
       gsap.set([supportEl, countdownEl, ctaEl, metaEl], { opacity: 0, y: 12 })
-      gsap.set(fragEls,   { opacity: 0, scale: 0.6, transformOrigin: 'center center' })
+      gsap.set(fragEls, { opacity: 0, scale: 0.6, transformOrigin: 'center center' })
 
       const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
-
-      // Tightened entrance: total ~0.9 s
       tl.to(wordmark, { opacity: 1, y: 0, duration: 0.30 }, 0)
-      tl.to(sparkEl,  { opacity: 1, scale: 1, duration: 0.35, ease: 'back.out(1.6)' }, 0.05)
-      tl.to(h1Words,  { clipPath: 'inset(0 0 0% 0)', y: 0, duration: 0.35, stagger: 0.055 }, 0.08)
-      tl.to(fragEls,  { opacity: 1, scale: 1, duration: 0.45, stagger: 0.05, ease: 'back.out(1.3)' }, 0.30)
+      tl.to(sparkEl, { opacity: 1, scale: 1, duration: 0.35, ease: 'back.out(1.6)' }, 0.05)
+      tl.to(h1Words, { clipPath: 'inset(0 0 0% 0)', y: 0, duration: 0.35, stagger: 0.055 }, 0.08)
+      tl.to(fragEls, { opacity: 1, scale: 1, duration: 0.45, stagger: 0.05, ease: 'back.out(1.3)' }, 0.30)
       tl.to([supportEl, countdownEl, ctaEl, metaEl],
-            { opacity: 1, y: 0, duration: 0.35, stagger: 0.055 }, 0.42)
+        { opacity: 1, y: 0, duration: 0.35, stagger: 0.055 }, 0.42)
     }
 
-    // If loader has already dispatched (e.g. HMR / cached) start immediately
     if (!document.getElementById('loader')) {
       runEntrance()
     } else {
       window.addEventListener('loader:done', runEntrance, { once: true })
     }
 
-    return () => {
-      window.removeEventListener('loader:done', runEntrance)
-    }
-
+    return () => window.removeEventListener('loader:done', runEntrance)
   }, { scope: outerRef, dependencies: [] })
 
-  // ── Desktop cursor parallax ─────────────────────────────────────────────
-  useGSAP(() => {
-    if (REDUCED) return
-    const mm = gsap.matchMedia()
-    mm.add('(min-width: 1024px) and (hover: hover)', () => {
-      const far = layerFarRef.current
-      const mid = layerMidRef.current
-      const near = layerNearRef.current
-      if (!far || !mid || !near) return
-
-      const qFarX = gsap.quickTo(far, 'x', { duration: 0.9, ease: 'power1.out' })
-      const qFarY = gsap.quickTo(far, 'y', { duration: 0.9, ease: 'power1.out' })
-      const qMidX = gsap.quickTo(mid, 'x', { duration: 0.7, ease: 'power1.out' })
-      const qMidY = gsap.quickTo(mid, 'y', { duration: 0.7, ease: 'power1.out' })
-      const qNearX = gsap.quickTo(near, 'x', { duration: 0.5, ease: 'power1.out' })
-      const qNearY = gsap.quickTo(near, 'y', { duration: 0.5, ease: 'power1.out' })
-
-      function onMove(e) {
-        const cx = window.innerWidth / 2
-        const cy = window.innerHeight / 2
-        const dx = (e.clientX - cx) / cx
-        const dy = (e.clientY - cy) / cy
-        qFarX(dx * 5); qFarY(dy * 5)
-        qMidX(dx * 9); qMidY(dy * 9)
-        qNearX(dx * 12); qNearY(dy * 12)
-      }
-      window.addEventListener('mousemove', onMove, { passive: true })
-      return () => window.removeEventListener('mousemove', onMove)
-    })
-  }, { scope: outerRef, dependencies: [] })
-
-  // ── Scroll-scrubbed artwork shift ────────────────────────────────────────
+  // ── Scroll-scrubbed far-layer shift (decorative fragments only) ───────────
+  // Moves the layerFar div (purely decorative) -40px on scroll.
+  // The content layer (h1, CTAs, etc.) is NOT inside layerFarRef — no text moves.
   useGSAP(() => {
     if (REDUCED) return
     const el = outerRef.current
-    if (!el) return
     const far = layerFarRef.current
-    if (!far) return
+    if (!el || !far) return
 
-    // Scrub the background layer -40px over the full hero height (no pinning)
     gsap.to(far, {
       y: -40,
       ease: 'none',
@@ -169,7 +125,7 @@ export default function Hero() {
         className="relative min-h-[100dvh] flex flex-col justify-center
                    pt-16 pb-12 px-5 md:px-8 lg:px-16 overflow-hidden"
       >
-        {/* ════ LAYER A — fragments behind all type ════ */}
+        {/* ════ LAYER A — decorative fragments, scroll-scrubbed (no text here) ════ */}
         <div
           aria-hidden="true"
           ref={layerFarRef}
@@ -222,11 +178,8 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* ════ COMPOSITION (parallax mid layer) ════ */}
-        <div
-          ref={layerMidRef}
-          className="relative z-10 max-w-6xl w-full"
-        >
+        {/* ════ CONTENT — static (no cursor parallax, no transform) ════ */}
+        <div className="relative z-10 max-w-6xl w-full">
           {/* Wordmark "IDEA SPRINT 2026" */}
           <div className="relative mb-2 lg:mb-0">
             <p
@@ -268,7 +221,7 @@ export default function Hero() {
             </p>
           </div>
 
-          {/* h1 — dominant, clip-reveal only */}
+          {/* h1 — dominant, clip-reveal only. NEVER from opacity:0. */}
           <h1
             id="hero-heading"
             tabIndex={-1}
@@ -285,8 +238,8 @@ export default function Hero() {
             ))}
           </h1>
 
-          {/* LAYER B — fragments crossing letter boundaries (parallax near) */}
-          <div aria-hidden="true" ref={layerNearRef} className="pointer-events-none select-none">
+          {/* Decorative near-layer fragments (overlapping type) — static, no parallax */}
+          <div aria-hidden="true" className="pointer-events-none select-none">
             <div data-hero="frag" className="absolute hidden lg:block"
               style={{ top: '54%', left: 'clamp(14rem, 32vw, 28rem)' }}>
               <Ring size={52} color="#F05A28" opacity={0.22} />

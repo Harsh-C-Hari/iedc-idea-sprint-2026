@@ -1,52 +1,108 @@
 /**
- * Timeline.jsx — section 4 with reveals and rail scrub (T15).
+ * Timeline.jsx — section 4 with reveals and per-item rail segments (T15 / Phase 1.6 fix 4).
  *
  * Data from data/schedule.js — 7 items Day 1, 4 items Day 2 (11 total).
  *
- * Layout (plan section D):
+ * Layout:
  *   Day 1 — near-black panel, lime markers, oversized Archivo Black time labels
  *   Day 2 — cream panel, orange node fills, near-black text
  *   Desktop: central rail with ring nodes, items alternating sides
- *   Mobile: single left rail
- *   Each day is an <ol> with <time> elements.
+ *   Mobile: left rail, items to the right
+ *   Rail segments connect node centre to next node centre; last item has no segment.
  *
- * Motion (plan section D, T15):
- *   • Rail scaleY scrubbed to scroll progress through each panel (no pinning)
+ * Motion:
+ *   • Each rail segment scales Y from top to bottom as user scrolls (transform-only)
  *   • Items slide+fade in as they enter viewport
  *   • Time markers scale 0.9→1 and gain accent colour
  *   • Day headings reveal (clip)
- *   • Reduced motion: no animation, content visible
- *   • No pinning anywhere
+ *   • Reduced motion: content visible, no animations
  */
 import { useRef } from 'react'
 import { useGSAP } from '@gsap/react'
 import SectionShell from '../components/ui/SectionShell.jsx'
 import schedule from '../data/schedule.js'
-import { gsap, ScrollTrigger } from '../motion/gsap.js'
+import { gsap } from '../motion/gsap.js'
 
 const REDUCED =
   typeof window !== 'undefined'
     ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
     : false
 
-/** Single timeline item */
-function TimelineItem({ item, side, day }) {
+/** Single timeline item with connected rail segment */
+function TimelineItem({ item, side, day, isLast }) {
   const isDay1 = day === 1
 
   return (
     <li
       data-timeline-item
-      className={`
-        relative flex items-start gap-4
-        lg:items-center
-        ${side === 'right' ? 'lg:flex-row-reverse' : 'lg:flex-row'}
-      `}
+      className="relative flex items-start pl-10 lg:pl-0 pb-12 lg:pb-16"
     >
-      {/* Content block */}
+      {/* ── Rail segment (only rendered if not the last item) ── */}
+      {!isLast && (
+        <span
+          data-rail-segment
+          aria-hidden="true"
+          className={`
+            absolute left-3 lg:left-1/2 top-2.5 w-px h-full -translate-x-1/2 z-0
+            ${isDay1 ? 'bg-[var(--color-lime)] opacity-30' : 'bg-[var(--color-near-black)] opacity-20'}
+          `}
+        />
+      )}
+
+      {/* ── Node marker ── */}
+      <div
+        aria-hidden="true"
+        className={`
+          absolute left-3 lg:left-1/2 top-2.5 -translate-x-1/2 z-10
+          rounded-full border-2 transition-transform duration-300
+          ${isLast ? 'w-5 h-5 -translate-y-0.5' : 'w-4 h-4'}
+          ${isLast && isDay1 ? 'ring-4 ring-[#D9F36A]/20' : ''}
+          ${isLast && !isDay1 ? 'ring-4 ring-[#F05A28]/20' : ''}
+        `}
+        style={{
+          backgroundColor: isDay1 ? 'var(--color-lime)' : 'var(--color-orange)',
+          borderColor:      isDay1 ? 'var(--color-lime)' : 'var(--color-orange)',
+        }}
+      />
+
+      {/* ── Desktop Left slot (only populated when side === 'left') ── */}
       <div
         className={`
-          flex-1 pb-8
-          ${side === 'right' ? 'lg:text-right' : 'lg:text-left'}
+          hidden lg:block w-1/2 pr-12
+          ${side === 'left' ? 'text-right' : 'pointer-events-none select-none'}
+        `}
+      >
+        {side === 'left' && (
+          <div>
+            <time
+              dateTime={item.time}
+              data-timeline-time
+              className={`
+                font-[family-name:var(--font-display)]
+                text-[clamp(2rem,4vw,3rem)] leading-none tracking-[-0.025em]
+                block mb-1
+                ${isDay1 ? 'text-[var(--color-lime)]' : 'text-[var(--color-near-black)]'}
+              `}
+            >
+              {item.time}
+            </time>
+            <p
+              className={`
+                font-[family-name:var(--font-body)] font-semibold text-sm uppercase tracking-wide
+                ${isDay1 ? 'text-[var(--color-cream)]' : 'text-[var(--color-near-black)]'}
+              `}
+            >
+              {item.title}
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* ── Right slot (mobile shows content here; desktop shows when side === 'right') ── */}
+      <div
+        className={`
+          flex-1 lg:w-1/2 lg:flex-none
+          ${side === 'right' ? 'lg:pl-12 lg:text-left' : 'lg:hidden'}
         `}
       >
         <time
@@ -57,7 +113,6 @@ function TimelineItem({ item, side, day }) {
             text-[clamp(2rem,4vw,3rem)] leading-none tracking-[-0.025em]
             block mb-1
             ${isDay1 ? 'text-[var(--color-lime)]' : 'text-[var(--color-near-black)]'}
-            /* Day 2 times are near-black (not orange — orange on cream fails contrast at this font size) */
           `}
         >
           {item.time}
@@ -71,19 +126,6 @@ function TimelineItem({ item, side, day }) {
           {item.title}
         </p>
       </div>
-
-      {/* Rail node */}
-      <div
-        className="shrink-0 relative z-10 w-4 h-4 rounded-full border-2 mt-2 lg:mt-0"
-        style={{
-          backgroundColor: isDay1 ? 'var(--color-lime)' : 'var(--color-orange)',
-          borderColor:      isDay1 ? 'var(--color-lime)' : 'var(--color-orange)',
-        }}
-        aria-hidden="true"
-      />
-
-      {/* Right-side spacer (desktop only, for alternating layout) */}
-      <div className="hidden lg:block flex-1" aria-hidden="true" />
     </li>
   )
 }
@@ -92,28 +134,13 @@ function TimelineItem({ item, side, day }) {
 function DayPanel({ day }) {
   const isDay1 = day.day === 1
   const panelRef = useRef(null)
-  const railRef  = useRef(null)
 
   useGSAP(() => {
     if (REDUCED) return
     const panel = panelRef.current
-    const rail  = railRef.current
-    if (!panel || !rail) return
+    if (!panel) return
 
-    // Rail scaleY scrubbed to scroll progress through panel (no pinning)
-    gsap.set(rail, { scaleY: 0, transformOrigin: 'top center' })
-    gsap.to(rail, {
-      scaleY: 1,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: panel,
-        start: 'top 80%',
-        end: 'bottom 60%',
-        scrub: 0.5,
-      },
-    })
-
-    // Day heading reveal (clip)
+    // 1. Day heading reveal (clip)
     const heading = panel.querySelector('[data-timeline-heading]')
     if (heading) {
       gsap.set(heading, { clipPath: 'inset(0 100% 0 0)' })
@@ -125,7 +152,7 @@ function DayPanel({ day }) {
       })
     }
 
-    // Timeline items — slide + fade
+    // 2. Timeline items — slide + fade
     const items = panel.querySelectorAll('[data-timeline-item]')
     items.forEach((item, i) => {
       gsap.set(item, { opacity: 0, y: 20 })
@@ -139,11 +166,27 @@ function DayPanel({ day }) {
           start: 'top 88%',
           once: true,
         },
-        delay: i * 0.05,
+        delay: (i % 3) * 0.05,
       })
     })
 
-    // Time markers scale + colour pop
+    // 3. Rail segments scaleY (top to bottom scrub)
+    const segments = panel.querySelectorAll('[data-rail-segment]')
+    segments.forEach((seg) => {
+      gsap.set(seg, { scaleY: 0, transformOrigin: 'top center' })
+      gsap.to(seg, {
+        scaleY: 1,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: seg,
+          start: 'top 82%',
+          end: 'bottom 68%',
+          scrub: 0.3,
+        },
+      })
+    })
+
+    // 4. Time markers scale + pop
     const times = panel.querySelectorAll('[data-timeline-time]')
     times.forEach((time) => {
       gsap.set(time, { scale: 0.9, transformOrigin: 'left center' })
@@ -189,20 +232,9 @@ function DayPanel({ day }) {
 
         {/* Rail + items */}
         <div className="relative">
-          {/* Vertical rail line — scrub target */}
-          <div
-            ref={railRef}
-            aria-hidden="true"
-            className={`
-              absolute left-[0.4375rem] lg:left-1/2 top-0 bottom-0 w-px
-              -translate-x-1/2
-              ${isDay1 ? 'bg-[var(--color-lime)] opacity-30' : 'bg-[var(--color-near-black)] opacity-20'}
-            `}
-          />
-
           <ol
             aria-label={`Day ${day.day} schedule`}
-            className="list-none p-0 m-0 pl-8 lg:pl-0 flex flex-col"
+            className="list-none p-0 m-0 flex flex-col"
           >
             {day.items.map((item, i) => (
               <TimelineItem
@@ -210,6 +242,7 @@ function DayPanel({ day }) {
                 item={item}
                 side={i % 2 === 0 ? 'left' : 'right'}
                 day={day.day}
+                isLast={i === day.items.length - 1}
               />
             ))}
           </ol>
@@ -236,7 +269,7 @@ export default function Timeline() {
         <DayPanel key={day.day} day={day} />
       ))}
 
-      {/* Subject to change note (plan section D) */}
+      {/* Subject to change note */}
       <div className="bg-[var(--color-cream)] px-5 md:px-8 lg:px-16 py-6">
         <p
           className="font-[family-name:var(--font-body)] text-xs text-[var(--color-near-black)]

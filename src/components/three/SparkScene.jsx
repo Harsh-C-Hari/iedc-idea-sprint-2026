@@ -1,164 +1,233 @@
 /**
- * SparkScene.jsx — lazy-loaded React Three Fiber scene (plan section C, T19/follow-up #4).
+ * SparkScene.jsx — lazy-loaded React Three Fiber scene (Phase 1.6 fix 3).
  *
- * This module is NEVER imported directly — only via React.lazy() in IdeaSpark.jsx.
- * That keeps the entire three.js + R3F chunk out of the initial bundle.
- *
- * Scene objects:
- *   Desktop (5 objects): orange cube, lime torus, cream sphere, dark disc, asterisk
- *   Mobile  (3 objects): orange cube, lime torus, cream sphere
- *   (plan section C: ~12 meshes desktop / 6 mobile — asterisk has 3 sub-meshes)
- *
- * Performance rules:
- *   • frameloop="demand" — R3F does NOT render on its own; only renders when
- *     invalidate() is called. The useFrame loops call invalidate() while pieces
- *     are moving and stop once they settle (lerp threshold). Result: zero GPU
- *     cost when the scene is idle or off-screen.
- *   • dpr capped at [1, 1.5]
- *   • No env-map — ambient + two directional lights only
- *   • paused prop: when true (section off-screen) useFrame returns early
- *
- * Generate: incrementing promptSeed scatters pieces to new random positions
- * via target refs; lerp in useFrame eases them smoothly.
+ * Performance & Animation:
+ *   • frameloop="always" while visible; "never" when paused/off-screen (0% GPU/CPU)
+ *   • frameloop="demand" under prefers-reduced-motion (single static frame)
+ *   • Continuous infinite motion: each piece has a target anchor + perpetual sine
+ *     idle float on y, x/z drift, and continuous rotation that never freezes.
+ *   • "Generate" smoothly eases anchors to new positions without interrupting idle motion.
+ *   • Objects strictly contained inside canvas bounds.
+ *   • Brightened 3-point lighting to keep materials crisp and vibrant (no muddy tones).
  */
-import { useRef, useEffect } from 'react'
-import { Canvas, useFrame, useThree } from '@react-three/fiber'
+import { useRef, useEffect, useState } from 'react'
+import { Canvas, useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { isMobile } from './webgl.js'
 
-// ── Colour palette (matches CSS tokens) ────────────────────────────────────
+// ── Palette tokens ───────────────────────────────────────────────────────────
 const C = {
   orange:    '#F05A28',
   lime:      '#D9F36A',
   cream:     '#F2EBDD',
-  nearBlack: '#171717',
+  nearBlack: '#262626', // slightly lifted from #171717 so specular highlights pop
 }
 
-// ── Lerp epsilon — stop updating once pieces are close enough ────────────────
-const EPS = 0.001
+// ── Bounded random position (strictly inside viewport bounds) ────────────────
+function rp(rangeX = 0.7, rangeY = 0.65, rangeZ = 0.2) {
+  return new THREE.Vector3(
+    (Math.random() - 0.5) * rangeX * 2,
+    (Math.random() - 0.5) * rangeY * 2,
+    (Math.random() - 0.5) * rangeZ * 2
+  )
+}
 
-// ── Shared invalidate ref (set from SceneObjects, used by all piece hooks) ──
-const sharedInvalidate = { fn: null }
+// ── Reusable piece component with anchor lerp + continuous idle float ────────
+function FloatingPiece({
+  initialPos,
+  targetAnchor,
+  freq = 1.0,
+  phase = 0,
+  ampY = 0.10,
+  ampX = 0.05,
+  ampZ = 0.04,
+  rotSpeed = { x: 0.2, y: 0.3, z: 0.1 },
+  children,
+}) {
+  const meshRef = useRef(null)
+  const currentAnchor = useRef(new THREE.Vector3(...initialPos))
 
-function useLerpFrame(ref, targetPos, speed) {
-  useFrame((_, delta) => {
-    if (!ref.current) return
-    const dist = ref.current.position.distanceTo(targetPos.current)
-    if (dist < EPS) return // settled — no invalidate, R3F stays idle
-    ref.current.position.lerp(targetPos.current, Math.min(delta * speed, 1))
-    sharedInvalidate.fn?.() // request next frame only while moving
+  useFrame((state, delta) => {
+    if (!meshRef.current) return
+    // Smoothly glide current anchor towards target anchor (eased on Generate)
+    currentAnchor.current.lerp(targetAnchor.current, Math.min(delta * 2.2, 1))
+
+    // Continuous perpetual idle motion (never stops)
+    const t = state.clock.elapsedTime
+    const x = currentAnchor.current.x + Math.sin(t * (freq * 0.75) + phase) * ampX
+    const y = currentAnchor.current.y + Math.sin(t * freq + phase) * ampY
+    const z = currentAnchor.current.z + Math.cos(t * (freq * 0.6) + phase) * ampZ
+
+    meshRef.current.position.set(x, y, z)
+
+    // Continuous rotation
+    meshRef.current.rotation.x += rotSpeed.x * delta
+    meshRef.current.rotation.y += rotSpeed.y * delta
+    meshRef.current.rotation.z += rotSpeed.z * delta
   })
-}
 
-// ── Pieces ───────────────────────────────────────────────────────────────────
-
-function OrangeCube({ position, targetPos }) {
-  const ref = useRef()
-  useLerpFrame(ref, targetPos, 2.5)
-  useFrame((_, delta) => { if (ref.current) ref.current.rotation.y += delta * 0.3 })
   return (
-    <mesh ref={ref} position={position}>
-      <boxGeometry args={[0.9, 0.9, 0.9]} />
-      <meshLambertMaterial color={C.orange} />
-    </mesh>
-  )
-}
-
-function LimeTorus({ position, targetPos }) {
-  const ref = useRef()
-  useLerpFrame(ref, targetPos, 2.0)
-  useFrame((_, delta) => {
-    if (!ref.current) return
-    ref.current.rotation.x += delta * 0.4
-    ref.current.rotation.z += delta * 0.2
-  })
-  return (
-    <mesh ref={ref} position={position}>
-      <torusGeometry args={[0.5, 0.18, 12, 48]} />
-      <meshLambertMaterial color={C.lime} />
-    </mesh>
-  )
-}
-
-function CreamSphere({ position, targetPos }) {
-  const ref = useRef()
-  useLerpFrame(ref, targetPos, 1.8)
-  useFrame((_, delta) => { if (ref.current) ref.current.rotation.y += delta * 0.25 })
-  return (
-    <mesh ref={ref} position={position}>
-      <sphereGeometry args={[0.45, 20, 20]} />
-      <meshLambertMaterial color={C.cream} />
-    </mesh>
-  )
-}
-
-function DarkDisc({ position, targetPos }) {
-  const ref = useRef()
-  useLerpFrame(ref, targetPos, 2.2)
-  useFrame((_, delta) => { if (ref.current) ref.current.rotation.z += delta * 0.35 })
-  return (
-    <mesh ref={ref} position={position}>
-      <cylinderGeometry args={[0.6, 0.6, 0.08, 28]} />
-      <meshStandardMaterial color={C.nearBlack} metalness={0.6} roughness={0.2} />
-    </mesh>
-  )
-}
-
-function Asterisk({ position, targetPos }) {
-  const ref = useRef()
-  useLerpFrame(ref, targetPos, 2.1)
-  useFrame((_, delta) => { if (ref.current) ref.current.rotation.z += delta * 0.5 })
-  return (
-    <group ref={ref} position={position}>
-      <mesh><boxGeometry args={[0.08, 0.9, 0.08]} /><meshLambertMaterial color={C.orange} /></mesh>
-      <mesh rotation={[0, 0, Math.PI / 3]}><boxGeometry args={[0.08, 0.9, 0.08]} /><meshLambertMaterial color={C.orange} /></mesh>
-      <mesh rotation={[0, 0, -Math.PI / 3]}><boxGeometry args={[0.08, 0.9, 0.08]} /><meshLambertMaterial color={C.orange} /></mesh>
+    <group ref={meshRef} position={initialPos}>
+      {children}
     </group>
   )
 }
 
-// ── Random target ────────────────────────────────────────────────────────────
-function rp(range = 1.4) {
-  return new THREE.Vector3(
-    (Math.random() - 0.5) * range * 2,
-    (Math.random() - 0.5) * range * 2,
-    (Math.random() - 0.5) * 0.6,
+// ── Scene pieces ─────────────────────────────────────────────────────────────
+
+function OrangeCube({ targetAnchor }) {
+  return (
+    <FloatingPiece
+      initialPos={[-0.65, 0.55, 0]}
+      targetAnchor={targetAnchor}
+      freq={1.1}
+      phase={0.2}
+      ampY={0.09}
+      ampX={0.04}
+      ampZ={0.03}
+      rotSpeed={{ x: 0.25, y: 0.35, z: 0.15 }}
+    >
+      <mesh>
+        <boxGeometry args={[0.75, 0.75, 0.75]} />
+        <meshStandardMaterial
+          color={C.orange}
+          roughness={0.28}
+          metalness={0.08}
+        />
+      </mesh>
+    </FloatingPiece>
   )
 }
 
-// ── Scene objects — R3F context required ────────────────────────────────────
+function LimeTorus({ targetAnchor }) {
+  return (
+    <FloatingPiece
+      initialPos={[0.65, 0.45, 0]}
+      targetAnchor={targetAnchor}
+      freq={0.95}
+      phase={1.8}
+      ampY={0.10}
+      ampX={0.05}
+      ampZ={0.04}
+      rotSpeed={{ x: 0.35, y: 0.20, z: 0.30 }}
+    >
+      <mesh>
+        <torusGeometry args={[0.42, 0.15, 16, 48]} />
+        <meshStandardMaterial
+          color={C.lime}
+          roughness={0.24}
+          metalness={0.08}
+        />
+      </mesh>
+    </FloatingPiece>
+  )
+}
+
+function CreamSphere({ targetAnchor }) {
+  return (
+    <FloatingPiece
+      initialPos={[-0.55, -0.5, 0]}
+      targetAnchor={targetAnchor}
+      freq={1.05}
+      phase={3.4}
+      ampY={0.08}
+      ampX={0.05}
+      ampZ={0.03}
+      rotSpeed={{ x: 0.15, y: 0.25, z: 0.10 }}
+    >
+      <mesh>
+        <sphereGeometry args={[0.4, 28, 28]} />
+        <meshStandardMaterial
+          color={C.cream}
+          roughness={0.32}
+          metalness={0.05}
+        />
+      </mesh>
+    </FloatingPiece>
+  )
+}
+
+function DarkDisc({ targetAnchor }) {
+  return (
+    <FloatingPiece
+      initialPos={[0.55, -0.45, 0]}
+      targetAnchor={targetAnchor}
+      freq={1.2}
+      phase={4.8}
+      ampY={0.08}
+      ampX={0.04}
+      ampZ={0.05}
+      rotSpeed={{ x: 0.2, y: 0.15, z: 0.4 }}
+    >
+      <mesh>
+        <cylinderGeometry args={[0.48, 0.48, 0.1, 32]} />
+        <meshStandardMaterial
+          color={C.nearBlack}
+          roughness={0.22}
+          metalness={0.35}
+        />
+      </mesh>
+    </FloatingPiece>
+  )
+}
+
+function Asterisk({ targetAnchor }) {
+  return (
+    <FloatingPiece
+      initialPos={[0.0, 0.05, 0.1]}
+      targetAnchor={targetAnchor}
+      freq={1.35}
+      phase={2.2}
+      ampY={0.06}
+      ampX={0.04}
+      ampZ={0.03}
+      rotSpeed={{ x: 0.12, y: 0.18, z: 0.5 }}
+    >
+      <group>
+        <mesh>
+          <boxGeometry args={[0.08, 0.75, 0.08]} />
+          <meshStandardMaterial color={C.orange} roughness={0.25} />
+        </mesh>
+        <mesh rotation={[0, 0, Math.PI / 3]}>
+          <boxGeometry args={[0.08, 0.75, 0.08]} />
+          <meshStandardMaterial color={C.orange} roughness={0.25} />
+        </mesh>
+        <mesh rotation={[0, 0, -Math.PI / 3]}>
+          <boxGeometry args={[0.08, 0.75, 0.08]} />
+          <meshStandardMaterial color={C.orange} roughness={0.25} />
+        </mesh>
+      </group>
+    </FloatingPiece>
+  )
+}
+
+// ── Scene composition ────────────────────────────────────────────────────────
 function SceneObjects({ promptSeed, mobile }) {
-  const tOrange  = useRef(new THREE.Vector3(-0.9,  0.7, 0))
-  const tLime    = useRef(new THREE.Vector3( 0.9,  0.5, 0))
-  const tCream   = useRef(new THREE.Vector3(-0.6, -0.7, 0))
-  const tDisc    = useRef(new THREE.Vector3( 0.7, -0.6, 0))
-  const tAsterix = useRef(new THREE.Vector3( 0.0,  0.0, 0.1))
-  const { invalidate } = useThree()
+  const tOrange   = useRef(new THREE.Vector3(-0.65,  0.55, 0))
+  const tLime     = useRef(new THREE.Vector3( 0.65,  0.45, 0))
+  const tCream    = useRef(new THREE.Vector3(-0.55, -0.50, 0))
+  const tDisc     = useRef(new THREE.Vector3( 0.55, -0.45, 0))
+  const tAsterisk = useRef(new THREE.Vector3( 0.0,   0.05, 0.1))
 
-  // Wire invalidate so piece hooks can call it
-  useEffect(() => { sharedInvalidate.fn = invalidate }, [invalidate])
-
-  // Generate pressed: scatter pieces to new positions, kick a render
+  // Scatter anchors when promptSeed increments
   useEffect(() => {
     if (promptSeed === 0) return
-    tOrange.current  = rp()
-    tLime.current    = rp()
-    tCream.current   = rp()
+    tOrange.current   = rp(0.65, 0.6)
+    tLime.current     = rp(0.65, 0.6)
+    tCream.current    = rp(0.65, 0.6)
     if (!mobile) {
-      tDisc.current    = rp()
-      tAsterix.current = rp(0.5)
+      tDisc.current     = rp(0.65, 0.6)
+      tAsterisk.current = rp(0.35, 0.35, 0.15)
     }
-    invalidate()
-  }, [promptSeed, invalidate, mobile])
+  }, [promptSeed, mobile])
 
   return (
     <>
-      <OrangeCube  position={[-0.9,  0.7, 0]} targetPos={tOrange}  />
-      <LimeTorus   position={[ 0.9,  0.5, 0]} targetPos={tLime}    />
-      <CreamSphere position={[-0.6, -0.7, 0]} targetPos={tCream}   />
-      {/* Desktop only: disc + asterisk */}
-      {!mobile && <DarkDisc   position={[ 0.7, -0.6, 0]} targetPos={tDisc}    />}
-      {!mobile && <Asterisk   position={[ 0.0,  0.0, 0]} targetPos={tAsterix} />}
+      <OrangeCube targetAnchor={tOrange} />
+      <LimeTorus targetAnchor={tLime} />
+      <CreamSphere targetAnchor={tCream} />
+      {!mobile && <DarkDisc targetAnchor={tDisc} />}
+      {!mobile && <Asterisk targetAnchor={tAsterisk} />}
     </>
   )
 }
@@ -166,22 +235,50 @@ function SceneObjects({ promptSeed, mobile }) {
 // ── Export ───────────────────────────────────────────────────────────────────
 /**
  * @param {object} props
- * @param {number} props.promptSeed — increments each Generate press; scatters pieces
+ * @param {number} props.promptSeed — increments each Generate click; shifts anchors
+ * @param {boolean} props.paused — pauses rendering when section is off-screen or tab hidden
  */
-export default function SparkScene({ promptSeed = 0 }) {
+export default function SparkScene({ promptSeed = 0, paused = false }) {
   const mobile = isMobile()
+  const [docHidden, setDocHidden] = useState(
+    typeof document !== 'undefined' ? document.hidden : false
+  )
+
+  useEffect(() => {
+    const onVis = () => setDocHidden(document.hidden)
+    document.addEventListener('visibilitychange', onVis)
+    return () => document.removeEventListener('visibilitychange', onVis)
+  }, [])
+
+  const reducedMotion =
+    typeof window !== 'undefined'
+      ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      : false
+
+  // Under reduced motion: render one static frame ('demand')
+  // When off-screen or tab hidden: 'never' (0% GPU/CPU)
+  // When active: 'always' (continuous fluid motion)
+  const loopMode = reducedMotion
+    ? 'demand'
+    : (paused || docHidden)
+    ? 'never'
+    : 'always'
+
   return (
     <Canvas
-      frameloop="demand"
+      frameloop={loopMode}
       dpr={[1, 1.5]}
-      camera={{ position: [0, 0, 4], fov: 45 }}
+      camera={{ position: [0, 0, 3.8], fov: 45 }}
       gl={{ antialias: !mobile, alpha: true }}
       style={{ width: '100%', height: '100%' }}
       aria-hidden="true"
     >
-      <ambientLight intensity={0.6} />
-      <directionalLight position={[3, 4, 2]}    intensity={1.0} />
-      <directionalLight position={[-2, -3, -1]}  intensity={0.35} />
+      {/* Crisp 3-point lighting — prevents dark muddy materials */}
+      <ambientLight intensity={1.1} />
+      <directionalLight position={[4, 5, 3]} intensity={1.7} />
+      <directionalLight position={[-3, -2, 2]} intensity={0.9} color="#FFFDF5" />
+      <pointLight position={[0, 0, 2]} intensity={0.5} color="#FFFFFF" />
+
       <SceneObjects promptSeed={promptSeed} mobile={mobile} />
     </Canvas>
   )

@@ -60,29 +60,11 @@ function Manifesto() {
   useGSAP(() => {
     if (REDUCED) return
     const words = ref.current?.querySelectorAll('[data-manifesto-word]')
-    if (!words?.length) return
+    const list  = ref.current?.querySelector('ul')
+    if (!words?.length || !list) return
 
+    // 1. Reveal on first scroll into view (clip from left) — only animates clipPath
     words.forEach((word) => {
-      // Add lime + scale class when word centre crosses viewport centre
-      ScrollTrigger.create({
-        trigger: word,
-        start: 'center center',
-        end: 'center 20%',
-        onEnter: () => {
-          gsap.to(word, { color: 'var(--color-lime)', scale: 1.03, duration: 0.4, ease: 'power2.out' })
-        },
-        onLeave: () => {
-          gsap.to(word, { color: 'var(--color-cream)', scale: 1, duration: 0.4, ease: 'power2.out' })
-        },
-        onEnterBack: () => {
-          gsap.to(word, { color: 'var(--color-lime)', scale: 1.03, duration: 0.4, ease: 'power2.out' })
-        },
-        onLeaveBack: () => {
-          gsap.to(word, { color: 'var(--color-cream)', scale: 1, duration: 0.4, ease: 'power2.out' })
-        },
-      })
-
-      // Reveal on first scroll into view (clip from left)
       gsap.set(word, { clipPath: 'inset(0 100% 0 0)' })
       gsap.to(word, {
         clipPath: 'inset(0 0% 0 0)',
@@ -94,6 +76,51 @@ function Manifesto() {
           once: true,
         },
       })
+    })
+
+    // 2. Single ScrollTrigger on the list: tracks closest word to viewport center
+    // and sets data-active="true". CSS transition handles the color & scale.
+    ScrollTrigger.create({
+      trigger: list,
+      start: 'top bottom',
+      end: 'bottom top',
+      onUpdate: () => {
+        const vCenter = window.innerHeight / 2
+        let closestWord = null
+        let minDistance = Infinity
+
+        words.forEach((word) => {
+          const rect = word.getBoundingClientRect()
+          const wordCenter = rect.top + rect.height / 2
+          const dist = Math.abs(vCenter - wordCenter)
+          if (dist < minDistance) {
+            minDistance = dist
+            closestWord = word
+          }
+        })
+
+        const listRect = list.getBoundingClientRect()
+        const inActiveZone = listRect.top <= vCenter + 60 && listRect.bottom >= vCenter - 60
+
+        words.forEach((word) => {
+          const shouldBeActive = inActiveZone && word === closestWord
+          if (shouldBeActive) {
+            if (word.getAttribute('data-active') !== 'true') {
+              word.setAttribute('data-active', 'true')
+            }
+          } else {
+            if (word.hasAttribute('data-active')) {
+              word.removeAttribute('data-active')
+            }
+          }
+        })
+      },
+      onLeave: () => {
+        words.forEach((w) => w.removeAttribute('data-active'))
+      },
+      onLeaveBack: () => {
+        words.forEach((w) => w.removeAttribute('data-active'))
+      },
     })
   }, { scope: ref, dependencies: [] })
 
@@ -114,7 +141,6 @@ function Manifesto() {
               data-manifesto-word
               className="font-[family-name:var(--font-display)]
                          text-[clamp(2.5rem,8vw,7rem)] leading-[1.0] tracking-[-0.03em]
-                         text-[var(--color-cream)]
                          origin-left will-change-transform"
             >
               {word}
@@ -174,19 +200,21 @@ function Journey() {
               data-journey-stage
               className="relative"
             >
-              {/* Connector line between stages (desktop only) */}
+              {/* Connector line between stages (desktop only) — never touches circle */}
               {i < journey.length - 1 && (
                 <span
                   aria-hidden="true"
-                  className="hidden lg:block absolute top-5 left-full w-full h-px
+                  className="hidden lg:block absolute top-5 h-px
                              bg-[var(--color-near-black)] opacity-15 z-0"
+                  style={{ left: '2.75rem', width: 'calc(100% - 1.5rem)' }}
                 />
               )}
 
-              {/* Number node */}
+              {/* Number node with solid cream background */}
               <div
                 className="relative z-10 w-10 h-10 rounded-full border-2
-                           border-[var(--color-near-black)] flex items-center justify-center mb-4"
+                           border-[var(--color-near-black)] bg-[var(--color-cream)]
+                           flex items-center justify-center mb-4"
               >
                 <span
                   className="font-[family-name:var(--font-body)] text-xs font-semibold

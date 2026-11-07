@@ -69,6 +69,7 @@ class SceneErrorBoundary extends Component {
 function SceneArea({ promptSeed }) {
   const containerRef = useRef(null)
   const [shouldLoad, setShouldLoad] = useState(false)
+  const [isIntersecting, setIsIntersecting] = useState(false)
   const webgl = canUseWebGL()
 
   useEffect(() => {
@@ -78,15 +79,15 @@ function SceneArea({ promptSeed }) {
     const el = containerRef.current
     if (!el) return
 
-    // Only request the chunk when the section is 300 px from the viewport
+    // Preload when 200px away; track intersection to play/pause rendering
     const io = new IntersectionObserver(
       ([entry]) => {
+        setIsIntersecting(entry.isIntersecting)
         if (entry.isIntersecting) {
           setShouldLoad(true)
-          io.disconnect()
         }
       },
-      { rootMargin: '300px' },
+      { rootMargin: '200px' },
     )
     io.observe(el)
     return () => io.disconnect()
@@ -104,7 +105,7 @@ function SceneArea({ promptSeed }) {
       {webgl && shouldLoad ? (
         <SceneErrorBoundary>
           <Suspense fallback={<SparkFallback />}>
-            <SparkScene promptSeed={promptSeed} />
+            <SparkScene promptSeed={promptSeed} paused={!isIntersecting} />
           </Suspense>
         </SceneErrorBoundary>
       ) : (

@@ -237,6 +237,21 @@
 }
 
 /* --------------------------------------------------------------------------
+   About Manifesto — CSS transition on active word (Phase 1.6 fix 5)
+   Literal hex values, no var() inside transitions, strictly on cream-lime line.
+   -------------------------------------------------------------------------- */
+
+[data-manifesto-word] {
+  color: #F2EBDD;
+  transition: color 0.35s ease, transform 0.35s ease;
+}
+
+[data-manifesto-word][data-active="true"] {
+  color: #D9F36A;
+  transform: scale(1.03);
+}
+
+/* --------------------------------------------------------------------------
    Scroll margin — anchors land below the fixed navbar
    -------------------------------------------------------------------------- */
 
