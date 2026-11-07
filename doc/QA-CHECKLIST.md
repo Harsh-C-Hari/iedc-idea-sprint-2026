@@ -130,17 +130,17 @@ loader cleared AND the clip-path animation completed (~0.94 s later).
 
 | # | Fix | File |
 |---|-----|------|
-| I1 | Loader GSAP durations compressed ~40 %: total wipe-out at 0.75 s instead of 1.25 s | `src/motion/Loader.jsx` |
-| I2 | `removeShell()` now dispatches `CustomEvent('loader:done')` after shell fades out | `src/motion/Loader.jsx` |
-| I3 | Hero entrance waits for `loader:done` before setting any `gsap.set()` hidden states | `src/sections/Hero.jsx` |
+| I1 | Loader converted to pure CSS keyframes in `index.html`: zero GSAP runtime overhead, total sequence capped at 1.1 s (panels part 0.78–1.06 s; `loader:done` dispatched at ~0.70 s) | `index.html`, `src/motion/Loader.jsx` |
+| I2 | `Loader.jsx` dispatches `CustomEvent('loader:done')` at ~0.70 s and removes shell at ~1.1 s | `src/motion/Loader.jsx` |
+| I3 | Hero entrance waits for `window.__loaderDone` or `loader:done` before setting any `gsap.set()` hidden states | `src/sections/Hero.jsx` |
 | I4 | h1 words stay at their natural visible state during load → LCP-eligible while loader runs | `src/sections/Hero.jsx` |
 | I5 | Hero entrance itself tightened to ~0.9 s total (was ~1.2 s) | `src/sections/Hero.jsx` |
-| I6 | CSS safety hide reduced from `2.0 s` to `1.1 s` | `index.html` |
-| I7 | CSS fallback animation timings updated to match new GSAP schedule | `index.html` |
+| I6 | CSS safety hide capped at `1.1 s` (reduced from `2.0 s`) | `index.html` |
+| I7 | Pure CSS keyframes animate parts, 00→24 counter, and parting panels with 0 layout shift | `index.html` |
 | I8 | Reduced-motion path dispatches `loader:done` immediately so Hero starts at once | `src/motion/Loader.jsx` |
 
 **Expected improvement:**
-- Loader clears at ~1.0 s (was ~1.68 s)
+- Loader clears at ~1.1 s (was ~1.68 s; hard cap 1.1 s)
 - h1 is LCP-eligible during loader (no clip-path until `loader:done`)
 - FCP target: < 1.5 s · LCP target: < 2.5 s · Performance target: > 80
 

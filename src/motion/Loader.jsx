@@ -1,134 +1,94 @@
 /**
- * Loader.jsx — GSAP sequence for the CSS-shell loader (plan section B, T17/follow-up #3).
+ * Loader.jsx — CSS-driven lifecycle controller for the "24-Hour Spark" load sequence.
  *
- * Sequence (total ≤ 1.0 s — T22 optimised for LCP):
- *   0.00 s — IEDC BOOTCAMP CEC already visible via CSS animation
- *   0.00 s — GSAP cancels CSS animations, takes over
- *   0.00 s — brand label fades to 0.5 opacity
- *   0.20 s — bar draws left-to-right
- *   0.35 s — brand label fades out, IDEA SPRINT 2026 clips in from bottom
- *   0.60 s — Spark SVG scales + fades in
- *   0.75 s — entire inner wrapper clips upward out of view
- *   0.95 s — shell removed from DOM, 'loader:done' event dispatched (hero entrance begins)
- *
- * Fail-safes:
- *   • CSS shell has independent 1.1 s hide — works with no JS at all.
- *   • If GSAP errors, removeShell() is called in catch (shell removed).
- *   • prefers-reduced-motion — CSS hides shell immediately; Loader dispatches 'loader:done' at once.
- *   • pointer-events: none on #loader — hero always reachable underneath.
- *   • aria-hidden on #loader — screen readers skip it.
+ * All animation keyframes are defined in pure CSS inside index.html for zero runtime
+ * script overhead and zero LCP penalty. This component:
+ *   1. Measures elapsed time since index.html painted (window.__ldT0).
+ *   2. Dispatches 'loader:done' at ~700 ms (as panels begin opening) to trigger Hero entrance.
+ *   3. Removes #loader from the DOM at ~1100 ms once panels are fully clear.
+ *   4. Handles prefers-reduced-motion immediately (instant dispatch & shell removal).
+ *   5. Protects against React StrictMode / HMR double-execution via module-level flags.
  */
 import { useEffect } from 'react'
-import { gsap } from './gsap.js'
 
 const REDUCED =
   typeof window !== 'undefined'
     ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
     : false
 
-let shellRemoved = false
+let doneFired = false
+let timerDone = null
+let timerRemove = null
 
-/** Fade out, remove the loader shell, then fire 'loader:done' so Hero can start its entrance. */
+function fireDone() {
+  if (doneFired || window.__loaderDone) return
+  doneFired = true
+  window.__loaderDone = true
+  window.dispatchEvent(new CustomEvent('loader:done'))
+}
+
 function removeShell() {
-  if (shellRemoved) return
-  shellRemoved = true
-
   const el = document.getElementById('loader')
-  if (!el) {
-    window.dispatchEvent(new CustomEvent('loader:done'))
-    return
-  }
-  el.style.transition = 'opacity 0.12s ease'
-  el.style.opacity = '0'
-  el.style.pointerEvents = 'none'
-  setTimeout(() => {
-    el?.remove()
-    window.dispatchEvent(new CustomEvent('loader:done'))
-  }, 150)
+  el?.remove()
 }
 
 export default function Loader() {
   useEffect(() => {
-    // Reduced-motion: CSS hides shell immediately; fire event so Hero starts right away.
+    // Reduced motion: skip immediately
     if (REDUCED) {
-      window.dispatchEvent(new CustomEvent('loader:done'))
-      return
-    }
-
-    const shell  = document.getElementById('loader')
-    const inner  = document.getElementById('loader-inner')
-    const brand  = document.getElementById('loader-brand')
-    const bar    = document.getElementById('loader-bar')
-    const title  = document.getElementById('loader-title')
-    const spark  = document.getElementById('loader-spark')
-
-    if (!shell || !inner) {
-      // Shell missing — fire event immediately
+      fireDone()
       removeShell()
       return
     }
 
-    let tl
-
-    try {
-      // ── Kill the pure-CSS animations so GSAP owns these elements ──────────
-      ;[brand, bar, title, spark].filter(Boolean).forEach(el => {
-        el.style.animation = 'none'
-      })
-      shell.style.animation = 'none'
-
-      // ── Set initial states ─────────────────────────────────────────────────
-      if (brand)  gsap.set(brand,  { opacity: 0, y: 4 })
-      if (bar)    gsap.set(bar,    { scaleX: 0, transformOrigin: 'left center' })
-      if (title)  gsap.set(title,  { clipPath: 'inset(0 0 100% 0)', y: 3 })
-      if (spark)  gsap.set(spark,  { opacity: 0, scale: 0.4, transformOrigin: 'center center' })
-
-      // ── Build timeline (target total ≤ 1.0 s before removeShell) ──────────
-      tl = gsap.timeline({ onComplete: removeShell })
-
-      // 0.00 — IEDC BOOTCAMP CEC fades in
-      if (brand) {
-        tl.to(brand, { opacity: 0.5, y: 0, duration: 0.22, ease: 'power3.out' }, 0)
-      }
-
-      // 0.20 — bar draws
-      if (bar) {
-        tl.to(bar, { scaleX: 1, duration: 0.28, ease: 'power3.out' }, 0.20)
-      }
-
-      // 0.35 — brand fades out as title clips in
-      if (brand) {
-        tl.to(brand, { opacity: 0, y: -3, duration: 0.16, ease: 'power2.in' }, 0.35)
-      }
-      if (title) {
-        tl.to(title, { clipPath: 'inset(0 0 0% 0)', y: 0, duration: 0.26, ease: 'power3.out' }, 0.38)
-      }
-
-      // 0.60 — Spark assembles
-      if (spark) {
-        tl.to(spark, { opacity: 0.85, scale: 1, duration: 0.20, ease: 'back.out(1.6)' }, 0.60)
-      }
-
-      // 0.75 — clip the whole inner panel upward
-      tl.to(inner, {
-        clipPath: 'inset(0 0 100% 0)',
-        duration: 0.18,
-        ease: 'power4.in',
-      }, 0.75)
-
-    } catch (err) {
-      // Any GSAP error — remove shell so the site isn't blocked
-      console.warn('[Loader] GSAP error, removing shell', err)
-      removeShell()
+    const loaderEl = document.getElementById('loader')
+    // If shell is already missing, dispatch done immediately
+    if (!loaderEl) {
+      fireDone()
+      return
     }
+
+    // If already completed in previous lifecycle (e.g. HMR), ensure clean state
+    if (window.__loaderDone) {
+      removeShell()
+      return
+    }
+
+    const elapsed = performance.now() - (window.__ldT0 ?? 0)
+    const doneDelay = Math.max(0, 700 - elapsed)
+    const removeDelay = Math.max(0, 1100 - elapsed)
+
+    if (timerDone) clearTimeout(timerDone)
+    if (timerRemove) clearTimeout(timerRemove)
+
+    timerDone = setTimeout(() => {
+      fireDone()
+      timerDone = null
+    }, doneDelay)
+
+    timerRemove = setTimeout(() => {
+      removeShell()
+      timerRemove = null
+    }, removeDelay)
 
     return () => {
-      // HMR / Strict-mode unmount — kill timeline, remove shell
-      tl?.kill()
-      removeShell()
+      if (timerDone) {
+        clearTimeout(timerDone)
+        timerDone = null
+      }
+      if (timerRemove) {
+        clearTimeout(timerRemove)
+        timerRemove = null
+      }
+      // Safety: if unmounted permanently before completion, ensure shell is removed
+      setTimeout(() => {
+        if (!timerDone && !timerRemove && !doneFired) {
+          fireDone()
+          removeShell()
+        }
+      }, 50)
     }
   }, [])
 
-  // No DOM output — drives the CSS shell imperatively via GSAP.
   return null
 }

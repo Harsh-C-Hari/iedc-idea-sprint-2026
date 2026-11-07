@@ -75,7 +75,7 @@ export default function Hero() {
         { opacity: 1, y: 0, duration: 0.35, stagger: 0.05 }, 0.36)
     }
 
-    if (!document.getElementById('loader')) {
+    if (window.__loaderDone || !document.getElementById('loader')) {
       runEntrance()
     } else {
       window.addEventListener('loader:done', runEntrance, { once: true })
