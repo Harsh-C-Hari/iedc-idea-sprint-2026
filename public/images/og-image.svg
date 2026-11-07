@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <!-- Cube gradient -->
+    <linearGradient id="cg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F05A28"/>
+      <stop offset="100%" stop-color="#c43e12"/>
+    </linearGradient>
+    <!-- Ring gradient -->
+    <linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D9F36A"/>
+      <stop offset="100%" stop-color="#a8c73e"/>
+    </linearGradient>
+    <!-- Glow filter -->
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#171717"/>
+
+  <!-- Subtle grid lines -->
+  <line x1="0" y1="315" x2="1200" y2="315" stroke="#F2EBDD" stroke-width="0.5" opacity="0.06"/>
+  <line x1="600" y1="0" x2="600" y2="630" stroke="#F2EBDD" stroke-width="0.5" opacity="0.06"/>
+
+  <!-- Large ring (right) -->
+  <circle cx="980" cy="315" r="260" fill="none" stroke="#F05A28" stroke-width="1.5" opacity="0.15"/>
+  <circle cx="980" cy="315" r="180" fill="none" stroke="#D9F36A" stroke-width="1" opacity="0.10"/>
+
+  <!-- Spark mark (left of centre) -->
+  <!-- Large cube -->
+  <polygon points="320,120 460,195 320,270 180,195" fill="url(#cg)" opacity="0.95" filter="url(#glow)"/>
+  <polygon points="180,195 320,270 320,420 180,345" fill="#c43e12" opacity="0.90"/>
+  <polygon points="320,270 460,195 460,345 320,420" fill="#F05A28" opacity="0.75"/>
+  <!-- Back ring -->
+  <ellipse cx="320" cy="275" rx="160" ry="52" transform="rotate(-15 320 275)" fill="none" stroke="url(#rg)" stroke-width="4" opacity="0.6"/>
+  <!-- Front accent ring -->
+  <ellipse cx="320" cy="230" rx="82" ry="26" transform="rotate(10 320 230)" fill="none" stroke="url(#rg)" stroke-width="2.5" opacity="0.4"/>
+  <!-- Scatter dots -->
+  <circle cx="120" cy="180" r="6" fill="#D9F36A" opacity="0.6"/>
+  <circle cx="490" cy="150" r="4" fill="#F05A28" opacity="0.5"/>
+  <circle cx="470" cy="380" r="7" fill="#D9F36A" opacity="0.4"/>
+
+  <!-- IDEA SPRINT 2026 wordmark -->
+  <text
+    x="560" y="250"
+    font-family="'Archivo Black', 'Arial Black', Arial, sans-serif"
+    font-size="128"
+    font-weight="900"
+    letter-spacing="-4"
+    fill="#F2EBDD"
+    opacity="0.95"
+  >IDEA</text>
+  <text
+    x="560" y="380"
+    font-family="'Archivo Black', 'Arial Black', Arial, sans-serif"
+    font-size="128"
+    font-weight="900"
+    letter-spacing="-4"
+    fill="#F2EBDD"
+    opacity="0.95"
+  >SPRINT</text>
+  <text
+    x="560" y="470"
+    font-family="'Archivo Black', 'Arial Black', Arial, sans-serif"
+    font-size="80"
+    font-weight="900"
+    letter-spacing="-2"
+    fill="#F05A28"
+    opacity="0.90"
+  >2026</text>
+
+  <!-- Tagline -->
+  <text
+    x="560" y="530"
+    font-family="'Space Grotesk', 'Helvetica Neue', Helvetica, sans-serif"
+    font-size="22"
+    letter-spacing="4"
+    fill="#F2EBDD"
+    opacity="0.45"
+  >IEDC BOOTCAMP · COLLEGE OF ENGINEERING CHENGANNUR</text>
+</svg>
+
