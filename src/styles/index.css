@@ -1,3 +1,239 @@
-/* Tailwind v4 CSS-first entry — tokens added in T2, sections in later tasks */
+/* ==========================================================================
+   IDEA SPRINT 2026 — styles/index.css
+   Tailwind v4 CSS-first configuration.
+   Tokens live here in @theme; no tailwind.config.js.
+   ========================================================================== */
+
 @import "tailwindcss";
 
+/* --------------------------------------------------------------------------
+   @font-face — self-hosted, hand-written per plan (section C)
+   Archivo Black: one weight only (400). Never use font-bold on it —
+   the browser would synthesise a fake bold.
+   -------------------------------------------------------------------------- */
+
+/* Archivo Black — Latin subset (LCP headline carrier) */
+@font-face {
+  font-family: 'Archivo Black';
+  src: url('/fonts/archivo-black-latin.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+    U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Metric-adjusted Arial fallback for Archivo Black
+   Prevents layout shift during font swap (plan section C).
+   Values measured against Archivo Black 400 metrics. */
+@font-face {
+  font-family: 'Archivo Black Fallback';
+  src: local('Arial');
+  font-weight: 400;
+  font-style: normal;
+  ascent-override: 97%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+  size-adjust: 104%;
+}
+
+/* Space Grotesk Variable — Latin subset (body / UI copy) */
+@font-face {
+  font-family: 'Space Grotesk';
+  src: url('/fonts/space-grotesk-latin.woff2') format('woff2');
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+    U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* --------------------------------------------------------------------------
+   @theme — design tokens (Tailwind v4 CSS-first)
+   Palette rules (section A):
+     • Orange never carries text on cream — use for fills/shapes, near-black labels on orange buttons
+     • Lime only on near-black or as fill behind near-black text
+     • Form borders and focus rings are near-black
+   -------------------------------------------------------------------------- */
+
+@theme {
+  /* --- Colour palette --- */
+  --color-cream:      #f5f0e8;   /* warm cream — primary light background */
+  --color-near-black: #0f0d0a;   /* near-black — primary dark background + body text on cream */
+  --color-orange:     #f5a623;   /* orange — fills, shapes, button backgrounds (near-black labels) */
+  --color-lime:       #c8f135;   /* lime — only on near-black surfaces or as fill behind near-black text */
+
+  /* Semantic aliases */
+  --color-bg-light:   var(--color-cream);
+  --color-bg-dark:    var(--color-near-black);
+  --color-accent-1:   var(--color-orange);
+  --color-accent-2:   var(--color-lime);
+  --color-text-light: var(--color-cream);
+  --color-text-dark:  var(--color-near-black);
+
+  /* --- Typography --- */
+  --font-display: 'Archivo Black', 'Archivo Black Fallback', Arial, sans-serif;
+  --font-body:    'Space Grotesk', system-ui, sans-serif;
+
+  /* Type scale (fluid; clamped in component CSS as needed) */
+  --text-display-2xl: clamp(3.5rem,  12vw, 13.75rem); /* ~220px @ 1440 / ~56px @ 320 */
+  --text-display-xl:  clamp(2.75rem,  9vw, 10rem);     /* headline max */
+  --text-display-lg:  clamp(2rem,     6vw,  6rem);
+  --text-display-md:  clamp(1.5rem,   4vw,  3.5rem);
+  --text-display-sm:  clamp(1.25rem, 2.5vw,  2rem);
+  --text-body-lg:     1.125rem;  /* 18px */
+  --text-body-md:     1rem;      /* 16px */
+  --text-body-sm:     0.875rem;  /* 14px */
+  --text-label:       0.75rem;   /* 12px */
+
+  /* --- Spacing (supplement Tailwind defaults) --- */
+  --spacing-section: clamp(5rem, 10vw, 10rem);  /* vertical section padding */
+
+  /* --- Motion --- */
+  --duration-fast:   150ms;
+  --duration-normal: 300ms;
+  --duration-slow:   600ms;
+  --ease-out-expo:   cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out:     cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* --- Border radius --- */
+  --radius-sm:  0.25rem;
+  --radius-md:  0.5rem;
+  --radius-lg:  1rem;
+  --radius-full: 9999px;
+
+  /* --- Z-index layers --- */
+  --z-loader:  100;
+  --z-nav:      50;
+  --z-modal:    80;
+  --z-above:    10;
+}
+
+/* --------------------------------------------------------------------------
+   Base styles
+   Content is visible by default; animation is an enhancement (plan section H).
+   -------------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  /* Smooth scroll — disabled under reduced motion (plan section D) */
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--text-body-md);
+  line-height: 1.6;
+  background-color: var(--color-cream);
+  color: var(--color-near-black);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Images never overflow their container and have no layout shift */
+img,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400; /* Archivo Black has one weight — never font-bold */
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+}
+
+/* Tabular nums for Countdown (plan section F — prevents layout shift) */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Focus styles
+   Near-black focus ring on all interactive elements (plan sections A and G).
+   Visible always; not just :focus-visible — covers mouse users who tab through.
+   -------------------------------------------------------------------------- */
+
+:focus-visible {
+  outline: 3px solid var(--color-near-black);
+  outline-offset: 3px;
+}
+
+/* On dark backgrounds, flip the ring to cream */
+.bg-dark :focus-visible,
+[data-theme="dark"] :focus-visible {
+  outline-color: var(--color-cream);
+}
+
+/* Remove outline on non-keyboard focus (mouse click) */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* --------------------------------------------------------------------------
+   Scroll margin — anchors land below the fixed navbar (filled in T4)
+   -------------------------------------------------------------------------- */
+
+[id] {
+  scroll-margin-top: 4rem; /* adjusted to match navbar height in T4 */
+}
+
+/* --------------------------------------------------------------------------
+   Utility: skip link (filled in T4)
+   -------------------------------------------------------------------------- */
+
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 1rem;
+  z-index: var(--z-nav);
+  padding: 0.5rem 1rem;
+  background: var(--color-near-black);
+  color: var(--color-cream);
+  font-family: var(--font-body);
+  font-size: var(--text-body-sm);
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  transition: top var(--duration-fast) var(--ease-out-expo);
+}
+
+.skip-link:focus {
+  top: 1rem;
+}
