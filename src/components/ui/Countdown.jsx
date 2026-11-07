@@ -66,7 +66,7 @@ export default function Countdown() {
           LIVE NOW
         </span>
         <div className="flex items-end gap-3">
-          <Unit value={hours}   label="hrs" />
+          <Unit value={hours} label="hrs" />
           <Divider />
           <Unit value={minutes} label="min" />
           <Divider />
@@ -91,9 +91,9 @@ export default function Countdown() {
         Starts in
       </span>
       <div className="flex items-end gap-3 flex-wrap">
-        <Unit value={days}    label="days" />
+        <Unit value={days} label="days" />
         <Divider />
-        <Unit value={hours}   label="hrs" />
+        <Unit value={hours} label="hrs" />
         <Divider />
         <Unit value={minutes} label="min" />
         <Divider />

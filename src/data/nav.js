@@ -6,12 +6,12 @@
  */
 
 const nav = [
-  { label: 'About',      href: '#about' },
+  { label: 'About', href: '#about' },
   { label: 'Idea Spark', href: '#idea-spark' },
-  { label: 'Timeline',   href: '#timeline' },
-  { label: 'Challenge',  href: '#challenge' },
-  { label: 'Register',   href: '#registration' },
-  { label: 'Venue',      href: '#venue' },
+  { label: 'Timeline', href: '#timeline' },
+  { label: 'Challenge', href: '#challenge' },
+  { label: 'Register', href: '#registration' },
+  { label: 'Venue', href: '#venue' },
 ]
 
 export default nav

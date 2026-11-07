@@ -35,7 +35,7 @@ const eventConfig = {
    * ISO 8601 with explicit +05:30 so the countdown is correct everywhere.
    */
   startISO: '2026-11-20T17:00:00+05:30',
-  endISO:   '2026-11-21T17:00:00+05:30',
+  endISO: '2026-11-21T17:00:00+05:30',
 
   registration: {
     /**

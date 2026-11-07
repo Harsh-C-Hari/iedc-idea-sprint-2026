@@ -19,7 +19,7 @@ export default function Navbar() {
   const triggerRef = useRef(null)
 
   const toggleMenu = () => setMenuOpen((v) => !v)
-  const closeMenu  = () => setMenuOpen(false)
+  const closeMenu = () => setMenuOpen(false)
 
   return (
     <>
