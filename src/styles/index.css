@@ -237,3 +237,20 @@ a {
 .skip-link:focus {
   top: 1rem;
 }
+
+/* --------------------------------------------------------------------------
+   Hero ambient float animations (transform only — plan section D).
+   Disabled under reduced motion via the global rule above.
+   -------------------------------------------------------------------------- */
+
+@keyframes heroFloat1 {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  40%       { transform: translateY(-14px) rotate(2deg); }
+  70%       { transform: translateY(-6px) rotate(-1deg); }
+}
+
+@keyframes heroFloat2 {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  35%       { transform: translateY(10px) rotate(-2deg); }
+  65%       { transform: translateY(4px) rotate(1deg); }
+}
