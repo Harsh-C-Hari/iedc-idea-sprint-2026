@@ -23,13 +23,46 @@ const C = {
   nearBlack: '#262626', // slightly lifted from #171717 so specular highlights pop
 }
 
-// ── Bounded random position (strictly inside viewport bounds) ────────────────
-function rp(rangeX = 0.7, rangeY = 0.65, rangeZ = 0.2) {
-  return new THREE.Vector3(
-    (Math.random() - 0.5) * rangeX * 2,
-    (Math.random() - 0.5) * rangeY * 2,
-    (Math.random() - 0.5) * rangeZ * 2
-  )
+// ── Overlap-aware random scatter ─────────────────────────────────────────────
+// Each piece has a "visual radius" (how much screen space it really covers while
+// spinning: thin pieces like the disc/asterisk need less than the cube).
+// Generate still picks RANDOM positions, but we draw many candidate layouts and
+// keep the first whose closest pair has a clear gap; if none does, we keep the
+// layout with the biggest gap. Pieces also stay fully inside the square canvas.
+const VISUAL_RADIUS = { orange: 0.52, lime: 0.50, cream: 0.40, disc: 0.38, asterisk: 0.34 }
+const Z_RANGE       = { orange: 0.10, lime: 0.10, cream: 0.10, disc: 0.10, asterisk: 0.10 }
+const HALF_EXTENT   = 1.5   // safe half-size of the visible area at z≈0 (canvas is square, true value ≈1.57)
+const EDGE_PAD      = 0.12  // room for the idle float so pieces never touch the canvas edge
+const TARGET_GAP    = 0.10  // clear space we aim for between any two pieces
+const MAX_TRIES     = 1200
+
+function scatterLayout(names) {
+  let best = null
+  let bestGap = -Infinity
+  for (let k = 0; k < MAX_TRIES; k++) {
+    const layout = {}
+    for (const n of names) {
+      const lim = HALF_EXTENT - VISUAL_RADIUS[n] - EDGE_PAD
+      layout[n] = new THREE.Vector3(
+        (Math.random() * 2 - 1) * lim,
+        (Math.random() * 2 - 1) * lim,
+        (Math.random() * 2 - 1) * Z_RANGE[n]
+      )
+    }
+    let gap = Infinity
+    for (let i = 0; i < names.length; i++) {
+      for (let j = i + 1; j < names.length; j++) {
+        const a = names[i], b = names[j]
+        const d =
+          Math.hypot(layout[a].x - layout[b].x, layout[a].y - layout[b].y) -
+          (VISUAL_RADIUS[a] + VISUAL_RADIUS[b])
+        if (d < gap) gap = d
+      }
+    }
+    if (gap > bestGap) { bestGap = gap; best = layout }
+    if (gap >= TARGET_GAP) break
+  }
+  return best
 }
 
 // ── Reusable piece component with anchor lerp + continuous idle float ────────
@@ -209,15 +242,19 @@ function SceneObjects({ promptSeed, mobile }) {
   const tDisc     = useRef(new THREE.Vector3( 0.55, -0.45, 0))
   const tAsterisk = useRef(new THREE.Vector3( 0.0,   0.05, 0.1))
 
-  // Scatter anchors when promptSeed increments
+  // Scatter anchors when promptSeed increments (random, but overlap-aware)
   useEffect(() => {
     if (promptSeed === 0) return
-    tOrange.current   = rp(0.65, 0.6)
-    tLime.current     = rp(0.65, 0.6)
-    tCream.current    = rp(0.65, 0.6)
+    const names = mobile
+      ? ['orange', 'lime', 'cream']
+      : ['orange', 'lime', 'cream', 'disc', 'asterisk']
+    const L = scatterLayout(names)
+    tOrange.current.copy(L.orange)
+    tLime.current.copy(L.lime)
+    tCream.current.copy(L.cream)
     if (!mobile) {
-      tDisc.current     = rp(0.65, 0.6)
-      tAsterisk.current = rp(0.35, 0.35, 0.15)
+      tDisc.current.copy(L.disc)
+      tAsterisk.current.copy(L.asterisk)
     }
   }, [promptSeed, mobile])
 
