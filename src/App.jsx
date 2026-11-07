@@ -10,6 +10,7 @@ import './styles/index.css'
 import Navbar from './components/nav/Navbar.jsx'
 import Hero from './sections/Hero.jsx'
 import About from './sections/About.jsx'
+import IdeaSpark from './sections/IdeaSpark.jsx'
 import eventConfig from './config/eventConfig.js'
 import schedule from './data/schedule.js'
 import prompts from './data/prompts.js'
@@ -50,7 +51,8 @@ export default function App() {
       <main id="main-content" tabIndex={-1}>
         <Hero />
         <About />
-        {/* T7–T12 sections added next */}
+        <IdeaSpark />
+        {/* T8–T12 sections added next */}
       </main>
     </>
   )
