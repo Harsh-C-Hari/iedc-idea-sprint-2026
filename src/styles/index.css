@@ -124,6 +124,10 @@
   --line:      rgb(23 23 23 / 0.18);
   --field-bg:  #ffffff;
   --focus-ring: #171717;
+  /* Text colour for content that sits ON a --fg fill (inverted surface).
+     Light section: --fg is near-black, so on-fg is cream.
+     Dark  section: --fg is cream,      so on-fg is near-black.          */
+  --on-fg:     #F2EBDD;
 }
 
 [data-theme="dark"] {
@@ -132,6 +136,7 @@
   --line:      rgb(242 235 221 / 0.25);
   --field-bg:  rgb(242 235 221 / 0.07);
   --focus-ring: #F2EBDD;
+  --on-fg:     #171717;
 }
 
 /* --------------------------------------------------------------------------

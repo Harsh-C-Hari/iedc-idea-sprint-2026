@@ -82,8 +82,8 @@ function ErrorSummary({ errors, summaryRef }) {
       aria-live="assertive"
       className="p-4 rounded-[var(--radius-sm)] mb-6 focus:outline-none"
       style={{
-        backgroundColor: 'rgb(185 28 28 / 0.18)',
-        border: '1px solid rgb(248 113 113 / 0.35)',
+        backgroundColor: 'rgb(185 28 28 / 0.22)',
+        border: '1px solid rgb(248 113 113 / 0.50)',
       }}
     >
       <p className="font-[family-name:var(--font-body)] text-sm font-semibold mb-2"
@@ -102,7 +102,7 @@ function ErrorSummary({ errors, summaryRef }) {
                 el?.focus()
               }}
               className="underline focus-visible:outline-[var(--focus-ring,var(--color-cream))]"
-              style={{ color: '#fca5a5' }}
+              style={{ color: 'var(--fg)' }}
             >
               {msg}
             </a>
@@ -142,7 +142,13 @@ function TeamStep({ state, setTeamName, setTeamSize, touch }) {
         </legend>
         <div className="flex flex-wrap gap-3">
           {sizes.map((n) => (
-            <label key={n} className="cursor-pointer">
+            /* has-[:focus-visible] shows the focus ring on the visual span
+               when the sr-only radio receives keyboard focus.             */
+            <label
+              key={n}
+              className="cursor-pointer has-[:focus-visible]:outline has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-offset-2 rounded-[var(--radius-sm)]"
+              style={{ outlineColor: 'var(--focus-ring)' }}
+            >
               <input
                 type="radio"
                 name="team-size"
@@ -157,10 +163,11 @@ function TeamStep({ state, setTeamName, setTeamSize, touch }) {
                   font-[family-name:var(--font-display)] text-lg
                   border-2 rounded-[var(--radius-sm)]
                   transition-colors duration-[var(--duration-fast)] cursor-pointer
+                  select-none
                 `}
                 style={
                   teamSize === n
-                    ? { backgroundColor: 'var(--fg)', color: 'var(--field-bg)', borderColor: 'var(--fg)' }
+                    ? { backgroundColor: 'var(--fg)', color: 'var(--on-fg)', borderColor: 'var(--fg)' }
                     : { backgroundColor: 'transparent', color: 'var(--fg)', borderColor: 'var(--line)' }
                 }
               >
