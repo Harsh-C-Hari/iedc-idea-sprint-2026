@@ -46,14 +46,19 @@ export default function Hero() {
                  pt-16 pb-12 px-5 md:px-8 lg:px-16 overflow-hidden"
     >
       {/* ── Wordmark "IDEA SPRINT 2026" ── */}
-      {/* p element — not h1; supports headline, does not outrank it (plan section A) */}
+      {/* p element — not h1; visible oversized wordmark integrated into composition */}
+      {/* Tonal treatment: outlined stroke + low-opacity fill so it reads without outranking h1 */}
       <p
         aria-label="IDEA SPRINT 2026"
         className="font-[family-name:var(--font-display)]
                    text-[clamp(3rem,14vw,10rem)] leading-[0.9] tracking-[-0.03em]
-                   text-[var(--color-near-black)] opacity-[0.08]
                    select-none pointer-events-none
                    mb-4 lg:mb-6"
+        style={{
+          WebkitTextStroke: '1.5px var(--color-orange)',
+          color: 'transparent',
+          opacity: 0.55,
+        }}
       >
         IDEA
         <br />
