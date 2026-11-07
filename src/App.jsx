@@ -24,8 +24,10 @@ export default function App() {
       </h1>
       <p>{eventConfig.tagline}</p>
       <p style={{ marginTop: '0.5rem', fontSize: '0.875rem', color: '#666' }}>
-        Phase: <strong>{_phase}</strong> · Nav items: {nav.length} ·
-        Schedule days: {schedule.length} · Prompt categories: {Object.keys(prompts).length} ·
+        Phase: <strong>{_phase}</strong> · Nav items: {nav.length} (expect 6) ·
+        Schedule days: {schedule.length} · Day 1 items: {schedule[0]?.items.length} (expect 7) ·
+        Day 2 items: {schedule[1]?.items.length} (expect 4) ·
+        Prompt categories: {Object.keys(prompts).length} ·
         Manifesto words: {manifesto.length} · Journey stages: {journey.length} ·
         Challenge steps: {steps.length}
       </p>

@@ -29,7 +29,7 @@ export function parseISO(iso) {
  */
 export function getPhase(nowMs, startMs, endMs) {
   if (nowMs < startMs) return 'before'
-  if (nowMs < endMs)   return 'live'
+  if (nowMs < endMs) return 'live'
   return 'after'
 }
 

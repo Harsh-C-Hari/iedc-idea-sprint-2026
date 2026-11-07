@@ -1,8 +1,8 @@
 /**
  * nav.js — navigation link definitions.
  *
- * href values are anchor IDs matching the section id attributes.
- * label is the display text exactly as it will appear in the navbar.
+ * All six sections in the approved order (plan section D).
+ * href values match section id attributes.
  */
 
 const nav = [
@@ -10,6 +10,7 @@ const nav = [
   { label: 'Idea Spark', href: '#idea-spark' },
   { label: 'Timeline',   href: '#timeline' },
   { label: 'Challenge',  href: '#challenge' },
+  { label: 'Register',   href: '#registration' },
   { label: 'Venue',      href: '#venue' },
 ]
 

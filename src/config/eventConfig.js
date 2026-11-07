@@ -6,10 +6,12 @@
  *   • Never invent URLs, emails or logos.
  *   • The explicit +05:30 offset makes the countdown correct on any device timezone.
  *   • registration.status drives CTA labels and form visibility.
+ *   • Values marked provisional:true are from the spec but unconfirmed by organizers;
+ *     they are shown to users but can be corrected without touching components.
  *
- * Fields to update when organizers reply (plan section F):
- *   registration.endpoint, registration.deadlineISO, registration.mode,
- *   venue.mapsUrl, venue.photo, social.instagram, social.linkedin, contact.email
+ * Null fields (organizer answers pending — plan section F):
+ *   registration.endpoint, venue.mapsUrl, venue.photo,
+ *   social.instagram, social.linkedin, contact.email
  */
 
 const eventConfig = {
@@ -37,19 +39,21 @@ const eventConfig = {
 
   registration: {
     /**
-     * 'preview'   — full validated flow; honest "not yet connected" message;
-     *               Copy summary; no success screen. Default until organizers answer.
-     * 'open'      — form is live (requires endpoint to be set).
+     * 'preview'      — full validated flow; honest "not yet connected" message;
+     *                  Copy summary; no success screen. Default until organizers answer.
+     * 'open'         — form is live (requires endpoint to be set).
      * 'opening-soon' — form replaced by opening-soon message.
-     * 'closed'    — form replaced by closed message.
+     * 'closed'       — form replaced by closed message.
      */
     status: 'preview',
 
     /**
      * Registration deadline ISO string.
-     * null until organizers confirm the date and time (plan section F Q2).
+     * Provisional: 18 Nov end-of-day (plan section F Q2 fallback).
+     * Confirm date AND time with organizers.
      */
-    deadlineISO: null,
+    deadlineISO: '2026-11-18T23:59:00+05:30',
+    provisional_deadlineISO: true,
 
     /**
      * Submission mode: 'preview' | 'endpoint'
@@ -79,15 +83,19 @@ const eventConfig = {
 
   /**
    * Semester options for the registration form.
-   * null until organizers confirm the list (plan section F Q3).
+   * Provisional: S1–S8 even semesters (plan section F Q3).
+   * Confirm the exact list with organizers.
    */
-  semesters: null,
+  semesters: ['S1', 'S3', 'S5', 'S7'],
+  provisional_semesters: true,
 
   /**
    * Division / branch options for the registration form.
-   * null until organizers confirm the list (plan section F Q3).
+   * Provisional: A–G (plan section F Q3).
+   * Confirm the exact list with organizers.
    */
-  divisions: null,
+  divisions: ['A', 'B', 'C', 'D', 'E', 'F', 'G'],
+  provisional_divisions: true,
 
   venue: {
     /** College name — verified */

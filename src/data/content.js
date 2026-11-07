@@ -76,10 +76,10 @@ export const steps = [
 
 /** Challenge — fact strip labels (values come from eventConfig, not here) */
 export const factLabels = {
-  hours:       '24 HOURS',
-  teamSize:    'TEAM SIZE',
+  hours: '24 HOURS',
+  teamSize: 'TEAM SIZE',
   eligibility: 'ELIGIBILITY',
-  idea:        'ONE IDEA',
+  idea: 'ONE IDEA',
 }
 
 /** Hero — supporting copy below the headline */

@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 
 Sitemap: https://idea-sprint-2026.vercel.app/sitemap.xml
+
