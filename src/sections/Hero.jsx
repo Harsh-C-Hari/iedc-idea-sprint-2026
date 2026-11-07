@@ -55,37 +55,56 @@ export default function Hero() {
   const layerNearRef = useRef(null)
 
   // ── Entrance timeline ───────────────────────────────────────────────────
+  // T22: Wait for 'loader:done' before hiding and revealing hero elements.
+  // This keeps h1 visible (LCP-eligible) while the loader is active, then
+  // plays a quick entrance once the loader shell has cleared.
   useGSAP(() => {
     const el = outerRef.current
     if (!el) return
-
-    const wordmark = el.querySelector('[data-hero="wordmark"]')
-    const sparkEl = el.querySelector('[data-hero="spark"]')
-    const h1Words = el.querySelectorAll('[data-hero="h1-word"]')
-    const supportEl = el.querySelector('[data-hero="support"]')
-    const countdownEl = el.querySelector('[data-hero="countdown"]')
-    const ctaEl = el.querySelector('[data-hero="cta"]')
-    const metaEl = el.querySelector('[data-hero="meta"]')
-    const fragEls = el.querySelectorAll('[data-hero="frag"]')
 
     if (REDUCED) {
       return // content already visible via CSS defaults
     }
 
-    // Set hidden start states (GSAP applies these; content is visible if GSAP never runs)
-    gsap.set(wordmark, { opacity: 0, y: -20 })
-    gsap.set(sparkEl, { opacity: 0, scale: 0.4, transformOrigin: 'center center' })
-    gsap.set(h1Words, { clipPath: 'inset(0 0 100% 0)', y: 8 })
-    gsap.set([supportEl, countdownEl, ctaEl, metaEl], { opacity: 0, y: 16 })
-    gsap.set(fragEls, { opacity: 0, scale: 0.5, transformOrigin: 'center center' })
+    function runEntrance() {
+      const wordmark   = el.querySelector('[data-hero="wordmark"]')
+      const sparkEl    = el.querySelector('[data-hero="spark"]')
+      const h1Words    = el.querySelectorAll('[data-hero="h1-word"]')
+      const supportEl  = el.querySelector('[data-hero="support"]')
+      const countdownEl = el.querySelector('[data-hero="countdown"]')
+      const ctaEl      = el.querySelector('[data-hero="cta"]')
+      const metaEl     = el.querySelector('[data-hero="meta"]')
+      const fragEls    = el.querySelectorAll('[data-hero="frag"]')
 
-    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
+      // Set hidden start states only now (after loader exits) so h1 is LCP-eligible
+      // during the loader phase. h1Words use clip-path only (no opacity).
+      gsap.set(wordmark,  { opacity: 0, y: -16 })
+      gsap.set(sparkEl,   { opacity: 0, scale: 0.5, transformOrigin: 'center center' })
+      gsap.set(h1Words,   { clipPath: 'inset(0 0 100% 0)', y: 6 })
+      gsap.set([supportEl, countdownEl, ctaEl, metaEl], { opacity: 0, y: 12 })
+      gsap.set(fragEls,   { opacity: 0, scale: 0.6, transformOrigin: 'center center' })
 
-    tl.to(wordmark, { opacity: 1, y: 0, duration: 0.4 }, 0)
-    tl.to(sparkEl, { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(1.6)' }, 0.1)
-    tl.to(h1Words, { clipPath: 'inset(0 0 0% 0)', y: 0, duration: 0.5, stagger: 0.08 }, 0.2)
-    tl.to(fragEls, { opacity: 1, scale: 1, duration: 0.6, stagger: 0.06, ease: 'back.out(1.3)' }, 0.5)
-    tl.to([supportEl, countdownEl, ctaEl, metaEl], { opacity: 1, y: 0, duration: 0.5, stagger: 0.07 }, 0.65)
+      const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
+
+      // Tightened entrance: total ~0.9 s
+      tl.to(wordmark, { opacity: 1, y: 0, duration: 0.30 }, 0)
+      tl.to(sparkEl,  { opacity: 1, scale: 1, duration: 0.35, ease: 'back.out(1.6)' }, 0.05)
+      tl.to(h1Words,  { clipPath: 'inset(0 0 0% 0)', y: 0, duration: 0.35, stagger: 0.055 }, 0.08)
+      tl.to(fragEls,  { opacity: 1, scale: 1, duration: 0.45, stagger: 0.05, ease: 'back.out(1.3)' }, 0.30)
+      tl.to([supportEl, countdownEl, ctaEl, metaEl],
+            { opacity: 1, y: 0, duration: 0.35, stagger: 0.055 }, 0.42)
+    }
+
+    // If loader has already dispatched (e.g. HMR / cached) start immediately
+    if (!document.getElementById('loader')) {
+      runEntrance()
+    } else {
+      window.addEventListener('loader:done', runEntrance, { once: true })
+    }
+
+    return () => {
+      window.removeEventListener('loader:done', runEntrance)
+    }
 
   }, { scope: outerRef, dependencies: [] })
 
