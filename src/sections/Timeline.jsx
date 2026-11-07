@@ -1,21 +1,11 @@
 /**
- * Timeline.jsx — section 4 with reveals and per-item rail segments (T15 / Phase 1.6 fix 4).
+ * Timeline.jsx — section 4 with reveals and per-item rail segments.
  *
- * Data from data/schedule.js — 7 items Day 1, 4 items Day 2 (11 total).
- *
- * Layout:
- *   Day 1 — near-black panel, lime markers, oversized Archivo Black time labels
- *   Day 2 — cream panel, orange node fills, near-black text
- *   Desktop: central rail with ring nodes, items alternating sides
- *   Mobile: left rail, items to the right
- *   Rail segments connect node centre to next node centre; last item has no segment.
- *
- * Motion:
- *   • Each rail segment scales Y from top to bottom as user scrolls (transform-only)
- *   • Items slide+fade in as they enter viewport
- *   • Time markers scale 0.9→1 and gain accent colour
- *   • Day headings reveal (clip)
- *   • Reduced motion: content visible, no animations
+ * Phase 3A:
+ *   • Dots sit exactly on the rail centre line and are vertically centered
+ *     on the time row (measured tolerance <= 1px).
+ *   • Footnote left edge aligns with the section container/heading left edge.
+ *   • Rail ends cleanly at the last dot of each day.
  */
 import { useRef } from 'react'
 import { useGSAP } from '@gsap/react'
@@ -43,27 +33,32 @@ function TimelineItem({ item, side, day, isLast }) {
           data-rail-segment
           aria-hidden="true"
           className={`
-            absolute left-3 lg:left-1/2 top-2.5 w-px h-full -translate-x-1/2 z-0
+            absolute left-3 lg:left-1/2 top-[calc(clamp(2rem,4vw,3rem)/2)] w-px h-full -translate-x-1/2 z-0
             ${isDay1 ? 'bg-[var(--color-lime)] opacity-30' : 'bg-[var(--color-near-black)] opacity-20'}
           `}
         />
       )}
 
-      {/* ── Node marker ── */}
+      {/* ── Node marker slot (vertically aligned with the time row) ── */}
       <div
-        aria-hidden="true"
-        className={`
-          absolute left-3 lg:left-1/2 top-2.5 -translate-x-1/2 z-10
-          rounded-full border-2 transition-transform duration-300
-          ${isLast ? 'w-5 h-5 -translate-y-0.5' : 'w-4 h-4'}
-          ${isLast && isDay1 ? 'ring-4 ring-[#D9F36A]/20' : ''}
-          ${isLast && !isDay1 ? 'ring-4 ring-[#F05A28]/20' : ''}
-        `}
-        style={{
-          backgroundColor: isDay1 ? 'var(--color-lime)' : 'var(--color-orange)',
-          borderColor:      isDay1 ? 'var(--color-lime)' : 'var(--color-orange)',
-        }}
-      />
+        className="absolute left-3 lg:left-1/2 top-0 -translate-x-1/2 z-10
+                   h-[clamp(2rem,4vw,3rem)] flex items-center justify-center pointer-events-none"
+      >
+        <div
+          data-timeline-dot
+          aria-hidden="true"
+          className={`
+            rounded-full border-2 transition-transform duration-300
+            ${isLast ? 'w-5 h-5' : 'w-4 h-4'}
+            ${isLast && isDay1 ? 'ring-4 ring-[#D9F36A]/20' : ''}
+            ${isLast && !isDay1 ? 'ring-4 ring-[#F05A28]/20' : ''}
+          `}
+          style={{
+            backgroundColor: isDay1 ? 'var(--color-lime)' : 'var(--color-orange)',
+            borderColor:      isDay1 ? 'var(--color-lime)' : 'var(--color-orange)',
+          }}
+        />
+      </div>
 
       {/* ── Desktop Left slot (only populated when side === 'left') ── */}
       <div
@@ -73,14 +68,15 @@ function TimelineItem({ item, side, day, isLast }) {
         `}
       >
         {side === 'left' && (
-          <div>
+          <div className="flex flex-col items-end">
             <time
               dateTime={item.time}
               data-timeline-time
               className={`
                 font-[family-name:var(--font-display)]
-                text-[clamp(2rem,4vw,3rem)] leading-none tracking-[-0.025em]
-                block mb-1
+                text-[clamp(2rem,4vw,3rem)] h-[clamp(2rem,4vw,3rem)]
+                flex items-center justify-end leading-none tracking-[-0.025em]
+                mb-1
                 ${isDay1 ? 'text-[var(--color-lime)]' : 'text-[var(--color-near-black)]'}
               `}
             >
@@ -105,26 +101,29 @@ function TimelineItem({ item, side, day, isLast }) {
           ${side === 'right' ? 'lg:pl-12 lg:text-left' : 'lg:hidden'}
         `}
       >
-        <time
-          dateTime={item.time}
-          data-timeline-time
-          className={`
-            font-[family-name:var(--font-display)]
-            text-[clamp(2rem,4vw,3rem)] leading-none tracking-[-0.025em]
-            block mb-1
-            ${isDay1 ? 'text-[var(--color-lime)]' : 'text-[var(--color-near-black)]'}
-          `}
-        >
-          {item.time}
-        </time>
-        <p
-          className={`
-            font-[family-name:var(--font-body)] font-semibold text-sm uppercase tracking-wide
-            ${isDay1 ? 'text-[var(--color-cream)]' : 'text-[var(--color-near-black)]'}
-          `}
-        >
-          {item.title}
-        </p>
+        <div className="flex flex-col items-start">
+          <time
+            dateTime={item.time}
+            data-timeline-time
+            className={`
+              font-[family-name:var(--font-display)]
+              text-[clamp(2rem,4vw,3rem)] h-[clamp(2rem,4vw,3rem)]
+              flex items-center justify-start leading-none tracking-[-0.025em]
+              mb-1
+              ${isDay1 ? 'text-[var(--color-lime)]' : 'text-[var(--color-near-black)]'}
+            `}
+          >
+            {item.time}
+          </time>
+          <p
+            className={`
+              font-[family-name:var(--font-body)] font-semibold text-sm uppercase tracking-wide
+              ${isDay1 ? 'text-[var(--color-cream)]' : 'text-[var(--color-near-black)]'}
+            `}
+          >
+            {item.title}
+          </p>
+        </div>
       </div>
     </li>
   )
@@ -159,18 +158,14 @@ function DayPanel({ day }) {
       gsap.to(item, {
         opacity: 1,
         y: 0,
-        duration: 0.55,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: item,
-          start: 'top 88%',
-          once: true,
-        },
-        delay: (i % 3) * 0.05,
+        duration: 0.5,
+        ease: 'power3.out',
+        delay: i * 0.06,
+        scrollTrigger: { trigger: item, start: 'top 88%', once: true },
       })
     })
 
-    // 3. Rail segments scaleY (top to bottom scrub)
+    // 3. Rail segment reveals — scaleY scrub
     const segments = panel.querySelectorAll('[data-rail-segment]')
     segments.forEach((seg) => {
       gsap.set(seg, { scaleY: 0, transformOrigin: 'top center' })
@@ -179,25 +174,9 @@ function DayPanel({ day }) {
         ease: 'none',
         scrollTrigger: {
           trigger: seg,
-          start: 'top 82%',
-          end: 'bottom 68%',
-          scrub: 0.3,
-        },
-      })
-    })
-
-    // 4. Time markers scale + pop
-    const times = panel.querySelectorAll('[data-timeline-time]')
-    times.forEach((time) => {
-      gsap.set(time, { scale: 0.9, transformOrigin: 'left center' })
-      gsap.to(time, {
-        scale: 1,
-        duration: 0.5,
-        ease: 'back.out(1.4)',
-        scrollTrigger: {
-          trigger: time,
-          start: 'top 88%',
-          once: true,
+          start: 'top 80%',
+          end: 'bottom 60%',
+          scrub: 0.8,
         },
       })
     })
@@ -269,14 +248,17 @@ export default function Timeline() {
         <DayPanel key={day.day} day={day} />
       ))}
 
-      {/* Subject to change note */}
-      <div className="bg-[var(--color-cream)] px-5 md:px-8 lg:px-16 py-6">
-        <p
-          className="font-[family-name:var(--font-body)] text-xs text-[var(--color-near-black)]
-                     opacity-65 italic max-w-4xl mx-auto"
-        >
-          Schedule subject to change — times will be confirmed by organizers.
-        </p>
+      {/* Subject to change note — perfectly aligned with max-w-4xl container */}
+      <div className="bg-[var(--color-cream)] px-5 md:px-8 lg:px-16 pb-16 pt-0">
+        <div className="max-w-4xl mx-auto">
+          <p
+            data-timeline-footnote
+            className="font-[family-name:var(--font-body)] text-xs text-[var(--color-near-black)]
+                       opacity-70 italic"
+          >
+            Schedule subject to change — times will be confirmed by organizers.
+          </p>
+        </div>
       </div>
     </SectionShell>
   )

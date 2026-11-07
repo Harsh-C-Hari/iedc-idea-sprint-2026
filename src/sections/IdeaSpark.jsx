@@ -103,7 +103,7 @@ function SceneArea({ promptSeed }) {
       aria-hidden="true"
       data-testid="scene-area-container"
       className="hidden lg:flex items-center justify-center
-                 w-full max-w-[320px] aspect-square
+                 w-full max-w-[360px] aspect-square
                  rounded-[var(--radius-lg)]
                  overflow-hidden"
     >
@@ -175,7 +175,7 @@ export default function IdeaSpark() {
             </h2>
             <p
               className="font-[family-name:var(--font-body)] text-[1rem] leading-relaxed
-                         text-[var(--color-cream)] opacity-60 max-w-[40ch] mb-10"
+                         text-[var(--color-cream)] opacity-60 max-w-[40ch] mb-6 lg:mb-8"
             >
               Pick a category and generate a starting prompt. Use it, ignore it,
               or let it spark something better.

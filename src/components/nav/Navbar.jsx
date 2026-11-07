@@ -40,31 +40,33 @@ export default function Navbar() {
           href="#hero"
           aria-label="IEDC BOOTCAMP CEC — back to top"
           className="font-[family-name:var(--font-display)] text-sm tracking-widest uppercase
-                     text-[var(--color-cream)] no-underline shrink-0
+                     text-[var(--color-cream)] no-underline shrink-0 mr-4
                      focus-visible:outline-[var(--color-cream)]"
         >
           <span className="sm:hidden">IEDC CEC</span>
           <span className="hidden sm:inline">IEDC BOOTCAMP CEC</span>
         </a>
 
-        {/* Desktop nav — centre */}
+        {/* Desktop nav — centre (omits Register since it is already the dedicated CTA on the right) */}
         <nav
           aria-label="Primary navigation"
           className="hidden lg:flex flex-1 justify-center gap-8"
         >
-          {nav.map(({ label, href }) => (
-            <a
-              key={href}
-              href={href}
-              className="font-[family-name:var(--font-body)] text-sm font-medium tracking-wide
-                         text-[var(--color-cream)] no-underline opacity-80
-                         hover:opacity-100 hover:text-[var(--color-orange)]
-                         transition-colors duration-[var(--duration-fast)]
-                         focus-visible:outline-[var(--color-cream)]"
-            >
-              {label}
-            </a>
-          ))}
+          {nav
+            .filter((item) => item.href !== '#registration')
+            .map(({ label, href }) => (
+              <a
+                key={href}
+                href={href}
+                className="font-[family-name:var(--font-body)] text-sm font-medium tracking-wide
+                           text-[var(--color-cream)] no-underline opacity-80
+                           hover:opacity-100 hover:text-[var(--color-orange)]
+                           transition-colors duration-[var(--duration-fast)]
+                           focus-visible:outline-[var(--color-cream)]"
+              >
+                {label}
+              </a>
+            ))}
         </nav>
 
         {/* Right side — Register CTA (always visible) + hamburger */}

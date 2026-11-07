@@ -1,20 +1,12 @@
 /**
  * Challenge.jsx — section 5 with reveals (T15) + travelling Spark (T18).
  *
- * Layout (plan section D):
- *   • Two-line headline with supporting headline and copy
- *   • Four steps (01–04) in an offset 2×2 grid on desktop; stacked on mobile
- *   • Near-black fact strip: 24 HOURS, TEAM SIZE 1–4, ELIGIBILITY, ONE IDEA
- *     — values read from eventConfig so one edit updates both here and the form
- *
- * Motion (plan section D, T15 + T18):
- *   • Staggered step card reveals (fade + slide up)
- *   • Fact strip values clip-reveal
- *   • Headline clip reveal
- *   • Travelling Spark (T18): scrubbed between step positions on desktop,
- *     static decorative at top on mobile.
- *   • Reduced motion safe. Content visible if GSAP fails.
- *   • No pinning.
+ * Phase 3A:
+ *   • Fact strip is full-bleed edge-to-edge near-black band with 4 equal columns (desktop),
+ *     thin cream/10 dividers, 2x2 on mobile.
+ *   • Step numbers 01–04 are solid near-black for AAA contrast (14.1:1).
+ *   • 2x2 grid is even with matching card heights per row.
+ *   • Travelling Spark is visible in orange, tracking card edges without obstructing text.
  */
 import { useRef } from 'react'
 import { useGSAP } from '@gsap/react'
@@ -22,7 +14,7 @@ import SectionShell from '../components/ui/SectionShell.jsx'
 import Spark from '../components/art/Spark.jsx'
 import { steps } from '../data/content.js'
 import eventConfig from '../config/eventConfig.js'
-import { gsap, ScrollTrigger } from '../motion/gsap.js'
+import { gsap } from '../motion/gsap.js'
 
 const REDUCED =
   typeof window !== 'undefined'
@@ -30,49 +22,49 @@ const REDUCED =
     : false
 
 /** Single step card */
-function StepCard({ step, offset }) {
+function StepCard({ step }) {
   return (
     <div
       data-challenge-step
-      className={`
-        p-6 md:p-8 border border-[var(--color-near-black)]/10
-        rounded-[var(--radius-md)]
-        ${offset ? 'lg:mt-12' : ''}
-      `}
+      className="p-6 md:p-8 border border-[var(--color-near-black)]/10
+                 rounded-[var(--radius-md)] flex flex-col justify-between
+                 bg-white/40 h-full"
     >
-      <span
-        className="font-[family-name:var(--font-display)]
-                   text-[clamp(3rem,5vw,4.5rem)] leading-none tracking-[-0.03em]
-                   text-[var(--color-orange)] opacity-30 block mb-4 select-none"
-      >
-        {step.number}
-      </span>
-      <h3
-        className="font-[family-name:var(--font-display)]
-                   text-[clamp(1.25rem,2.5vw,1.75rem)] leading-tight tracking-[-0.02em]
-                   text-[var(--color-near-black)] mb-3"
-      >
-        {step.title}
-      </h3>
-      <p
-        className="font-[family-name:var(--font-body)] text-sm leading-relaxed
-                   text-[var(--color-near-black)] opacity-65 max-w-[32ch]"
-      >
-        {step.description}
-      </p>
+      <div>
+        <span
+          className="font-[family-name:var(--font-display)]
+                     text-[clamp(2.5rem,4.5vw,4rem)] leading-none tracking-[-0.03em]
+                     text-[var(--color-near-black)] block mb-4 select-none"
+        >
+          {step.number}
+        </span>
+        <h3
+          className="font-[family-name:var(--font-display)]
+                     text-[clamp(1.25rem,2.5vw,1.75rem)] leading-tight tracking-[-0.02em]
+                     text-[var(--color-near-black)] mb-3"
+        >
+          {step.title}
+        </h3>
+        <p
+          className="font-[family-name:var(--font-body)] text-sm leading-relaxed
+                     text-[var(--color-near-black)] opacity-65 max-w-[32ch]"
+        >
+          {step.description}
+        </p>
+      </div>
     </div>
   )
 }
 
-/** Fact strip — values from eventConfig (plan section D) */
+/** Fact strip — full-bleed edge-to-edge band */
 function FactStrip() {
   const stripRef = useRef(null)
 
   const facts = [
-    { value: '24 HOURS',                                        label: 'Duration' },
+    { value: '24 HOURS',                                                  label: 'Duration' },
     { value: `TEAM SIZE ${eventConfig.team.min}–${eventConfig.team.max}`, label: 'Team' },
-    { value: eventConfig.eligibility.toUpperCase(),             label: 'Eligibility' },
-    { value: 'ONE IDEA',                                        label: 'Deliverable' },
+    { value: eventConfig.eligibility.toUpperCase(),                       label: 'Eligibility' },
+    { value: 'ONE IDEA',                                                  label: 'Deliverable' },
   ]
 
   useGSAP(() => {
@@ -98,19 +90,27 @@ function FactStrip() {
   return (
     <div
       ref={stripRef}
-      className="bg-[var(--color-near-black)] mt-20 lg:mt-24
-                 px-5 md:px-8 lg:px-16 py-12"
+      className="w-full bg-[var(--color-near-black)] text-[var(--color-cream)]
+                 mt-20 lg:mt-28 py-12 px-5 md:px-8 lg:px-16 border-y border-[var(--color-cream)]/10"
       aria-label="Event facts"
     >
       <ul
         className="list-none p-0 m-0 max-w-6xl mx-auto
-                   grid grid-cols-2 lg:grid-cols-4 gap-8"
+                   grid grid-cols-2 lg:grid-cols-4
+                   divide-y divide-[var(--color-cream)]/10 sm:divide-y-0
+                   sm:divide-x divide-[var(--color-cream)]/10"
       >
-        {facts.map(({ value, label }) => (
-          <li key={label} data-fact-item className="flex flex-col gap-1">
+        {facts.map(({ value, label }, idx) => (
+          <li
+            key={label}
+            data-fact-item
+            className={`flex flex-col justify-center gap-1.5 py-4 sm:py-0
+                       ${idx % 2 === 0 ? 'pr-4 sm:px-6' : 'pl-4 sm:px-6'}
+                       lg:px-8 first:pl-0 last:pr-0`}
+          >
             <span
               className="font-[family-name:var(--font-display)]
-                         text-[clamp(1rem,2.5vw,1.5rem)] leading-tight tracking-[-0.02em]
+                         text-[clamp(1.125rem,2.2vw,1.65rem)] leading-tight tracking-[-0.02em]
                          text-[var(--color-lime)]"
             >
               {value}
@@ -155,7 +155,7 @@ function TravellingSpark({ gridRef }) {
         const cr = card.getBoundingClientRect()
         return {
           x: cr.left - gr.left + cr.width / 2 - 24, // 24 = half spark size 48
-          y: cr.top - gr.top - 60,                   // safely above the card
+          y: cr.top - gr.top - 52,                   // safely above the card
         }
       }
 
@@ -193,18 +193,13 @@ function TravellingSpark({ gridRef }) {
   }, { scope: sparkRef, dependencies: [] })
 
   return (
-    /*
-     * aria-hidden — purely decorative.
-     * On mobile: static, opacity-40, centred at top of grid.
-     * On desktop: positioned absolutely (transforms applied by GSAP).
-     */
     <div
       ref={sparkRef}
       aria-hidden="true"
       className="pointer-events-none select-none
                  lg:absolute lg:z-10
                  flex justify-center mb-6 lg:mb-0
-                 opacity-40 lg:opacity-60"
+                 opacity-60 lg:opacity-75"
       style={{ top: 0, left: 0 }}
     >
       <Spark size={48} color="orange" />
@@ -218,11 +213,10 @@ export default function Challenge() {
 
   // Staggered step cards + headline reveal
   useGSAP(() => {
-    if (REDUCED) return
     const el = outerRef.current
-    if (!el) return
+    if (!el || REDUCED) return
 
-    // Headline clip reveal
+    // Heading clip reveal
     const heading = el.querySelector('[data-challenge-heading]')
     if (heading) {
       gsap.set(heading, { clipPath: 'inset(0 100% 0 0)' })
@@ -255,10 +249,10 @@ export default function Challenge() {
         id="challenge"
         labelId="challenge-heading"
         theme="light"
-        className="px-5 md:px-8 lg:px-16 pt-20 lg:pt-28 pb-0 overflow-hidden"
+        className="px-0 pt-20 lg:pt-28 pb-0 overflow-hidden"
       >
         {/* Headline block */}
-        <div className="max-w-6xl mx-auto mb-16 lg:mb-20">
+        <div className="max-w-6xl mx-auto px-5 md:px-8 lg:px-16 mb-16 lg:mb-20">
           <h2
             id="challenge-heading"
             data-challenge-heading
@@ -278,19 +272,19 @@ export default function Challenge() {
           </p>
         </div>
 
-        {/* Steps grid — 2×2 offset on desktop — relative for Spark positioning */}
-        <div className="max-w-6xl mx-auto relative" ref={gridRef}>
+        {/* Steps grid — 2×2 even heights on desktop */}
+        <div className="max-w-6xl mx-auto px-5 md:px-8 lg:px-16 relative" ref={gridRef}>
           {/* Travelling Spark — decorative, desktop scrubbed */}
           <TravellingSpark gridRef={gridRef} />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:gap-8">
-            {steps.map((step, i) => (
-              <StepCard key={step.number} step={step} offset={i === 1 || i === 3} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:gap-8 items-stretch">
+            {steps.map((step) => (
+              <StepCard key={step.number} step={step} />
             ))}
           </div>
         </div>
 
-        {/* Fact strip */}
+        {/* Fact strip — full-bleed band */}
         <FactStrip />
       </SectionShell>
     </div>

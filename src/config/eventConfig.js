@@ -115,6 +115,18 @@ const eventConfig = {
     mapsUrl: null,
 
     /**
+     * Google Maps interactive embed URL.
+     * null until confirmed. When null, interactive iframe is not offered.
+     */
+    mapEmbedUrl: null,
+
+    /**
+     * Map preview image path (relative to /public/images/).
+     * cec-map.jpg with webp alternative in public/images/. Null-safe.
+     */
+    mapImage: 'cec-map.jpg',
+
+    /**
      * Campus photo path (relative to /public/images/).
      * cec-campus.jpg with webp alternative in public/images/.
      */

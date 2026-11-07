@@ -4,18 +4,18 @@
  * Content (plan section D):
  *   • College of Engineering Chengannur
  *   • SPDK Room, 5th Floor
- *   • "20 Nov, 5:00 PM to 21 Nov, 5:00 PM" (written out in full — plan section D)
+ *   • "20 Nov, 5:00 PM to 21 Nov, 5:00 PM" (written out in full)
  *
- * MapFacade (plan section D):
- *   • Static preview panel + animated pin + "Load interactive map" button
- *   • Iframe injected only on click (no third-party requests at load time)
- *   • "Open in Google Maps" link (target="_blank" rel="noopener noreferrer")
- *   • If mapsUrl is null: search URL from college name, labelled "Search on Google Maps"
+ * MapFacade (Phase 3A):
+ *   • Static map preview using cec-map.webp / cec-map.jpg
+ *   • Animated LocationPin overlay with "Map preview" label chip
+ *   • "Load interactive map" button shown only if mapEmbedUrl is configured
+ *   • Iframe NEVER created at load time (document.querySelectorAll('iframe').length === 0)
+ *   • "Open in Google Maps" link if mapsUrl set, else "Search on Google Maps" fallback
+ *   • Full-width container filling 100% of the card column (no right-edge strip)
  *
- * Photo fallback (plan section D + section F Q4):
- *   • If venue.photo is null: geometric panel (not a stock image).
- *
- * Iframe never loads at page load — plan section A (Performance and Best Practices).
+ * Caption:
+ *   • Single space after period, no duplicate "5th Floor", opacity-70 for WCAG AA.
  */
 import { useState } from 'react'
 import SectionShell from '../components/ui/SectionShell.jsx'
@@ -47,54 +47,76 @@ function LocationPin({ color = 'var(--color-orange)' }) {
 /** Map facade — no iframe until clicked */
 function MapFacade() {
   const [loaded, setLoaded] = useState(false)
+  const mapImage = eventConfig.venue.mapImage
+  const mapEmbedUrl = eventConfig.venue.mapEmbedUrl
   const mapsUrl  = eventConfig.venue.mapsUrl
-  const embedUrl = mapsUrl
-    ? `${mapsUrl}&output=embed`
-    : null
   const linkUrl  = mapsUrl ?? SEARCH_URL
   const linkLabel = mapsUrl ? 'Open in Google Maps' : 'Search on Google Maps'
 
   return (
-    <div className="rounded-[var(--radius-md)] overflow-hidden border border-[var(--color-near-black)]/10">
-      {/* Map area */}
-      <div className="relative bg-[var(--color-cream)] aspect-[4/3] max-h-[400px]">
+    <div className="rounded-[var(--radius-md)] overflow-hidden border border-[var(--color-near-black)]/10 bg-white shadow-xs w-full">
+      {/* Map area: full width aspect-[4/3] without right-edge gap */}
+      <div className="relative bg-[var(--color-cream)] w-full aspect-[4/3] overflow-hidden">
         {!loaded ? (
           /* Static facade */
-          <div
-            className="absolute inset-0 flex flex-col items-center justify-center gap-4
-                       bg-[var(--color-near-black)]/5"
-          >
-            <LocationPin />
-            <div className="text-center px-4">
-              <p className="font-[family-name:var(--font-body)] text-sm font-semibold
-                            text-[var(--color-near-black)] mb-1">
-                {eventConfig.venue.college}
-              </p>
-              <p className="font-[family-name:var(--font-body)] text-xs
-                            text-[var(--color-near-black)] opacity-50">
-                {eventConfig.venue.room}
-              </p>
+          <div className="absolute inset-0 w-full h-full">
+            {mapImage ? (
+              <picture>
+                <source srcSet="/images/cec-map.webp" type="image/webp" />
+                <img
+                  src={`/images/${mapImage}`}
+                  alt="Map showing College of Engineering Chengannur"
+                  width="1200"
+                  height="900"
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-full object-cover"
+                />
+              </picture>
+            ) : (
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-[var(--color-near-black)]/5">
+                <div className="text-center px-4">
+                  <p className="font-[family-name:var(--font-body)] text-sm font-semibold text-[var(--color-near-black)] mb-1">
+                    {eventConfig.venue.college}
+                  </p>
+                  <p className="font-[family-name:var(--font-body)] text-xs text-[var(--color-near-black)] opacity-60">
+                    {eventConfig.venue.room}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Animated LocationPin + "Map preview" chip */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10">
+              <LocationPin />
+              <span className="mt-2 px-2.5 py-1 font-[family-name:var(--font-body)] text-[11px] font-medium tracking-wide bg-[var(--color-near-black)]/85 text-[var(--color-cream)] rounded-full backdrop-blur-xs shadow-xs">
+                Map preview
+              </span>
             </div>
-            {embedUrl && (
-              <button
-                type="button"
-                onClick={() => setLoaded(true)}
-                className="px-5 py-2 min-h-[44px] flex items-center
-                           font-[family-name:var(--font-body)] text-sm font-semibold
-                           bg-[var(--color-near-black)] text-[var(--color-cream)]
-                           rounded-[var(--radius-sm)]
-                           hover:bg-[#2a2420] transition-colors duration-[var(--duration-fast)]
-                           focus-visible:outline-[var(--color-near-black)]"
-              >
-                Load interactive map
-              </button>
+
+            {/* "Load interactive map" button — shown only if mapEmbedUrl is set */}
+            {mapEmbedUrl && (
+              <div className="absolute bottom-4 inset-x-0 flex justify-center z-20">
+                <button
+                  type="button"
+                  onClick={() => setLoaded(true)}
+                  className="px-5 py-2 min-h-[44px] flex items-center
+                             font-[family-name:var(--font-body)] text-sm font-semibold
+                             bg-[var(--color-near-black)] text-[var(--color-cream)]
+                             rounded-[var(--radius-sm)] shadow-md
+                             hover:bg-[#2a2420] transition-colors duration-[var(--duration-fast)]
+                             focus-visible:outline-[var(--color-near-black)]"
+                >
+                  Load interactive map
+                </button>
+              </div>
             )}
           </div>
         ) : (
-          /* Iframe — only injected after user clicks */
+          /* Iframe — ONLY injected after user clicks */
           <iframe
             title="College of Engineering Chengannur — Google Maps"
-            src={embedUrl}
+            src={mapEmbedUrl}
             className="absolute inset-0 w-full h-full border-0"
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
@@ -104,13 +126,13 @@ function MapFacade() {
       </div>
 
       {/* Footer link */}
-      <div className="px-4 py-3 bg-white border-t border-[var(--color-near-black)]/5">
+      <div className="px-4 py-3 bg-white border-t border-[var(--color-near-black)]/5 flex items-center justify-between">
         <a
           href={linkUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="font-[family-name:var(--font-body)] text-xs text-[var(--color-near-black)]
-                     opacity-60 hover:opacity-100 underline
+                     opacity-70 hover:opacity-100 underline
                      focus-visible:outline-[var(--color-near-black)]"
         >
           {linkLabel} ↗
@@ -120,15 +142,14 @@ function MapFacade() {
   )
 }
 
-/** Geometric fallback panel (when no photo supplied — plan section D) */
+/** Geometric fallback panel (when no campus photo supplied) */
 function GeometricPanel() {
   return (
     <div
       aria-hidden="true"
-      className="w-full aspect-[16/9] rounded-[var(--radius-md)] overflow-hidden
+      className="w-full aspect-[2.35/1] rounded-[var(--radius-md)] overflow-hidden
                  bg-[var(--color-near-black)] relative flex items-center justify-center"
     >
-      {/* Simple geometric shapes as placeholder artwork */}
       <svg viewBox="0 0 400 225" xmlns="http://www.w3.org/2000/svg" className="absolute inset-0 w-full h-full">
         <rect width="400" height="225" fill="#171717"/>
         <circle cx="200" cy="112" r="80" fill="none" stroke="#F05A28" strokeWidth="1" opacity="0.3"/>
@@ -250,9 +271,8 @@ export default function Venue() {
           <div>
             <MapFacade />
             <p className="font-[family-name:var(--font-body)] text-xs text-[var(--color-near-black)]
-                          opacity-40 mt-3 italic">
-              The pin marks the college, not the specific room.
-              {eventConfig.venue.room} is on the 5th Floor.
+                          opacity-70 mt-3 italic">
+              The pin marks the college, not the specific room. {eventConfig.venue.room}.
             </p>
           </div>
         </div>
