@@ -207,7 +207,7 @@ export default function Hero() {
         </div>
 
         {/* ════ CONTENT — static (no cursor parallax, no transform) ════ */}
-        <div className="relative z-10 max-w-6xl w-full mx-auto my-auto">
+        <div className="relative z-10 max-w-6xl w-full my-auto">
           {/* Wordmark "IDEA SPRINT 2026" */}
           <div className="relative mb-2 lg:mb-0">
             <p
