@@ -8,6 +8,7 @@
  */
 import './styles/index.css'
 import Navbar from './components/nav/Navbar.jsx'
+import Hero from './sections/Hero.jsx'
 import eventConfig from './config/eventConfig.js'
 import schedule from './data/schedule.js'
 import prompts from './data/prompts.js'
@@ -46,42 +47,8 @@ export default function App() {
       <Navbar />
 
       <main id="main-content" tabIndex={-1}>
-        {/* Sections added T5–T12 */}
-        {/* Temporary placeholder so the shell has visible content */}
-        <div
-          style={{
-            paddingTop: '4rem',
-            minHeight: '100dvh',
-            background: 'var(--color-cream)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexDirection: 'column',
-            gap: '1rem',
-            fontFamily: 'var(--font-display)',
-          }}
-        >
-          <h1
-            style={{
-              fontSize: 'clamp(2rem, 8vw, 6rem)',
-              color: 'var(--color-near-black)',
-              textAlign: 'center',
-              margin: 0,
-            }}
-          >
-            {eventConfig.name}
-          </h1>
-          <p
-            style={{
-              fontFamily: 'var(--font-body)',
-              color: 'var(--color-near-black)',
-              opacity: 0.6,
-              fontSize: '0.875rem',
-            }}
-          >
-            Phase 1 in progress — sections loading…
-          </p>
-        </div>
+        <Hero />
+        {/* T6–T12 sections added next */}
       </main>
     </>
   )
