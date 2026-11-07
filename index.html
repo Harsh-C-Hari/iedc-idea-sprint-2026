@@ -47,6 +47,85 @@
     />
   </head>
   <body>
+    <!--
+      CSS-only loader shell — plan section B, T17.
+      Painted synchronously before React mounts.
+      Pure CSS fallback: hides itself at 2 s via animation; no JS needed.
+      aria-hidden + pointer-events:none so the hero behind is always reachable.
+      prefers-reduced-motion: hidden immediately.
+      noscript: hidden immediately.
+    -->
+    <style>
+      #loader {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        background: #0f0d0a;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+        pointer-events: none;
+        /* Pure-CSS safety: hide at 2 s max even if JS never fires */
+        animation: __loaderHide 0s 2s forwards;
+      }
+      @keyframes __loaderHide {
+        to { visibility: hidden; opacity: 0; }
+      }
+      #loader-wordmark {
+        font-family: 'Archivo Black', 'Arial Black', sans-serif;
+        font-size: clamp(2rem, 10vw, 5rem);
+        font-weight: 900;
+        letter-spacing: -0.04em;
+        line-height: 0.9;
+        color: #f5f0e8;
+        text-align: center;
+        opacity: 0;
+        transform: translateY(12px);
+        animation: __loaderWordIn 0.5s 0.1s cubic-bezier(0.16,1,0.3,1) forwards;
+      }
+      @keyframes __loaderWordIn {
+        to { opacity: 1; transform: translateY(0); }
+      }
+      #loader-sub {
+        font-family: 'Space Grotesk', 'Helvetica Neue', sans-serif;
+        font-size: clamp(0.65rem, 2vw, 0.85rem);
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: #f5f0e8;
+        opacity: 0;
+        animation: __loaderSubIn 0.4s 0.5s cubic-bezier(0.16,1,0.3,1) forwards;
+      }
+      @keyframes __loaderSubIn {
+        to { opacity: 0.45; }
+      }
+      #loader-bar {
+        width: clamp(3rem, 15vw, 6rem);
+        height: 2px;
+        background: #f5a623;
+        transform: scaleX(0);
+        transform-origin: left;
+        animation: __loaderBar 0.8s 0.6s cubic-bezier(0.16,1,0.3,1) forwards;
+      }
+      @keyframes __loaderBar {
+        to { transform: scaleX(1); }
+      }
+      /* Reduced-motion: skip loader entirely */
+      @media (prefers-reduced-motion: reduce) {
+        #loader { display: none !important; }
+      }
+    </style>
+    <noscript>
+      <style>#loader { display: none !important; }</style>
+    </noscript>
+
+    <div id="loader" aria-hidden="true" role="presentation">
+      <div id="loader-wordmark">IDEA SPRINT<br/>2026</div>
+      <div id="loader-bar"></div>
+      <div id="loader-sub">IEDC BOOTCAMP CEC</div>
+    </div>
+
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

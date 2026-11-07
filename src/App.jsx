@@ -27,6 +27,7 @@ import prompts from './data/prompts.js'
 import { manifesto, journey, steps } from './data/content.js'
 import nav from './data/nav.js'
 import { parseISO, getPhase } from './lib/time.js'
+import Loader from './motion/Loader.jsx'
 
 const _phase = getPhase(
   Date.now(),
@@ -51,6 +52,9 @@ if (import.meta.env.DEV) {
 export default function App() {
   return (
     <>
+      {/* Loader — drives CSS shell exit with GSAP (plan section B, T17) */}
+      <Loader />
+
       {/* Skip link — plan section D */}
       <a href="#main-content" className="skip-link">
         Skip to main content
