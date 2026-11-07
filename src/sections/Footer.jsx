@@ -132,10 +132,10 @@ export default function Footer() {
           </div>
 
           {/* Nav links + optional social/contact (aligned to the right end) */}
-          <div className="flex flex-col md:flex-row gap-10 md:ml-auto md:text-right">
+          <div className="flex flex-col md:flex-row gap-10 md:ml-auto text-left">
             {/* Social + contact — hidden when null (plan section H) */}
             {(eventConfig.social.instagram || eventConfig.social.linkedin || eventConfig.contact.email) && (
-              <div className="flex flex-col gap-3 md:items-end">
+              <div className="flex flex-col gap-3 md:items-start">
                 {eventConfig.social.instagram && (
                   <a
                     href={eventConfig.social.instagram}
@@ -178,7 +178,7 @@ export default function Footer() {
 
             {/* Nav links */}
             <nav aria-label="Footer navigation">
-              <ul className="list-none p-0 m-0 flex flex-col md:items-end gap-3">
+              <ul className="list-none p-0 m-0 flex flex-col items-start gap-3">
                 {nav.map(({ label, href }) => (
                   <li key={href}>
                     <a
