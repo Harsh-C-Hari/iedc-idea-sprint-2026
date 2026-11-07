@@ -60,10 +60,10 @@
 
 @theme {
   /* --- Colour palette --- */
-  --color-cream:      #f5f0e8;   /* warm cream — primary light background */
-  --color-near-black: #0f0d0a;   /* near-black — primary dark background + body text on cream */
-  --color-orange:     #f5a623;   /* orange — fills, shapes, button backgrounds (near-black labels) */
-  --color-lime:       #c8f135;   /* lime — only on near-black surfaces or as fill behind near-black text */
+  --color-cream:      #F2EBDD;   /* warm cream — primary light background */
+  --color-near-black: #171717;   /* near-black — primary dark background + body text on cream */
+  --color-orange:     #F05A28;   /* orange — fills, shapes, button backgrounds (near-black labels) */
+  --color-lime:       #D9F36A;   /* lime — only on near-black surfaces or as fill behind near-black text */
 
   /* Semantic aliases */
   --color-bg-light:   var(--color-cream);

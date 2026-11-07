@@ -130,12 +130,12 @@ function GeometricPanel() {
     >
       {/* Simple geometric shapes as placeholder artwork */}
       <svg viewBox="0 0 400 225" xmlns="http://www.w3.org/2000/svg" className="absolute inset-0 w-full h-full">
-        <rect width="400" height="225" fill="#0f0d0a"/>
-        <circle cx="200" cy="112" r="80" fill="none" stroke="#f5a623" strokeWidth="1" opacity="0.3"/>
-        <circle cx="200" cy="112" r="50" fill="none" stroke="#c8f135" strokeWidth="1" opacity="0.2"/>
-        <line x1="80" y1="112" x2="320" y2="112" stroke="#f5f0e8" strokeWidth="0.5" opacity="0.1"/>
-        <line x1="200" y1="30" x2="200" y2="195" stroke="#f5f0e8" strokeWidth="0.5" opacity="0.1"/>
-        <polygon points="200,60 230,100 170,100" fill="#f5a623" opacity="0.15"/>
+        <rect width="400" height="225" fill="#171717"/>
+        <circle cx="200" cy="112" r="80" fill="none" stroke="#F05A28" strokeWidth="1" opacity="0.3"/>
+        <circle cx="200" cy="112" r="50" fill="none" stroke="#D9F36A" strokeWidth="1" opacity="0.2"/>
+        <line x1="80" y1="112" x2="320" y2="112" stroke="#F2EBDD" strokeWidth="0.5" opacity="0.1"/>
+        <line x1="200" y1="30" x2="200" y2="195" stroke="#F2EBDD" strokeWidth="0.5" opacity="0.1"/>
+        <polygon points="200,60 230,100 170,100" fill="#F05A28" opacity="0.15"/>
       </svg>
       <span className="relative z-10 font-[family-name:var(--font-display)] text-sm
                        text-[var(--color-cream)] opacity-20 tracking-widest uppercase">

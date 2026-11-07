@@ -26,10 +26,10 @@ import * as THREE from 'three'
 
 // ── Colour palette ──────────────────────────────────────────────────────────
 const C = {
-  orange:    '#f5a623',
-  lime:      '#c8f135',
-  cream:     '#f5f0e8',
-  nearBlack: '#0f0d0a',
+  orange:    '#F05A28',
+  lime:      '#D9F36A',
+  cream:     '#F2EBDD',
+  nearBlack: '#171717',
 }
 
 // ── Individual pieces ────────────────────────────────────────────────────────

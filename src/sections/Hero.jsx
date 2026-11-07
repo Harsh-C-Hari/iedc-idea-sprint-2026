@@ -159,47 +159,47 @@ export default function Hero() {
           {/* Large ring — top right */}
           <div data-hero="frag" className="absolute"
             style={{ top: '-4%', right: '8%', animation: 'heroFloat1 7s ease-in-out infinite' }}>
-            <Ring size={180} color="#f5a623" opacity={0.12} />
+            <Ring size={180} color="#F05A28" opacity={0.12} />
           </div>
           {/* Cube — upper left */}
           <div data-hero="frag" className="absolute"
             style={{ top: '8%', left: '4%', animation: 'heroFloat2 9s ease-in-out infinite', animationDelay: '1s' }}>
-            <Cube size={64} color="#f5a623" opacity={0.18} />
+            <Cube size={64} color="#F05A28" opacity={0.18} />
           </div>
           {/* Large disc — mid left */}
           <div data-hero="frag" className="absolute"
             style={{ top: '32%', left: '-2%' }}>
-            <Disc size={120} color="#c8f135" opacity={0.08} />
+            <Disc size={120} color="#D9F36A" opacity={0.08} />
           </div>
           {/* Sphere — far right mid (desktop) */}
           <div data-hero="frag" className="absolute hidden lg:block"
             style={{ top: '45%', right: '3%', animation: 'heroFloat1 11s ease-in-out infinite', animationDelay: '2s' }}>
-            <Sphere size={56} color="#f5a623" opacity={0.15} uid="hero-sphere-1" />
+            <Sphere size={56} color="#F05A28" opacity={0.15} uid="hero-sphere-1" />
           </div>
           {/* Small cube — lower left (desktop) */}
           <div data-hero="frag" className="absolute hidden lg:block"
             style={{ bottom: '18%', left: '12%' }}>
-            <Cube size={36} color="#c8f135" opacity={0.14} />
+            <Cube size={36} color="#D9F36A" opacity={0.14} />
           </div>
           {/* Ring bottom right (desktop) */}
           <div data-hero="frag" className="absolute hidden lg:block"
             style={{ bottom: '10%', right: '18%', animation: 'heroFloat2 8s ease-in-out infinite', animationDelay: '3s' }}>
-            <Ring size={88} color="#c8f135" opacity={0.10} />
+            <Ring size={88} color="#D9F36A" opacity={0.10} />
           </div>
           {/* Tiny disc — right side (desktop) */}
           <div data-hero="frag" className="absolute hidden lg:block"
             style={{ top: '22%', right: '28%' }}>
-            <Disc size={28} color="#f5a623" opacity={0.20} />
+            <Disc size={28} color="#F05A28" opacity={0.20} />
           </div>
           {/* Extra sphere bottom (desktop) */}
           <div data-hero="frag" className="absolute hidden lg:block"
             style={{ bottom: '24%', left: '42%' }}>
-            <Sphere size={42} color="#c8f135" opacity={0.10} uid="hero-sphere-2" />
+            <Sphere size={42} color="#D9F36A" opacity={0.10} uid="hero-sphere-2" />
           </div>
           {/* Cube right edge (desktop) */}
           <div data-hero="frag" className="absolute hidden lg:block"
             style={{ top: '62%', right: '6%' }}>
-            <Cube size={28} color="#f5f0e8" opacity={0.25} />
+            <Cube size={28} color="#F2EBDD" opacity={0.25} />
           </div>
         </div>
 
@@ -218,8 +218,8 @@ export default function Hero() {
                          select-none pointer-events-none"
               style={{
                 fontSize: 'clamp(2.8rem, 15vw, 11rem)',
-                WebkitTextStroke: '2px rgba(15,13,10,0.6)',
-                color: 'rgba(15,13,10,0.12)',
+                WebkitTextStroke: '2px rgba(23,23,23,0.6)',
+                color: 'rgba(23,23,23,0.12)',
               }}
             >
               <span className="block">IDEA</span>
@@ -269,11 +269,11 @@ export default function Hero() {
           <div aria-hidden="true" ref={layerNearRef} className="pointer-events-none select-none">
             <div data-hero="frag" className="absolute hidden lg:block"
               style={{ top: '54%', left: 'clamp(14rem, 32vw, 28rem)' }}>
-              <Ring size={52} color="#f5a623" opacity={0.22} />
+              <Ring size={52} color="#F05A28" opacity={0.22} />
             </div>
             <div data-hero="frag" className="absolute hidden sm:block"
               style={{ top: '72%', left: 'clamp(10rem, 28vw, 24rem)' }}>
-              <Disc size={22} color="#c8f135" opacity={0.30} />
+              <Disc size={22} color="#D9F36A" opacity={0.30} />
             </div>
           </div>
 

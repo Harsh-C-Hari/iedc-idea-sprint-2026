@@ -14,8 +14,8 @@
  */
 
 /** Isometric cube fragment */
-export function Cube({ size = 48, color = '#f5a623', opacity = 0.6, className = '', style = {} }) {
-  const dark = color === '#c8f135' ? '#8aab00' : color === '#f5f0e8' ? '#c8c3bb' : '#c47d08'
+export function Cube({ size = 48, color = '#F05A28', opacity = 0.6, className = '', style = {} }) {
+  const dark = color === '#D9F36A' ? '#a8c73e' : color === '#F2EBDD' ? '#c5b9a8' : '#c43e12'
   return (
     <svg
       width={size} height={size}
@@ -36,7 +36,7 @@ export function Cube({ size = 48, color = '#f5a623', opacity = 0.6, className = 
 }
 
 /** Partial ring / torus arc fragment */
-export function Ring({ size = 48, color = '#c8f135', opacity = 0.55, className = '', style = {} }) {
+export function Ring({ size = 48, color = '#D9F36A', opacity = 0.55, className = '', style = {} }) {
   return (
     <svg
       width={size} height={size}
@@ -53,7 +53,7 @@ export function Ring({ size = 48, color = '#c8f135', opacity = 0.55, className =
 }
 
 /** Filled disc fragment */
-export function Disc({ size = 32, color = '#f5f0e8', opacity = 0.4, className = '', style = {} }) {
+export function Disc({ size = 32, color = '#F2EBDD', opacity = 0.4, className = '', style = {} }) {
   return (
     <svg
       width={size} height={size}
@@ -69,7 +69,7 @@ export function Disc({ size = 32, color = '#f5f0e8', opacity = 0.4, className = 
 }
 
 /** Sphere illusion (radial gradient) */
-export function Sphere({ size = 40, color = '#f5a623', opacity = 0.5, className = '', style = {}, uid = 'sphere' }) {
+export function Sphere({ size = 40, color = '#F05A28', opacity = 0.5, className = '', style = {}, uid = 'sphere' }) {
   return (
     <svg
       width={size} height={size}

@@ -257,7 +257,7 @@ export default function IdeaSpark() {
                                  font-[family-name:var(--font-body)] text-sm font-semibold
                                  text-[var(--color-near-black)] bg-[var(--color-lime)]
                                  rounded-[var(--radius-sm)]
-                                 hover:bg-[#afd42d] transition-colors duration-[var(--duration-fast)]
+                                 hover:bg-[#c3db5f] transition-colors duration-[var(--duration-fast)]
                                  focus-visible:outline-[var(--color-cream)]"
                     >
                       {copied ? 'Copied!' : 'Copy'}
