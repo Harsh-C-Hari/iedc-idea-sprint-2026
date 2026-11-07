@@ -54,7 +54,7 @@ function MapFacade() {
   const linkLabel = mapsUrl ? 'Open in Google Maps' : 'Search on Google Maps'
 
   return (
-    <div className="rounded-[var(--radius-md)] overflow-hidden border border-[var(--color-near-black)]/10 bg-white shadow-xs w-full">
+    <div className="rounded-[var(--radius-md)] overflow-hidden border border-[var(--color-near-black)]/12 bg-white shadow-xs w-full">
       {/* Map area: full width aspect-[4/3] without right-edge gap */}
       <div className="relative bg-[var(--color-cream)] w-full aspect-[4/3] overflow-hidden">
         {!loaded ? (
@@ -126,7 +126,7 @@ function MapFacade() {
       </div>
 
       {/* Footer link */}
-      <div className="px-4 py-3 bg-white border-t border-[var(--color-near-black)]/5 flex items-center justify-between">
+      <div className="px-4 py-3 bg-white border-t border-[var(--color-near-black)]/10 flex items-center justify-between">
         <a
           href={linkUrl}
           target="_blank"
@@ -198,7 +198,7 @@ export default function Venue() {
           <div className="mb-10 lg:mb-0">
             {/* Campus photo or geometric panel */}
             {eventConfig.venue.photo ? (
-              <div className="rounded-[var(--radius-md)] overflow-hidden border border-[var(--color-near-black)]/10 mb-8 bg-white shadow-xs">
+              <div className="group rounded-[var(--radius-md)] overflow-hidden border border-[var(--color-near-black)]/12 mb-8 bg-white shadow-xs hover:shadow-md transition-shadow duration-300">
                 <div className="relative aspect-[2.35/1] overflow-hidden bg-[var(--color-near-black)]/5">
                   <picture>
                     <source srcSet="/images/cec-campus.webp" type="image/webp" />
@@ -209,25 +209,39 @@ export default function Venue() {
                       height="435"
                       loading="lazy"
                       decoding="async"
-                      className="w-full h-full object-cover object-center"
+                      className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.025] motion-reduce:transform-none"
                     />
                   </picture>
+
+                  {/* Gradient scrim at bottom for text legibility */}
+                  <div
+                    className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[var(--color-near-black)]/60 via-[var(--color-near-black)]/20 to-transparent pointer-events-none"
+                    aria-hidden="true"
+                  />
+
                   {/* Subtle location tag pill overlay */}
                   <span
-                    className="absolute bottom-3 left-3 px-2.5 py-1
+                    className="absolute bottom-3 left-3 px-3 py-1
                                font-[family-name:var(--font-body)] text-[11px] font-medium tracking-wide
-                               bg-[var(--color-near-black)]/75 text-[var(--color-cream)]
-                               rounded-[var(--radius-full)] backdrop-blur-xs shadow-xs"
+                               bg-[var(--color-near-black)]/85 text-[var(--color-cream)]
+                               rounded-[var(--radius-full)] backdrop-blur-xs shadow-xs
+                               flex items-center gap-1.5 border border-white/10"
                   >
+                    <svg className="w-3 h-3 text-[var(--color-orange)]" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true">
+                      <path d="M6 1C4.343 1 3 2.343 3 4c0 2.25 3 7 3 7s3-4.75 3-7c0-1.657-1.343-3-3-3zm0 4.25a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5z" />
+                    </svg>
                     Main Block · Chengannur
                   </span>
                 </div>
-                <div className="px-4 py-3 bg-white border-t border-[var(--color-near-black)]/5 flex items-center justify-between">
-                  <span className="font-[family-name:var(--font-body)] text-xs text-[var(--color-near-black)] opacity-70 font-medium">
+                <div className="px-4 py-3 bg-white border-t border-[var(--color-near-black)]/10 flex items-center justify-between">
+                  <span className="font-[family-name:var(--font-body)] text-xs text-[var(--color-near-black)] opacity-80 font-medium">
                     {eventConfig.venue.college}
                   </span>
-                  <span className="font-[family-name:var(--font-body)] text-[11px] text-[var(--color-near-black)] opacity-50 uppercase tracking-widest flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-orange)] inline-block" aria-hidden="true" />
+                  <span className="font-[family-name:var(--font-body)] text-[11px] text-[var(--color-near-black)] opacity-60 uppercase tracking-widest flex items-center gap-2 font-medium">
+                    <span className="relative flex h-2 w-2" aria-hidden="true">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--color-orange)] opacity-75 motion-reduce:hidden" />
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--color-orange)]" />
+                    </span>
                     Host Campus
                   </span>
                 </div>
