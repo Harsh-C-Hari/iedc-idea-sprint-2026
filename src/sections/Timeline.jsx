@@ -25,7 +25,7 @@ function TimelineItem({ item, side, day, isLast }) {
   return (
     <li
       data-timeline-item
-      className="relative flex items-start pl-10 lg:pl-0 pb-12 lg:pb-16"
+      className={`relative flex items-start pl-10 lg:pl-0 ${isLast ? 'pb-0' : 'pb-12 lg:pb-16'}`}
     >
       {/* ── Rail segment (only rendered if not the last item) ── */}
       {!isLast && (
@@ -186,7 +186,7 @@ function DayPanel({ day }) {
     <div
       ref={panelRef}
       className={`
-        px-5 md:px-8 lg:px-16 py-20 lg:py-28
+        px-5 md:px-8 lg:px-16 ${isDay1 ? 'py-20 lg:py-28' : 'pt-20 lg:pt-28 pb-14 lg:pb-20'}
         ${isDay1
           ? 'bg-[var(--color-near-black)] text-[var(--color-cream)]'
           : 'bg-[var(--color-cream)] text-[var(--color-near-black)]'}
@@ -248,17 +248,9 @@ export default function Timeline() {
         <DayPanel key={day.day} day={day} />
       ))}
 
-      {/* Subject to change note — perfectly aligned with max-w-4xl container */}
-      <div className="bg-[var(--color-cream)] px-5 md:px-8 lg:px-16 pb-16 pt-0">
-        <div className="max-w-4xl mx-auto">
-          <p
-            data-timeline-footnote
-            className="font-[family-name:var(--font-body)] text-xs text-[var(--color-near-black)]
-                       opacity-70 italic"
-          >
-            Schedule subject to change — times will be confirmed by organizers.
-          </p>
-        </div>
+      {/* Subtle divider line between Timeline and Challenge */}
+      <div className="bg-[var(--color-cream)] px-5 md:px-8 lg:px-16" aria-hidden="true">
+        <div className="max-w-6xl mx-auto border-t border-[var(--color-near-black)]/10" />
       </div>
     </SectionShell>
   )

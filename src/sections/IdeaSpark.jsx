@@ -157,7 +157,7 @@ export default function IdeaSpark() {
       id="idea-spark"
       labelId="idea-spark-heading"
       theme="dark"
-      className="px-5 md:px-8 lg:px-16 py-20 lg:py-28"
+      className="px-5 md:px-8 lg:px-16 pt-20 pb-12 md:py-20 lg:py-28"
     >
       <div className="max-w-6xl mx-auto">
         {/* Desktop two-column layout */}
@@ -242,7 +242,7 @@ export default function IdeaSpark() {
             <div
               aria-live="polite"
               aria-atomic="true"
-              className="min-h-[8rem]"
+              className="min-h-0 lg:min-h-[8rem]"
             >
               {prompt ? (
                 <div
