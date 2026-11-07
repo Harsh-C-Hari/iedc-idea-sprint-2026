@@ -218,8 +218,8 @@ export default function Hero() {
                          select-none pointer-events-none"
               style={{
                 fontSize: 'clamp(2.8rem, 15vw, 11rem)',
-                WebkitTextStroke: '1px rgba(15,13,10,0.35)',
-                color: 'rgba(15,13,10,0.07)',
+                WebkitTextStroke: '2px rgba(15,13,10,0.6)',
+                color: 'rgba(15,13,10,0.12)',
               }}
             >
               <span className="block">IDEA</span>

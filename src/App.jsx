@@ -3,10 +3,10 @@
  *
  * Renders:
  *   skip link → Navbar → <main> (Hero through Venue) → Footer
- *   SectionWipe at three cream/dark boundaries (plan section B, T16):
- *     1. Hero → About         (cream / dark manifesto) — accent: orange
- *     2. About → IdeaSpark    (cream → dark)           — accent: lime
- *     3. Challenge → Registration (cream → dark)       — accent: orange
+ *   SectionWipe at three genuine cream/dark boundaries (plan section B, T16):
+ *     1. About → IdeaSpark        (cream → dark)  — accent: lime
+ *     2. Challenge → Registration (cream → dark)  — accent: orange
+ *     3. Venue → Footer           (cream → dark)  — accent: lime
  *
  * Phase 0 data-wiring check printed to console only in DEV.
  */
@@ -61,17 +61,9 @@ export default function App() {
       <main id="main-content" tabIndex={-1}>
         <Hero />
 
-        {/* Boundary 1: Hero → About (cream accent, dark manifesto follows) */}
-        <SectionWipe
-          id="hero-about"
-          fromColor="var(--color-cream)"
-          toColor="var(--color-cream)"
-          accentColor="var(--color-orange)"
-        />
-
         <About />
 
-        {/* Boundary 2: About → IdeaSpark (cream → dark) */}
+        {/* Boundary 1: About → IdeaSpark (cream → dark) */}
         <SectionWipe
           id="about-ideaspark"
           fromColor="var(--color-cream)"
@@ -83,7 +75,7 @@ export default function App() {
         <Timeline />
         <Challenge />
 
-        {/* Boundary 3: Challenge → Registration (cream → dark) */}
+        {/* Boundary 2: Challenge → Registration (cream → dark) */}
         <SectionWipe
           id="challenge-registration"
           fromColor="var(--color-cream)"
@@ -93,6 +85,14 @@ export default function App() {
 
         <Registration />
         <Venue />
+
+        {/* Boundary 3: Venue → Footer (cream → dark) */}
+        <SectionWipe
+          id="venue-footer"
+          fromColor="var(--color-cream)"
+          toColor="var(--color-near-black)"
+          accentColor="var(--color-lime)"
+        />
       </main>
 
       <Footer />
