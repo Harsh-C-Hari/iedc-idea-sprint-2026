@@ -43,6 +43,7 @@ function SparkFallback() {
   return (
     <div
       aria-hidden="true"
+      data-testid="spark-fallback"
       className="flex items-center justify-center w-full h-full"
     >
       <Spark size={160} color="lime" />
@@ -58,6 +59,9 @@ class SceneErrorBoundary extends Component {
   }
   static getDerivedStateFromError() {
     return { hasError: true }
+  }
+  componentDidCatch(error, errorInfo) {
+    console.error('[IdeaSpark] 3D Scene Error:', error, errorInfo)
   }
   render() {
     if (this.state.hasError) return <SparkFallback />
@@ -97,6 +101,7 @@ function SceneArea({ promptSeed }) {
     <div
       ref={containerRef}
       aria-hidden="true"
+      data-testid="scene-area-container"
       className="hidden lg:flex items-center justify-center
                  w-full max-w-[320px] aspect-square
                  rounded-[var(--radius-lg)]
