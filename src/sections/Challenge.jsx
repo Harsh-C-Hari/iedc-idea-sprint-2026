@@ -64,15 +64,15 @@ function StepCard({ step, offset }) {
   )
 }
 
-/** Fact strip — values from eventConfig (plan section D) */
+/** Fact strip — full-bleed edge-to-edge band */
 function FactStrip() {
   const stripRef = useRef(null)
 
   const facts = [
-    { value: '24 HOURS',                                        label: 'Duration' },
+    { value: '24 HOURS',                                                  label: 'Duration' },
     { value: `TEAM SIZE ${eventConfig.team.min}–${eventConfig.team.max}`, label: 'Team' },
-    { value: eventConfig.eligibility.toUpperCase(),             label: 'Eligibility' },
-    { value: 'ONE IDEA',                                        label: 'Deliverable' },
+    { value: eventConfig.eligibility.toUpperCase(),                       label: 'Eligibility' },
+    { value: 'ONE IDEA',                                                  label: 'Deliverable' },
   ]
 
   useGSAP(() => {
@@ -98,19 +98,27 @@ function FactStrip() {
   return (
     <div
       ref={stripRef}
-      className="bg-[var(--color-near-black)] mt-20 lg:mt-24
-                 px-5 md:px-8 lg:px-16 py-12"
+      className="w-full bg-[var(--color-near-black)] text-[var(--color-cream)]
+                 mt-20 lg:mt-28 py-12 px-5 md:px-8 lg:px-16 border-y border-[var(--color-cream)]/10"
       aria-label="Event facts"
     >
       <ul
         className="list-none p-0 m-0 max-w-6xl mx-auto
-                   grid grid-cols-2 lg:grid-cols-4 gap-8"
+                   grid grid-cols-2 lg:grid-cols-4
+                   divide-y divide-[var(--color-cream)]/10 sm:divide-y-0
+                   sm:divide-x divide-[var(--color-cream)]/10"
       >
-        {facts.map(({ value, label }) => (
-          <li key={label} data-fact-item className="flex flex-col gap-1">
+        {facts.map(({ value, label }, idx) => (
+          <li
+            key={label}
+            data-fact-item
+            className={`flex flex-col justify-center gap-1.5 py-4 sm:py-0
+                       ${idx % 2 === 0 ? 'pr-4 sm:px-6' : 'pl-4 sm:px-6'}
+                       lg:px-8 first:pl-0 last:pr-0`}
+          >
             <span
               className="font-[family-name:var(--font-display)]
-                         text-[clamp(1rem,2.5vw,1.5rem)] leading-tight tracking-[-0.02em]
+                         text-[clamp(1.125rem,2.2vw,1.65rem)] leading-tight tracking-[-0.02em]
                          text-[var(--color-lime)]"
             >
               {value}
@@ -255,10 +263,10 @@ export default function Challenge() {
         id="challenge"
         labelId="challenge-heading"
         theme="light"
-        className="px-5 md:px-8 lg:px-16 pt-20 lg:pt-28 pb-0 overflow-hidden"
+        className="px-0 pt-20 lg:pt-28 pb-0 overflow-hidden"
       >
         {/* Headline block */}
-        <div className="max-w-6xl mx-auto mb-16 lg:mb-20">
+        <div className="max-w-6xl mx-auto px-5 md:px-8 lg:px-16 mb-16 lg:mb-20">
           <h2
             id="challenge-heading"
             data-challenge-heading
@@ -279,7 +287,7 @@ export default function Challenge() {
         </div>
 
         {/* Steps grid — 2×2 offset on desktop — relative for Spark positioning */}
-        <div className="max-w-6xl mx-auto relative" ref={gridRef}>
+        <div className="max-w-6xl mx-auto px-5 md:px-8 lg:px-16 relative" ref={gridRef}>
           {/* Travelling Spark — decorative, desktop scrubbed */}
           <TravellingSpark gridRef={gridRef} />
 
