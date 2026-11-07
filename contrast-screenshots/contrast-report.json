@@ -1,0 +1,301 @@
+{
+  "summary": {
+    "total": 33,
+    "pass": 27,
+    "fail": 0,
+    "skip": 6
+  },
+  "rows": [
+    {
+      "vp": "390",
+      "state": "Team/default",
+      "label": "Legend \"Team size\"",
+      "ratio": 15.11,
+      "ok": true,
+      "fgRaw": "rgb(242, 235, 221)",
+      "bgRaw": "rgb(23, 23, 23)"
+    },
+    {
+      "vp": "390",
+      "state": "Team/default",
+      "label": "Team name label",
+      "ratio": 15.11,
+      "ok": true,
+      "fgRaw": "rgb(242, 235, 221)",
+      "bgRaw": "rgb(23, 23, 23)"
+    },
+    {
+      "vp": "390",
+      "state": "Team/default",
+      "label": "Unselected tile number",
+      "ratio": 15.11,
+      "ok": true,
+      "fgRaw": "rgb(242, 235, 221)",
+      "bgRaw": "rgb(23, 23, 23)"
+    },
+    {
+      "vp": "390",
+      "state": "Team/default",
+      "label": "Stepper text",
+      "ratio": 15.02,
+      "ok": true,
+      "fgRaw": "rgba(242, 235, 221, 0.68)",
+      "bgRaw": "rgb(23, 23, 23)"
+    },
+    {
+      "vp": "390",
+      "state": "Team/tile-selected",
+      "label": "Number on selected tile",
+      "ratio": 17.7,
+      "ok": true,
+      "fgRaw": "rgb(242, 235, 221)",
+      "bgRaw": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "vp": "390",
+      "state": "Team/tile-focused",
+      "label": "Focus ring vs section bg",
+      "ratio": 15.11,
+      "ok": true,
+      "fgRaw": "#F2EBDD",
+      "bgRaw": "rgb(23, 23, 23)"
+    },
+    {
+      "vp": "390",
+      "state": "Team/next-hover",
+      "label": "Next button text on hover bg",
+      "ratio": 6.56,
+      "ok": true,
+      "fgRaw": "rgb(23, 23, 23)",
+      "bgRaw": "rgb(255, 113, 64)"
+    },
+    {
+      "vp": "390",
+      "state": "Team/error",
+      "label": "ErrorSummary heading",
+      "ratio": 5.39,
+      "ok": true,
+      "fgRaw": "rgb(242, 235, 221)",
+      "bgRaw": "rgba(185, 28, 28, 0.22)"
+    },
+    {
+      "vp": "390",
+      "state": "Team/error",
+      "label": "ErrorSummary link",
+      "ratio": 5.39,
+      "ok": true,
+      "fgRaw": "rgb(242, 235, 221)",
+      "bgRaw": "rgba(185, 28, 28, 0.22)"
+    },
+    {
+      "vp": "390",
+      "state": "Participants",
+      "label": "Participant heading",
+      "ratio": 15.11,
+      "ok": true,
+      "fgRaw": "rgb(242, 235, 221)",
+      "bgRaw": "rgb(23, 23, 23)"
+    },
+    {
+      "vp": "390",
+      "state": "Participants",
+      "label": "Field label",
+      "ratio": 15.11,
+      "ok": true,
+      "fgRaw": "rgb(242, 235, 221)",
+      "bgRaw": "rgb(23, 23, 23)"
+    },
+    {
+      "vp": "390",
+      "state": "Review",
+      "label": "Review heading",
+      "ratio": 15.11,
+      "ok": true,
+      "fgRaw": "rgb(242, 235, 221)",
+      "bgRaw": "rgb(23, 23, 23)"
+    },
+    {
+      "vp": "390",
+      "state": "Review",
+      "label": "Review dt",
+      "ratio": null,
+      "ok": null,
+      "note": "selector not found: #registration dl dt"
+    },
+    {
+      "vp": "390",
+      "state": "Review",
+      "label": "Review dd",
+      "ratio": null,
+      "ok": null,
+      "note": "selector not found: #registration dl dd"
+    },
+    {
+      "vp": "390",
+      "state": "Review",
+      "label": "Preview notice",
+      "ratio": null,
+      "ok": null,
+      "note": "selector not found: #registration [role=\"note\"], #registration [data-preview]"
+    },
+    {
+      "vp": "1440",
+      "state": "Team/default",
+      "label": "Legend \"Team size\"",
+      "ratio": 15.11,
+      "ok": true,
+      "fgRaw": "rgb(242, 235, 221)",
+      "bgRaw": "rgb(23, 23, 23)"
+    },
+    {
+      "vp": "1440",
+      "state": "Team/default",
+      "label": "Team name label",
+      "ratio": 15.11,
+      "ok": true,
+      "fgRaw": "rgb(242, 235, 221)",
+      "bgRaw": "rgb(23, 23, 23)"
+    },
+    {
+      "vp": "1440",
+      "state": "Team/default",
+      "label": "Unselected tile number",
+      "ratio": 15.11,
+      "ok": true,
+      "fgRaw": "rgb(242, 235, 221)",
+      "bgRaw": "rgb(23, 23, 23)"
+    },
+    {
+      "vp": "1440",
+      "state": "Team/default",
+      "label": "Stepper text",
+      "ratio": 15.11,
+      "ok": true,
+      "fgRaw": "rgb(242, 235, 221)",
+      "bgRaw": "rgb(23, 23, 23)"
+    },
+    {
+      "vp": "1440",
+      "state": "Team/tile-selected",
+      "label": "Number on selected tile",
+      "ratio": 17.7,
+      "ok": true,
+      "fgRaw": "rgb(242, 235, 221)",
+      "bgRaw": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "vp": "1440",
+      "state": "Team/tile-focused",
+      "label": "Focus ring vs section bg",
+      "ratio": 15.11,
+      "ok": true,
+      "fgRaw": "#F2EBDD",
+      "bgRaw": "rgb(23, 23, 23)"
+    },
+    {
+      "vp": "1440",
+      "state": "Team/next-hover",
+      "label": "Next button text on hover bg",
+      "ratio": 6.56,
+      "ok": true,
+      "fgRaw": "rgb(23, 23, 23)",
+      "bgRaw": "rgb(255, 113, 64)"
+    },
+    {
+      "vp": "1440",
+      "state": "Team/error",
+      "label": "ErrorSummary heading",
+      "ratio": 5.39,
+      "ok": true,
+      "fgRaw": "rgb(242, 235, 221)",
+      "bgRaw": "rgba(185, 28, 28, 0.22)"
+    },
+    {
+      "vp": "1440",
+      "state": "Team/error",
+      "label": "ErrorSummary link",
+      "ratio": 5.39,
+      "ok": true,
+      "fgRaw": "rgb(242, 235, 221)",
+      "bgRaw": "rgba(185, 28, 28, 0.22)"
+    },
+    {
+      "vp": "1440",
+      "state": "Stepper/done",
+      "label": "Check icon on done pill",
+      "ratio": 15.11,
+      "ok": true,
+      "fgRaw": "rgb(23, 23, 23)",
+      "bgRaw": "rgb(242, 235, 221)"
+    },
+    {
+      "vp": "1440",
+      "state": "Stepper/current",
+      "label": "Current pill \"2\" on orange",
+      "ratio": 5.29,
+      "ok": true,
+      "fgRaw": "rgb(23, 23, 23)",
+      "bgRaw": "rgb(240, 90, 40)"
+    },
+    {
+      "vp": "1440",
+      "state": "Stepper/upcoming",
+      "label": "Upcoming pill \"3\" vs section bg",
+      "ratio": 15.11,
+      "ok": true,
+      "fgRaw": "rgb(242, 235, 221)",
+      "bgRaw": "section-bg"
+    },
+    {
+      "vp": "1440",
+      "state": "Participants",
+      "label": "Participant heading",
+      "ratio": 15.11,
+      "ok": true,
+      "fgRaw": "rgb(242, 235, 221)",
+      "bgRaw": "rgb(23, 23, 23)"
+    },
+    {
+      "vp": "1440",
+      "state": "Participants",
+      "label": "Field label",
+      "ratio": 15.11,
+      "ok": true,
+      "fgRaw": "rgb(242, 235, 221)",
+      "bgRaw": "rgb(23, 23, 23)"
+    },
+    {
+      "vp": "1440",
+      "state": "Review",
+      "label": "Review heading",
+      "ratio": 15.11,
+      "ok": true,
+      "fgRaw": "rgb(242, 235, 221)",
+      "bgRaw": "rgb(23, 23, 23)"
+    },
+    {
+      "vp": "1440",
+      "state": "Review",
+      "label": "Review dt",
+      "ratio": null,
+      "ok": null,
+      "note": "selector not found: #registration dl dt"
+    },
+    {
+      "vp": "1440",
+      "state": "Review",
+      "label": "Review dd",
+      "ratio": null,
+      "ok": null,
+      "note": "selector not found: #registration dl dd"
+    },
+    {
+      "vp": "1440",
+      "state": "Review",
+      "label": "Preview notice",
+      "ratio": null,
+      "ok": null,
+      "note": "selector not found: #registration [role=\"note\"], #registration [data-preview]"
+    }
+  ]
+}
