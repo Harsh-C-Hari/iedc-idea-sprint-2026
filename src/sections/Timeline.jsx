@@ -173,8 +173,17 @@ function DayPanel({ day, hiddenOnMobile, statusFor }) {
   const isDay1 = day.day === 1
   const panelRef = useRef(null)
 
+  // A panel hidden with display:none has no layout, so ScrollTriggers built for it would see every
+  // element as "already scrolled past" and finish instantly, before the person ever opens the day.
+  // So reveals are only armed once the panel is really on screen: always on desktop (both days are
+  // visible), and on mobile the first time its day button is chosen. Once armed it stays armed.
+  const armedRef = useRef(false)
+  const isDesktop = typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches
+  if (isDesktop || !hiddenOnMobile) armedRef.current = true
+  const armed = armedRef.current
+
   useGSAP(() => {
-    if (REDUCED) return
+    if (REDUCED || !armed) return
     const panel = panelRef.current
     if (!panel) return
 
@@ -219,7 +228,7 @@ function DayPanel({ day, hiddenOnMobile, statusFor }) {
         },
       })
     })
-  }, { scope: panelRef, dependencies: [] })
+  }, { scope: panelRef, dependencies: [armed] })
 
   return (
     <div
