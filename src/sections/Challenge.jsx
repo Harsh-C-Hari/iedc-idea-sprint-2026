@@ -32,13 +32,12 @@ const REDUCED =
 /** Single step card */
 function StepCard({ step, offset }) {
   return (
+    /* Outer node is the GSAP reveal target (inline transform); the .brutal block lives on the inner
+       node so the reveal transform and the hover lift never fight. Non-interactive: no role changes. */
+    <div data-challenge-step className={offset ? 'lg:mt-12' : ''}>
     <div
-      data-challenge-step
-      className={`
-        p-6 md:p-8 border border-[var(--color-near-black)]/10 step-card
-        rounded-[var(--radius-md)]
-        ${offset ? 'lg:mt-12' : ''}
-      `}
+      className="brutal h-full p-6 md:p-8 rounded-[var(--radius-md)]
+                 [--b-offset:6px] [--b-face:var(--color-cream)] [--b-edge:rgb(23_23_23_/_0.10)] [--b-bw:1px]"
     >
       <span
         className="font-[family-name:var(--font-display)]
@@ -61,6 +60,7 @@ function StepCard({ step, offset }) {
       >
         {step.description}
       </p>
+    </div>
     </div>
   )
 }

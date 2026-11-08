@@ -11,7 +11,7 @@
  *
  * Null fields (organizer answers pending — plan section F):
  *   registration.endpoint, venue.mapsUrl, venue.photo,
- *   social.instagram, social.linkedin, contact.email
+ *   contact.email (social + website are now verified)
  */
 
 const eventConfig = {
@@ -136,15 +136,14 @@ const eventConfig = {
   social: {
     /**
      * Instagram URL.
-     * null until verified (plan section F Q5). Hidden when null.
+     * Verified by organizers (tracking parameter removed on purpose). Hidden when null.
      */
-    instagram: null,
+    instagram: 'https://www.instagram.com/iedcbootcampcec/',
 
     /**
-     * LinkedIn URL.
-     * null until verified (plan section F Q5). Hidden when null.
+     * LinkedIn URL. Verified by organizers. Hidden when null.
      */
-    linkedin: null,
+    linkedin: 'https://www.linkedin.com/company/iedc-bootcamp-cec/',
   },
 
   contact: {
@@ -153,6 +152,13 @@ const eventConfig = {
      * null until approved by organizers (plan section F Q5). Hidden when null.
      */
     email: null,
+
+    /**
+     * Organiser website (verified). Hidden when null.
+     * websiteLabel is the visible text; website is the href.
+     */
+    website: 'https://iedcbootcampcec.org',
+    websiteLabel: 'iedcbootcampcec.org',
   },
 }
 

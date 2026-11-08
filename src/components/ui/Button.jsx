@@ -4,8 +4,12 @@
  * Variants:
  *   'primary'       — near-black fill, cream text (use on cream/dark backgrounds)
  *   'orange'        — orange fill, near-black text (plan section A: near-black on orange ~5.3:1)
- *   'outline'       — transparent fill, near-black border and text (on cream)
- *   'outline-light' — transparent fill, cream border and text (on dark)
+ *   'outline'       — cream fill, near-black border and text (on cream)
+ *   'outline-light' — near-black fill, cream border and text (on dark)
+ *   'lime'          — lime fill, near-black text (near-black sections only)
+ *
+ * Hover system: see .brutal in index.css. Orange variant on a CREAM surface would hide its
+ * orange block; it is only used on dark sections.
  *
  * Size: 'md' (default) | 'lg'
  * Minimum touch target 48px height enforced via min-h.
@@ -29,18 +33,16 @@ export default function Button({
     ? { 'aria-disabled': 'true', tabIndex: -1 }
     : {}
 
+  // .brutal (index.css) supplies position, lift, offset block, press and focus ring offset.
+  // Fill and border live on the ::before face, driven by --b-face / --b-edge / --b-bw.
   const base =
-    'inline-flex items-center justify-center font-[family-name:var(--font-body)] font-semibold ' +
+    'brutal inline-flex items-center justify-center font-[family-name:var(--font-body)] font-semibold ' +
     'tracking-wide uppercase rounded-[var(--radius-sm)] ' +
-    'transition-[transform,background-color,color,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease-out-expo)] ' +
-    'hover:-translate-x-0.5 hover:-translate-y-0.5 ' +
-    'active:translate-x-0 active:translate-y-0 active:shadow-none ' +
-    // Focus ring uses theme-aware --focus-ring token
-    'focus-visible:outline-[3px] focus-visible:outline-[var(--focus-ring,var(--color-near-black))] focus-visible:outline-offset-[3px] ' +
+    'focus-visible:outline-[var(--focus-ring,var(--color-near-black))] ' +
     'cursor-pointer select-none'
 
   const disabledClass = disabled
-    ? (isAnchor ? 'opacity-50 pointer-events-none hover:transform-none hover:shadow-none' : 'disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none')
+    ? (isAnchor ? 'opacity-50 pointer-events-none' : 'disabled:opacity-50 disabled:cursor-not-allowed')
     : ''
 
   const sizes = {
@@ -49,18 +51,23 @@ export default function Button({
   }
 
   const variants = {
+    // near-black face on cream surfaces; block orange (default)
     primary:
-      'bg-[var(--color-near-black)] text-[var(--color-cream)] ' +
-      'hover:bg-[#2a2420] hover:shadow-[3px_3px_0px_var(--color-orange)]',
+      'text-[var(--color-cream)] [--b-face:var(--color-near-black)] hover:[--b-face:#2a2420]',
+    // orange face; used on near-black sections, block lime (dark default)
     orange:
-      'bg-[var(--color-orange)] text-[var(--color-near-black)] ' +
-      'hover:bg-[var(--color-orange-hover)] hover:shadow-[3px_3px_0px_var(--color-near-black)]',
+      'text-[var(--color-near-black)] [--b-face:var(--color-orange)] hover:[--b-face:var(--color-orange-hover)]',
+    // lime face with near-black text; for near-black sections only, block orange
+    lime:
+      'text-[var(--color-near-black)] [--b-face:var(--color-lime)] hover:[--b-face:#c3db5f] [--b-color:var(--color-orange)]',
+    // cream-surface outline: solid cream face so the block never shows through
     outline:
-      'border-2 border-[var(--color-near-black)] text-[var(--color-near-black)] ' +
-      'hover:bg-[var(--color-near-black)] hover:text-[var(--color-cream)] hover:shadow-[3px_3px_0px_var(--color-orange)]',
+      'text-[var(--color-near-black)] [--b-face:var(--color-cream)] [--b-edge:var(--color-near-black)] [--b-bw:2px] ' +
+      'hover:[--b-face:var(--color-near-black)] hover:text-[var(--color-cream)]',
+    // near-black-surface outline: solid near-black face
     'outline-light':
-      'border-2 border-[var(--color-cream)] text-[var(--color-cream)] ' +
-      'hover:bg-[var(--color-cream)] hover:text-[var(--color-near-black)] hover:shadow-[3px_3px_0px_var(--color-orange)]',
+      'text-[var(--color-cream)] [--b-face:var(--color-near-black)] [--b-edge:var(--color-cream)] [--b-bw:2px] ' +
+      'hover:[--b-face:var(--color-cream)] hover:text-[var(--color-near-black)]',
   }
 
   return (

@@ -412,14 +412,95 @@
 /* Pause ambient hero animation while the hero is off-screen (class set via IntersectionObserver) */
 .hero-paused [style*="heroFloat"] { animation-play-state: paused !important; }
 
-/* Button: hover lift only on hover-capable pointers; press feedback everywhere */
-@media (hover: none) {
-  a[class*="hover:-translate-x-0.5"]:hover, button[class*="hover:-translate-x-0.5"]:hover { transform: none; box-shadow: none; }
+/* ==========================================================================
+   .brutal — one reusable offset-block hover system (Phase 3)
+
+   Structure (element needs NO background/border of its own; set them via vars):
+     ::before  z -1  the visible "face" (--b-face fill, --b-edge/--b-bw border)
+     ::after   z -2  the "block" (--b-color fill, --b-border), directly behind at rest
+   Hover (hover-capable pointers only) and keyboard :focus-visible:
+     element translate(-2px,-2px), block translate(var(--b-offset)) => block shows offset behind.
+   Press (:active): element and block both return to (0,0).
+   Selected / permanent state: data-on="true" (offset shown at rest, readable on touch).
+   Only `transform` (and the face's background-colour) transitions; no box-shadow.
+
+   Vars (set per element):
+     --b-color   block fill  (default: orange on cream, lime on [data-theme="dark"])
+     --b-offset  4px (6px for cards)
+     --b-border  block border, default 2px near-black
+     --b-face    face fill, --b-edge face border colour, --b-bw face border width
+   Never use lime as the only block on a cream surface (it is nearly invisible there).
+   ========================================================================== */
+@layer components {
+  .brutal {
+    --b-color:  var(--color-orange);
+    --b-offset: 4px;
+    --b-border: 2px solid var(--color-near-black);
+    --b-face:   transparent;
+    --b-edge:   transparent;
+    --b-bw:     0px;
+  }
+  [data-theme="dark"] .brutal { --b-color: var(--color-lime); }
 }
 
-/* Step cards: subtle lift on hover-capable devices (transform only) */
-.step-card { transition: transform var(--duration-normal) var(--ease-out-expo), border-color var(--duration-normal); }
-@media (hover: hover) { .step-card:hover { transform: translateY(-4px); border-color: var(--color-orange); } }
+.brutal {
+  position: relative;
+  isolation: isolate;
+  transform: translate(0, 0);
+  transition: transform var(--duration-fast) var(--ease-out-expo);
+}
+.brutal::before,
+.brutal::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  border-radius: inherit;
+  pointer-events: none;
+}
+.brutal::before {
+  z-index: -1;
+  background: var(--b-face);
+  border: var(--b-bw) solid var(--b-edge);
+  transition: background-color var(--duration-fast) var(--ease-out-expo);
+}
+.brutal::after {
+  z-index: -2;
+  background: var(--b-color);
+  border: var(--b-border);
+  transform: translate(0, 0);
+  transition: transform var(--duration-fast) var(--ease-out-expo);
+}
+
+/* Lifted: keyboard focus, focus inside a card, radio sibling focus, permanent selected state */
+:is(.brutal:focus-visible, .brutal:has(:focus-visible), input:focus-visible + .brutal, .brutal[data-on="true"]) {
+  transform: translate(-2px, -2px);
+}
+:is(.brutal:focus-visible, .brutal:has(:focus-visible), input:focus-visible + .brutal, .brutal[data-on="true"])::after {
+  transform: translate(var(--b-offset), var(--b-offset));
+}
+
+/* Hover: only where a real hover exists, so nothing sticks after a tap */
+@media (hover: hover) {
+  .brutal:hover:not(:disabled):not([aria-disabled="true"]) { transform: translate(-2px, -2px); }
+  .brutal:hover:not(:disabled):not([aria-disabled="true"])::after { transform: translate(var(--b-offset), var(--b-offset)); }
+}
+
+/* Press: element and block both collapse to (0,0). Higher specificity than hover/focus on purpose. */
+.brutal.brutal:active:not(:disabled):not([aria-disabled="true"]) { transform: translate(0, 0); }
+.brutal.brutal:active:not(:disabled):not([aria-disabled="true"])::after { transform: translate(0, 0); }
+
+/* Focus ring sits outside the block so it is never covered or clipped by it */
+.brutal:focus-visible,
+input:focus-visible + .brutal {
+  outline: 3px solid var(--focus-ring, var(--color-near-black));
+  outline-offset: calc(var(--b-offset) + 3px);
+}
+
+/* Reduced motion: no transition, lifted state still shows on hover/focus */
+@media (prefers-reduced-motion: reduce) {
+  .brutal, .brutal::before, .brutal::after { transition: none; }
+}
 
 /* Countdown digit roll respects reduced motion (global rule already zeroes durations) */
 
@@ -429,3 +510,30 @@
 @keyframes errorShake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
 .error-flash { animation: errorShake .3s var(--ease-out-expo) 1; }
 @media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 2s; } .error-flash { animation: none; } }
+
+/* Scrollspy underline: transform/opacity only; jumps (no travel) under reduced motion */
+.nav-indicator {
+  transition: transform var(--duration-normal) var(--ease-out-expo), opacity var(--duration-fast) linear;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav-indicator { transition: none; }
+}
+
+/* ==========================================================================
+   Timeline (Phase 5)
+   • Day toggle + single-day view exist on < lg only, and only when JS is running, so the no-JS page
+     shows both days and no dead buttons.
+   • Progress fill moves by transform only; static under reduced motion.
+   ========================================================================== */
+.day-toggle { display: none; }
+@media (max-width: 1023.98px) {
+  .js .day-toggle { display: flex; }
+  .js [data-day-hidden="true"] { display: none; }
+}
+.timeline-progress { transition: transform var(--duration-slow) var(--ease-out-expo); }
+@media (prefers-reduced-motion: reduce) { .timeline-progress { transition: none; } }
+
+/* Idea Spark result card entrance: opacity + transform only; none under reduced motion */
+@keyframes sparkIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.spark-in { animation: sparkIn var(--duration-normal) var(--ease-out-expo) 1 both; }
+@media (prefers-reduced-motion: reduce) { .spark-in { animation: none; } }

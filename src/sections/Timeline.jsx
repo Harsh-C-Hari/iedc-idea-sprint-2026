@@ -7,24 +7,56 @@
  *   • Footnote left edge aligns with the section container/heading left edge.
  *   • Rail ends cleanly at the last dot of each day.
  */
-import { useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useGSAP } from '@gsap/react'
 import SectionShell from '../components/ui/SectionShell.jsx'
+import Button from '../components/ui/Button.jsx'
 import schedule from '../data/schedule.js'
-import { gsap } from '../motion/gsap.js'
+import eventConfig from '../config/eventConfig.js'
+import { gsap, ScrollTrigger } from '../motion/gsap.js'
+import { downloadICS } from '../lib/calendar.js'
+import { parseISO } from '../lib/time.js'
+import { buildSlots, getNowNext, getProgress } from '../lib/scheduleClock.js'
+import useEventClock from '../hooks/useEventClock.js'
+
+const START_MS = parseISO(eventConfig.startISO)
+const END_MS = parseISO(eventConfig.endISO)
 
 const REDUCED =
   typeof window !== 'undefined'
     ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
     : false
 
+
+/** "Now" / "Next" tag. Absolutely positioned beside the time so it never changes layout. */
+function StatusBadge({ status, isDay1, side }) {
+  if (!status) return null
+  const isNow = status === 'now'
+  const tone = isNow
+    ? (isDay1 ? 'bg-[var(--color-lime)] text-[var(--color-near-black)] border-[var(--color-lime)]'
+              : 'bg-[var(--color-orange)] text-[var(--color-near-black)] border-[var(--color-orange)]')
+    : (isDay1 ? 'bg-transparent text-[var(--color-cream)] border-[var(--color-cream)]'
+              : 'bg-transparent text-[var(--color-near-black)] border-[var(--color-near-black)]')
+  return (
+    <span
+      data-timeline-status={status}
+      className={`absolute top-1/2 -translate-y-1/2 ${side === 'left' ? 'right-full mr-3' : 'left-full ml-3'}
+        border-2 rounded-[var(--radius-sm)] px-2 py-0.5 text-[0.7rem] leading-none font-semibold uppercase
+        tracking-widest font-[family-name:var(--font-body)] whitespace-nowrap ${tone}`}
+    >
+      {isNow ? 'Now' : 'Next'}
+    </span>
+  )
+}
+
 /** Single timeline item with connected rail segment */
-function TimelineItem({ item, side, day, isLast }) {
+function TimelineItem({ item, side, day, isLast, status }) {
   const isDay1 = day === 1
 
   return (
     <li
       data-timeline-item
+      aria-current={status === 'now' ? 'time' : undefined}
       className={`relative flex items-start pl-10 lg:pl-0 ${isLast ? 'pb-0' : 'pb-12 lg:pb-16'}`}
     >
       {/* ── Rail segment (only rendered if not the last item) ── */}
@@ -56,6 +88,7 @@ function TimelineItem({ item, side, day, isLast }) {
           style={{
             backgroundColor: isDay1 ? 'var(--color-lime)' : 'var(--color-orange)',
             borderColor:      isDay1 ? 'var(--color-lime)' : 'var(--color-orange)',
+            transform: status === 'now' ? 'scale(1.4)' : undefined,
           }}
         />
       </div>
@@ -69,6 +102,8 @@ function TimelineItem({ item, side, day, isLast }) {
       >
         {side === 'left' && (
           <div className="flex flex-col items-end">
+            <div className="relative">
+            <StatusBadge status={status} isDay1={isDay1} side="left" />
             <time
               dateTime={item.time}
               data-timeline-time
@@ -82,6 +117,7 @@ function TimelineItem({ item, side, day, isLast }) {
             >
               {item.time}
             </time>
+            </div>
             <p
               className={`
                 font-[family-name:var(--font-body)] font-semibold text-sm uppercase tracking-wide
@@ -102,6 +138,8 @@ function TimelineItem({ item, side, day, isLast }) {
         `}
       >
         <div className="flex flex-col items-start">
+          <div className="relative">
+          <StatusBadge status={status} isDay1={isDay1} side="right" />
           <time
             dateTime={item.time}
             data-timeline-time
@@ -115,6 +153,7 @@ function TimelineItem({ item, side, day, isLast }) {
           >
             {item.time}
           </time>
+          </div>
           <p
             className={`
               font-[family-name:var(--font-body)] font-semibold text-sm uppercase tracking-wide
@@ -130,7 +169,7 @@ function TimelineItem({ item, side, day, isLast }) {
 }
 
 /** One day panel with its own motion scope */
-function DayPanel({ day }) {
+function DayPanel({ day, hiddenOnMobile, statusFor }) {
   const isDay1 = day.day === 1
   const panelRef = useRef(null)
 
@@ -185,8 +224,10 @@ function DayPanel({ day }) {
   return (
     <div
       ref={panelRef}
+      data-day-panel={day.day}
+      data-day-hidden={hiddenOnMobile ? 'true' : undefined}
       className={`
-        px-5 md:px-8 lg:px-16 ${isDay1 ? 'py-20 lg:py-28' : 'pt-20 lg:pt-28 pb-14 lg:pb-20'}
+        px-5 md:px-8 lg:px-16 ${isDay1 ? 'pt-12 lg:pt-16 pb-20 lg:pb-28' : 'pt-20 lg:pt-28 pb-14 lg:pb-20'}
         ${isDay1
           ? 'bg-[var(--color-near-black)] text-[var(--color-cream)]'
           : 'bg-[var(--color-cream)] text-[var(--color-near-black)]'}
@@ -222,6 +263,7 @@ function DayPanel({ day }) {
                 side={i % 2 === 0 ? 'left' : 'right'}
                 day={day.day}
                 isLast={i === day.items.length - 1}
+                status={statusFor(`${day.day}-${i}`)}
               />
             ))}
           </ol>
@@ -231,7 +273,90 @@ function DayPanel({ day }) {
   )
 }
 
+
+/** Header: live progress line, Add to calendar, and the mobile-only day toggle. */
+function TimelineHeader({ progress, phase, nowPct, activeDay, onDay, liveDay }) {
+  const caption =
+    phase === 'live' ? `Live now · ${nowPct}% of the 24 hours` :
+    phase === 'after' ? 'Event ended' : 'Starts 20 Nov · 5:00 PM IST'
+  return (
+    <div className="bg-[var(--color-near-black)] text-[var(--color-cream)] px-5 md:px-8 lg:px-16 pt-16 lg:pt-20">
+      <div className="max-w-4xl mx-auto">
+        <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+          <div className="min-w-0">
+            <p className="font-[family-name:var(--font-body)] text-xs uppercase tracking-widest opacity-70 mb-2">
+              Schedule · all times IST
+            </p>
+            <p className="font-[family-name:var(--font-body)] text-sm font-semibold uppercase tracking-wide min-h-[1.25rem]">
+              {caption}
+            </p>
+          </div>
+          <div className="pr-1 pb-1">
+            <Button variant="outline-light" size="md" type="button" onClick={downloadICS}>
+              Add to calendar
+            </Button>
+          </div>
+        </div>
+
+        {/* Thin progress line across the event window — scaleX only */}
+        <div
+          role="progressbar"
+          aria-label="Event progress"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={Math.round(progress * 100)}
+          className="mt-6 h-[3px] bg-[var(--color-cream)]/20 overflow-hidden"
+        >
+          <div
+            data-timeline-progress
+            className="timeline-progress h-full w-full origin-left bg-[var(--color-lime)]"
+            style={{ transform: `scaleX(${progress})` }}
+          />
+        </div>
+
+        {/* Day toggle: < lg and JS only (see .day-toggle in index.css) */}
+        <div role="group" aria-label="Choose schedule day" className="day-toggle gap-5 mt-8 pr-1 pb-1">
+          {schedule.map((d) => {
+            const on = activeDay === d.day
+            return (
+              <Button
+                key={d.day}
+                type="button"
+                variant={on ? 'lime' : 'outline-light'}
+                data-on={on ? 'true' : undefined}
+                aria-pressed={on}
+                onClick={() => onDay(d.day)}
+                className="flex-1"
+              >
+                Day {d.day}{liveDay === d.day ? ' · Live' : ''}
+              </Button>
+            )
+          })}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function Timeline() {
+  const slots = useMemo(() => buildSlots(schedule), [])
+  const now = useEventClock(END_MS)
+  const [activeDay, setActiveDay] = useState(1)
+
+  const phase = now < START_MS ? 'before' : now < END_MS ? 'live' : 'after'
+  const progress = getProgress(now, START_MS, END_MS)
+  const { nowKey, nextKey } = getNowNext(slots, now, START_MS, END_MS)
+  const statusFor = (key) => (key === nowKey ? 'now' : key === nextKey ? 'next' : null)
+  const liveDay = nowKey ? Number(nowKey.split('-')[0]) : null
+
+  // A day that was display:none has no layout; re-measure scroll triggers when the toggle changes it.
+  const first = useRef(true)
+  useEffect(() => {
+    if (first.current) { first.current = false; return undefined }
+    const id = requestAnimationFrame(() => ScrollTrigger.refresh())
+    return () => cancelAnimationFrame(id)
+  }, [activeDay])
+
   return (
     <SectionShell
       id="timeline"
@@ -244,8 +369,22 @@ export default function Timeline() {
         Event Timeline
       </h2>
 
+      <TimelineHeader
+        progress={progress}
+        phase={phase}
+        nowPct={Math.floor(progress * 100)}
+        activeDay={activeDay}
+        onDay={setActiveDay}
+        liveDay={liveDay}
+      />
+
       {schedule.map((day) => (
-        <DayPanel key={day.day} day={day} />
+        <DayPanel
+          key={day.day}
+          day={day}
+          hiddenOnMobile={activeDay !== day.day}
+          statusFor={statusFor}
+        />
       ))}
 
       {/* Subtle divider line between Timeline and Challenge */}

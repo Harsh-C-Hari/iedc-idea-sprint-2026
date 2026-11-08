@@ -52,14 +52,17 @@ function MapFacade() {
   const linkLabel = mapsUrl ? 'Open in Google Maps' : 'Search on Google Maps'
 
   return (
-    <div className="group rounded-[var(--radius-md)] overflow-hidden border border-[var(--color-near-black)]/12 bg-white shadow-xs hover:shadow-md transition-shadow duration-300 w-full">
+    <div className="brutal group w-full rounded-[var(--radius-md)]
+                    [--b-offset:6px] [--b-face:#fff] [--b-edge:rgb(23_23_23_/_0.12)] [--b-bw:1px]">
+     {/* Inner wrapper clips the image to the radius; the block lives on the outer card so it is never clipped */}
+     <div className="rounded-[var(--radius-md)] overflow-hidden">
       {/* Clickable map area: opens Google Maps in a new tab */}
       <a
         href={linkUrl}
         target="_blank"
         rel="noopener noreferrer"
         aria-label={`Open ${eventConfig.venue.college} in Google Maps`}
-        className="relative block bg-[var(--color-cream)] w-full aspect-[4/3] overflow-hidden cursor-pointer focus-visible:outline-[var(--color-near-black)] focus-visible:outline-offset-2"
+        className="relative block bg-[var(--color-cream)] w-full aspect-[4/3] overflow-hidden cursor-pointer focus-visible:outline-[var(--color-near-black)] focus-visible:outline-offset-[-6px]"
       >
         <div className="absolute inset-0 w-full h-full">
           {mapImage ? (
@@ -71,7 +74,7 @@ function MapFacade() {
               width={1200}
               height={900}
               className="absolute inset-0 h-full w-full"
-              imgClassName="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025] motion-reduce:transform-none"
+              imgClassName="w-full h-full object-cover"
             />
           ) : (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-[var(--color-near-black)]/5">
@@ -115,6 +118,7 @@ function MapFacade() {
           {linkLabel} ↗
         </a>
       </div>
+     </div>
     </div>
   )
 }
@@ -175,7 +179,9 @@ export default function Venue() {
           <div className="mb-10 lg:mb-0">
             {/* Campus photo or geometric panel */}
             {eventConfig.venue.photo ? (
-              <div className="group rounded-[var(--radius-md)] overflow-hidden border border-[var(--color-near-black)]/12 mb-8 bg-white shadow-xs hover:shadow-md transition-shadow duration-300">
+              <div className="brutal group mb-8 rounded-[var(--radius-md)]
+                              [--b-offset:6px] [--b-face:#fff] [--b-edge:rgb(23_23_23_/_0.12)] [--b-bw:1px]">
+               <div className="rounded-[var(--radius-md)] overflow-hidden">
                 <div className="relative aspect-[2.35/1] overflow-hidden bg-[var(--color-near-black)]/5">
                   <ImageSkeleton
                     base="/images/cec-campus"
@@ -185,7 +191,7 @@ export default function Venue() {
                     width={1024}
                     height={435}
                     className="absolute inset-0 h-full w-full"
-                    imgClassName="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.025] motion-reduce:transform-none"
+                    imgClassName="w-full h-full object-cover object-center"
                   />
 
                   {/* Gradient scrim at bottom for text legibility */}
@@ -220,6 +226,7 @@ export default function Venue() {
                     Host Campus
                   </span>
                 </div>
+               </div>
               </div>
             ) : (
               <div className="mb-8">

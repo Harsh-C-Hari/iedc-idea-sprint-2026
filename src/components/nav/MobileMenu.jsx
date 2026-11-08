@@ -16,7 +16,7 @@
 import { useEffect, useRef } from 'react'
 import nav from '../../data/nav.js'
 
-export default function MobileMenu({ id, isOpen, onClose, triggerRef }) {
+export default function MobileMenu({ id, isOpen, onClose, triggerRef, activeId = null }) {
   const menuRef = useRef(null)
 
   /* Close on Escape */
@@ -91,11 +91,18 @@ export default function MobileMenu({ id, isOpen, onClose, triggerRef }) {
                 href={href}
                 onClick={handleLinkClick}
                 tabIndex={isOpen ? undefined : -1}
-                className="font-[family-name:var(--font-display)] text-4xl text-[var(--color-cream)] no-underline
+                aria-current={activeId === href.slice(1) ? 'true' : undefined}
+                className="relative font-[family-name:var(--font-display)] text-4xl text-[var(--color-cream)] no-underline
                            hover:text-[var(--color-orange)]
                            focus-visible:outline-[var(--color-cream)]
                            transition-colors"
               >
+                {/* Lime marker for the active section (reserved, absolutely positioned: no layout shift) */}
+                <span
+                  aria-hidden="true"
+                  className={`absolute -left-7 top-1/2 -translate-y-1/2 w-3.5 h-3.5 bg-[var(--color-lime)]
+                              ${activeId === href.slice(1) ? 'opacity-100' : 'opacity-0'}`}
+                />
                 {label}
               </a>
             </li>
@@ -106,13 +113,15 @@ export default function MobileMenu({ id, isOpen, onClose, triggerRef }) {
       {/* Register CTA */}
       <a
         href="#registration"
+        aria-current={activeId === 'registration' ? 'true' : undefined}
+        data-on={activeId === 'registration' ? 'true' : undefined}
         onClick={handleLinkClick}
         tabIndex={isOpen ? undefined : -1}
-        className="mt-4 px-8 py-4 bg-[var(--color-orange)] text-[var(--color-near-black)]
+        className="brutal mt-4 px-8 py-4 text-[var(--color-near-black)]
+                   [--b-face:var(--color-orange)] hover:[--b-face:var(--color-orange-hover)]
                    font-[family-name:var(--font-body)] font-semibold uppercase tracking-wide
                    rounded-[var(--radius-sm)] text-base min-h-[48px] flex items-center
-                   hover:bg-[var(--color-orange-hover)]
-                   transition-colors focus-visible:outline-[var(--color-cream)]"
+                   focus-visible:outline-[var(--color-cream)]"
       >
         Register
       </a>

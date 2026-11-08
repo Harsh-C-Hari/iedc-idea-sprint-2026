@@ -1,107 +1,95 @@
 # IDEA SPRINT 2026
 
-**24-hour student ideathon** by IEDC BOOTCAMP, College of Engineering Chengannur.
+**24-hour student ideathon** by IEDC BOOTCAMP CEC, College of Engineering Chengannur.
+**20–21 November 2026 · 5:00 PM to 5:00 PM IST · SPDK Room, 5th Floor**
 
-**20–21 November 2026 · 5:00 PM – 5:00 PM**
+**Live:** https://iedc-idea-sprint-2026-vert.vercel.app/
+<!-- TODO(owner): confirm this is the final public URL. It is copied from index.html (canonical / og:url); nothing was invented. -->
 
-Live: https://iedc-idea-sprint-2026-vert.vercel.app/
+![IDEA SPRINT 2026 hero](doc/hero.png)
+<!-- doc/hero.png is generated, not committed by default: see "Hero screenshot" below. -->
 
----
+A single-page event site: countdown, Idea Spark prompt generator, live schedule, four-step challenge, registration form, venue and footer.
 
 ## Stack
 
 | Layer | Choice |
 |---|---|
-| Framework | React 19 + Vite 8 |
-| Styling | Tailwind CSS v4 (CSS-first, `@theme` tokens) |
-| Animation | GSAP 3 + ScrollTrigger + `@gsap/react` |
-| 3D (lazy) | React Three Fiber + three.js (lazy chunk, not in initial bundle) |
-| Fonts | Archivo Black (display), Space Grotesk (body) — self-hosted woff2 |
-| Deployment | Vercel (auto-deploy on push to `main`) |
+| Framework | React 19 + Vite |
+| Styling | Tailwind CSS v4 (CSS-first `@theme` tokens) |
+| Motion | GSAP 3 + ScrollTrigger + `@gsap/react` (no other animation library) |
+| 3D (lazy) | React Three Fiber + three.js, loaded only when Idea Spark nears the viewport; SVG fallback for no WebGL, reduced motion or Save-Data |
+| Fonts | Archivo Black (display), Space Grotesk (body), self-hosted woff2 |
+| Hosting | Vercel |
 
-## Colour tokens
+## Run it
 
-| Token | Hex | Use |
-|---|---|---|
-| `--color-cream` | `#F2EBDD` | Primary light background |
-| `--color-near-black` | `#171717` | Primary dark background + body text |
-| `--color-orange` | `#F05A28` | Fills, shapes, button backgrounds (near-black labels) |
-| `--color-lime` | `#D9F36A` | Only on near-black surfaces or as fill behind near-black text |
-
-**Rule:** Orange never carries text on cream. Lime only on near-black.
-
-## Dev setup
+Requires Node 18+.
 
 ```bash
-# Requires Node 18+
 npm install
 npm run dev        # http://localhost:5173
 npm run build      # production build in dist/
-npm run preview    # preview dist/ locally
+npm run preview    # serve dist/ at http://localhost:4173
 ```
 
-> **npm/node must be run via cmd on Windows** — not PowerShell directly.
+On Windows run npm from `cmd`, not PowerShell.
 
-## Project structure
+Testing the event states: append `?now=` with an ISO time to see the countdown and schedule at that moment, for example
+`?now=2026-11-20T18:45:00+05:30` (live: "Now" and "Next" appear) or `?now=2026-11-21T18:00:00+05:30` (ended).
+
+## Design system
+
+| Token | Hex | Use |
+|---|---|---|
+| `--color-cream` | `#F2EBDD` | Light surfaces |
+| `--color-near-black` | `#171717` | Dark surfaces, body text on cream |
+| `--color-orange` | `#F05A28` | Fills, blocks, buttons (near-black labels) |
+| `--color-orange-deep` | `#D94A1A` | Large display text on cream only |
+| `--color-lime` | `#D9F36A` | Near-black surfaces, or as a fill behind near-black text |
+
+Interaction: one `.brutal` utility in `src/styles/index.css` (hard offset block that lifts on hover and focus, collapses on press; hover only where a real hover exists). Motion animates `transform`, `opacity` and `clip-path` only, and every animation has a reduced-motion path.
+
+## Brand assets
+
+Generated with scripts that depend only on `sharp` (already a devDependency):
+
+```bash
+node scripts/gen-favicon.mjs                                  # public/favicon/favicon-32.png, apple-touch-icon.png (180)
+python scripts/og-build-svg.py && node scripts/gen-og.mjs    # public/images/og-image.svg -> og-image.png (1200x630)
+```
+
+`og-build-svg.py` converts the OG text to outlines using the site fonts (`pip install fonttools brotli`, dev-only), so the PNG renders identically on any machine.
+
+### Hero screenshot
+
+```bash
+npm run build && npm run preview     # one terminal
+npx playwright install chromium      # once
+node scripts/shot-hero.mjs           # writes doc/hero.png, then commit it
+```
+
+## Where things live
 
 ```
 src/
-  components/
-    art/          Spark.jsx, Fragments.jsx  — SVG art primitives
-    nav/          Navbar, MobileMenu
-    three/        SparkScene.jsx (lazy R3F), webgl.js
-    ui/           SectionShell, Button, Countdown
-  config/
-    eventConfig.js  — single source of truth for all event facts
-  data/
-    content.js    — static copy (manifesto, journey, steps, hero text)
-    nav.js        — navigation items
-    prompts.js    — Idea Spark generator prompts (4 categories × 12)
-    schedule.js   — event timeline (Day 1: 7 items, Day 2: 4 items)
-  hooks/          useCopy.js
-  lib/            pickPrompt.js, time.js
-  motion/
-    gsap.js       — registers GSAP + ScrollTrigger once
-    Loader.jsx    — branded page-load overlay sequence
-    SectionWipe.jsx — clip-path scrubbed cream/dark wipes
-    useReveal.js  — data-reveal scroll activation hook
-  sections/       Hero, About, IdeaSpark, Timeline, Challenge,
-                  Registration, Venue, Footer
-  styles/
-    index.css     — Tailwind v4 @theme tokens + global styles
-public/
-  favicon/        icon.svg, manifest.json
-  fonts/          archivo-black-latin.woff2, space-grotesk-latin.woff2
-  images/         og-image.svg
+  components/  nav/ (Navbar, MobileMenu), ui/ (Button, Countdown, SectionShell ...), art/, three/ (lazy scene)
+  config/eventConfig.js   single source of truth for event facts (null = unverified, UI hidden)
+  data/                   nav.js, schedule.js, prompts.js (4 x 12), content.js
+  hooks/                  useScrollSpy, useCountdown, useEventClock, useCopy, useRegistrationForm
+  lib/                    calendar.js (.ics), scheduleClock.js (Now/Next), pickPrompt.js, time.js, validation.js
+  motion/                 gsap.js, Loader.jsx, SectionWipe.jsx, useReveal.js
+  sections/               Hero, About, IdeaSpark, Timeline, Challenge, Registration, Venue, Footer
+scripts/                  image, favicon and OG generators, contrast check
 ```
 
-## Key constraints
+## Status of event data
 
-- No new sections, features, or packages beyond plan section C.
-- Copy verbatim from plan. Unverified values → `null` + hidden.
-- Registration form is in `preview` mode — never shows success state.
-- No pinning anywhere. Scrub OK for wipes and rail.
-- h1 never revealed from `opacity:0` — transform/clip only.
-- 3D scene lazy-loaded via `React.lazy()` only when IdeaSpark is near viewport.
-- 3D scene skipped on: no WebGL, `prefers-reduced-motion`, `Save-Data`, slow-2g/2g/3g.
-- `prefers-reduced-motion: reduce` → all GSAP durations 0 or skipped.
+| Item | Field in `eventConfig.js` | State |
+|---|---|---|
+| Registration endpoint | `registration.endpoint` | pending: form runs as a frontend-only demo and does not submit anywhere |
+| Google Maps link | `venue.mapsUrl` | pending |
+| Contact email | `contact.email` | pending, hidden in the footer until verified |
+| Instagram, LinkedIn, website | `social.*`, `contact.website` | set |
 
-## Pending from organisers
-
-| Item | Field in `eventConfig.js` |
-|---|---|
-| Registration form endpoint | `registration.endpoint` |
-| Google Maps link | `venue.mapsUrl` |
-| Campus photo | `venue.photo` |
-| Instagram URL | `social.instagram` |
-| LinkedIn URL | `social.linkedin` |
-| Contact email | `contact.email` |
-
-Fields marked `provisional: true` are from the implementation plan and should be confirmed.
-
-## Deployment
-
-Vercel auto-deploys on push to `main`. No build command needed in Vercel settings — it reads `vite build` from `package.json`.
-
-Canonical URL: `https://iedc-idea-sprint-2026-vert.vercel.app/`
-
+Values flagged `provisional_*` (registration deadline, semesters, divisions) come from the plan and should be confirmed by the organisers.
