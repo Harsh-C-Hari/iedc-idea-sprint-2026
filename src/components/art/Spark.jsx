@@ -7,7 +7,7 @@
  *
  * Props:
  *   size    {number}  — rendered square size in px (default 120)
- *   color   {string}  — primary accent ('orange' | 'lime' | 'cream'), default 'orange'
+ *   color   {string}  — primary accent ('orange' | 'lime' | 'cream' | 'ink'), default 'orange'
  *   className {string}
  *
  * All content is aria-hidden — purely decorative.
@@ -31,6 +31,15 @@ const PALETTES = {
     disc:     '#F2EBDD',
     discDark: '#c5b9a8',
     glow:     'rgba(217,243,106,0.3)',
+  },
+  ink: {
+    cube:     '#171717',
+    cubeDark: '#000000',
+    ring:     '#F05A28',
+    ringDark: '#c43e12',
+    disc:     '#D9F36A',
+    discDark: '#a8c73e',
+    glow:     'rgba(23,23,23,0.18)',
   },
   cream: {
     cube:     '#F2EBDD',

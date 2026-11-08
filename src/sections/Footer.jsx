@@ -47,7 +47,7 @@ function BackToTop() {
       onClick={handleClick}
       aria-label="Back to top"
       className="font-[family-name:var(--font-body)] text-xs uppercase tracking-widest
-                 text-[var(--color-cream)] opacity-50 hover:opacity-100
+                 text-[var(--color-cream)] opacity-70 hover:opacity-100
                  transition-opacity duration-[var(--duration-fast)]
                  focus-visible:outline-[var(--color-cream)]
                  flex items-center gap-2"
@@ -123,10 +123,10 @@ export default function Footer() {
                           text-[var(--color-cream)]">
               IEDC BOOTCAMP CEC
             </p>
-            <p className="font-[family-name:var(--font-body)] text-xs text-[var(--color-cream)] opacity-50">
+            <p className="font-[family-name:var(--font-body)] text-xs text-[var(--color-cream)] opacity-70">
               IDEA SPRINT 2026
             </p>
-            <p className="font-[family-name:var(--font-body)] text-xs text-[var(--color-cream)] opacity-40">
+            <p className="font-[family-name:var(--font-body)] text-xs text-[var(--color-cream)] opacity-70">
               {eventConfig.college}
             </p>
           </div>
@@ -142,7 +142,7 @@ export default function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="font-[family-name:var(--font-body)] text-sm
-                               text-[var(--color-cream)] opacity-60 hover:opacity-100
+                               text-[var(--color-cream)] opacity-70 hover:opacity-100
                                no-underline transition-opacity duration-[var(--duration-fast)]
                                focus-visible:outline-[var(--color-cream)]"
                   >
@@ -155,7 +155,7 @@ export default function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="font-[family-name:var(--font-body)] text-sm
-                               text-[var(--color-cream)] opacity-60 hover:opacity-100
+                               text-[var(--color-cream)] opacity-70 hover:opacity-100
                                no-underline transition-opacity duration-[var(--duration-fast)]
                                focus-visible:outline-[var(--color-cream)]"
                   >
@@ -166,7 +166,7 @@ export default function Footer() {
                   <a
                     href={`mailto:${eventConfig.contact.email}`}
                     className="font-[family-name:var(--font-body)] text-sm
-                               text-[var(--color-cream)] opacity-60 hover:opacity-100
+                               text-[var(--color-cream)] opacity-70 hover:opacity-100
                                no-underline transition-opacity duration-[var(--duration-fast)]
                                focus-visible:outline-[var(--color-cream)]"
                   >
@@ -184,7 +184,7 @@ export default function Footer() {
                     <a
                       href={href}
                       className="font-[family-name:var(--font-body)] text-sm
-                                 text-[var(--color-cream)] opacity-60
+                                 text-[var(--color-cream)] opacity-70
                                  hover:opacity-100 no-underline
                                  transition-opacity duration-[var(--duration-fast)]
                                  focus-visible:outline-[var(--color-cream)]"
@@ -201,7 +201,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="mt-10 pt-6 border-t border-[var(--color-cream)]/10
                         flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <p className="font-[family-name:var(--font-body)] text-xs text-[var(--color-cream)] opacity-30">
+          <p className="font-[family-name:var(--font-body)] text-xs text-[var(--color-cream)] opacity-70">
             © 2026 IEDC BOOTCAMP CEC. All rights reserved.
           </p>
           <BackToTop />

@@ -64,12 +64,25 @@ export default function MobileMenu({ id, isOpen, onClose, triggerRef }) {
         fixed inset-0 z-[var(--z-modal)]
         bg-[var(--color-near-black)] text-[var(--color-cream)]
         flex flex-col justify-center items-center gap-8
-        transition-all duration-[var(--duration-normal)]
+        transition-[opacity,visibility] duration-[var(--duration-normal)]
         ${isOpen
           ? 'opacity-100 visible pointer-events-auto'
           : 'opacity-0 invisible pointer-events-none'}
       `}
     >
+      <button
+        type="button"
+        onClick={() => { onClose(); triggerRef?.current?.focus() }}
+        tabIndex={isOpen ? undefined : -1}
+        aria-label="Close navigation menu"
+        className="absolute top-3 right-4 w-12 h-12 flex items-center justify-center
+                   text-[var(--color-cream)] focus-visible:outline-[var(--color-cream)]"
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+          <path d="M5 5l14 14M19 5L5 19" />
+        </svg>
+      </button>
+
       <nav aria-label="Mobile navigation">
         <ul className="list-none m-0 p-0 flex flex-col items-center gap-6">
           {nav.map(({ label, href }) => (

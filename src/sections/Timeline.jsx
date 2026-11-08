@@ -196,7 +196,7 @@ function DayPanel({ day }) {
         {/* Day header */}
         <div className="mb-12 lg:mb-16">
           <span
-            className="font-[family-name:var(--font-body)] text-xs uppercase tracking-widest opacity-50 block mb-2"
+            className="font-[family-name:var(--font-body)] text-xs uppercase tracking-widest opacity-70 block mb-2"
           >
             Day {day.day} · {day.date}
           </span>

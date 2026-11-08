@@ -32,7 +32,7 @@ export default function Button({
   const base =
     'inline-flex items-center justify-center font-[family-name:var(--font-body)] font-semibold ' +
     'tracking-wide uppercase rounded-[var(--radius-sm)] ' +
-    'transition-all duration-[var(--duration-fast)] ' +
+    'transition-[transform,background-color,color,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease-out-expo)] ' +
     'hover:-translate-x-0.5 hover:-translate-y-0.5 ' +
     'active:translate-x-0 active:translate-y-0 active:shadow-none ' +
     // Focus ring uses theme-aware --focus-ring token

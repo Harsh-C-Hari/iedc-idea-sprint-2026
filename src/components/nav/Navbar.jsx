@@ -43,7 +43,17 @@ export default function Navbar() {
                      text-[var(--color-cream)] no-underline shrink-0 mr-4
                      focus-visible:outline-[var(--color-cream)]"
         >
-          <span className="sm:hidden">IEDC CEC</span>
+          <picture className="sm:hidden block">
+            <source srcSet="/images/iedc-mark-cream.webp" type="image/webp" />
+            <img
+              src="/images/iedc-mark-cream.png"
+              alt=""
+              width="560"
+              height="224"
+              decoding="async"
+              className="block h-7 w-auto"
+            />
+          </picture>
           <span className="hidden sm:inline">IEDC BOOTCAMP CEC</span>
         </a>
 

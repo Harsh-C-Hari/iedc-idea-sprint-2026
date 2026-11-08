@@ -7,3 +7,8 @@ dist
 .DS_Store
 Thumbs.db
 
+
+# local QA output
+contrast-screenshots/
+ui-baseline/
+loader-screenshots/

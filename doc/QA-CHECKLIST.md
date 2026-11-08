@@ -30,8 +30,9 @@ _Plan section G · Audited 2026-11-07 · Build `9719e46`_
 | B2 | Cream `#F2EBDD` on near-black `#171717` (dark sections) | ≈ 14.1 : 1 | ✅ PASS |
 | B3 | Orange `#F05A28` on near-black `#171717` (CTA button) | ≈ 5.3 : 1 | ✅ PASS (≥ 4.5 : 1 AA) |
 | B4 | Lime `#D9F36A` on near-black `#171717` (accent text, wipes) | ≈ 11.6 : 1 | ✅ PASS |
-| B5 | Wordmark outline `rgba(23,23,23,0.6)` on cream `#F2EBDD` | ≈ 4.85 : 1 | ✅ PASS (≥ 3 : 1 large text) |
-| B6 | Orange on cream — **prohibited** | — | ✅ PASS — no orange text renders on cream anywhere |
+| B5 | "2026" outline `#171717` stroke on cream `#F2EBDD` (outlined display type) | ≈ 14.1 : 1 | ✅ PASS (≥ 3 : 1 large text) |
+| B6 | Orange on cream — small text **prohibited**; only exception is `--color-orange-deep` `#D94A1A` on the ≥ 24 px hero wordmark, countdown colons and step numerals | ≈ 3.58 : 1 | ✅ PASS (≥ 3 : 1 large text); no small orange text on cream |
+| B6a | Small muted text (labels, meta, footer) raised from 30–60 % to 70 % opacity and ≥ 12 px | ≥ 4.5 : 1 | ✅ PASS — site audit: 27 → 0 real failures (1 false positive: outlined "2026") |
 | B7 | Lime on cream — **prohibited** | — | ✅ PASS — lime is only used on near-black backgrounds or as a fill with near-black text |
 
 ---

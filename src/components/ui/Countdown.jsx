@@ -25,7 +25,7 @@ function Unit({ value, label }) {
       >
         {formatted}
       </span>
-      <span className="font-[family-name:var(--font-body)] text-[0.65rem] uppercase tracking-widest opacity-60 mt-1">
+      <span className="font-[family-name:var(--font-body)] text-xs uppercase tracking-widest opacity-70 mt-1">
         {label}
       </span>
     </div>
@@ -37,7 +37,7 @@ function Divider() {
     <span
       aria-hidden="true"
       className="font-[family-name:var(--font-display)] text-[clamp(1.5rem,4vw,2.5rem)]
-                 leading-none text-[var(--color-orange)] pb-4 select-none"
+                 leading-none text-[var(--color-orange-deep)] pb-4 select-none"
     >
       :
     </span>
@@ -89,7 +89,7 @@ export default function Countdown() {
   return (
     <div role="timer" className="flex flex-col gap-2">
       <span
-        className="font-[family-name:var(--font-body)] text-xs uppercase tracking-widest opacity-60"
+        className="font-[family-name:var(--font-body)] text-xs uppercase tracking-widest opacity-70"
       >
         Starts in
       </span>

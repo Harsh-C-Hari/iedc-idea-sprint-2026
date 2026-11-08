@@ -35,7 +35,7 @@ function StepCard({ step, offset }) {
     <div
       data-challenge-step
       className={`
-        p-6 md:p-8 border border-[var(--color-near-black)]/10
+        p-6 md:p-8 border border-[var(--color-near-black)]/10 step-card
         rounded-[var(--radius-md)]
         ${offset ? 'lg:mt-12' : ''}
       `}
@@ -43,7 +43,8 @@ function StepCard({ step, offset }) {
       <span
         className="font-[family-name:var(--font-display)]
                    text-[clamp(3rem,5vw,4.5rem)] leading-none tracking-[-0.03em]
-                   text-[var(--color-orange)] opacity-30 block mb-4 select-none"
+                   text-[var(--color-orange-deep)] block mb-4 select-none"
+        aria-hidden="true"
       >
         {step.number}
       </span>

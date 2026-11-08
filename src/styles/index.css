@@ -53,7 +53,8 @@
 /* --------------------------------------------------------------------------
    @theme — design tokens (Tailwind v4 CSS-first)
    Palette rules (section A):
-     • Orange never carries text on cream — use for fills/shapes, near-black labels on orange buttons
+     • Orange never carries SMALL text on cream — fills/shapes, near-black labels on orange buttons.
+       Exception: --color-orange-deep for the large hero wordmark only (≥3:1 large-text AA)
      • Lime only on near-black or as fill behind near-black text
      • Form borders and focus rings driven by --line token (theme-aware)
    -------------------------------------------------------------------------- */
@@ -64,6 +65,7 @@
   --color-near-black:   #171717;   /* near-black — primary dark background + body text on cream */
   --color-orange:       #F05A28;   /* orange — fills, shapes, button backgrounds (near-black labels) */
   --color-orange-hover: #FF7140;   /* lighter orange hover — near-black text ≥ 4.5:1 on this */
+  --color-orange-deep:  #D94A1A;   /* display-only: large hero wordmark on cream (3.58:1, large-text AA). Never for small text. */
   --color-lime:         #D9F36A;   /* lime — only on near-black surfaces or as fill behind near-black text */
 
   /* Semantic aliases */
@@ -358,3 +360,72 @@
   0%, 100% { transform: translateY(0px) scale(1); }
   50%       { transform: translateY(-10px) scale(1.03); }
 }
+
+/* ==========================================================================
+   Image skeleton (Phase 2) — transform/opacity only, space always reserved
+   ========================================================================== */
+.img-skel {
+  position: relative;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--color-near-black) 8%, var(--color-cream));
+}
+.img-skel > picture { display: contents; }
+.img-skel__img {
+  opacity: 0;
+  transform: scale(1.02);
+  transition: opacity var(--duration-slow) var(--ease-out-expo),
+              transform var(--duration-slow) var(--ease-out-expo);
+}
+.img-skel.is-loaded .img-skel__img { opacity: 1; transform: none; }
+.img-skel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 30%,
+              color-mix(in srgb, var(--color-cream) 70%, transparent) 50%, transparent 70%);
+  transform: translateX(-100%);
+  animation: skelShimmer 1.4s linear infinite;
+  pointer-events: none;
+}
+.img-skel.is-loaded::after,
+.img-skel.is-error::after { animation: none; opacity: 0; }
+.img-skel.is-error .img-skel__img { display: none; }
+@keyframes skelShimmer { to { transform: translateX(100%); } }
+@media (prefers-reduced-motion: reduce) {
+  .img-skel::after { animation: none; }
+  .img-skel__img { transition: none; transform: none; }
+}
+
+/* IdeaSpark scene placeholder — breathing ring, transform/opacity only */
+.scene-skel { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
+.scene-skel::before {
+  content: ''; position: absolute; width: 62%; aspect-ratio: 1; border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--color-lime, #D9F36A) 40%, transparent);
+  animation: sceneBreathe 2.2s var(--ease-in-out) infinite;
+}
+@keyframes sceneBreathe { 0%,100% { transform: scale(.92); opacity: .35; } 50% { transform: scale(1.04); opacity: .8; } }
+@media (prefers-reduced-motion: reduce) { .scene-skel::before { animation: none; opacity: .5; } }
+
+/* Fail-safe: content must never stay hidden if motion JS did not run */
+.reveal-failsafe [data-reveal] { opacity: 1 !important; transform: none !important; clip-path: none !important; }
+
+/* Pause ambient hero animation while the hero is off-screen (class set via IntersectionObserver) */
+.hero-paused [style*="heroFloat"] { animation-play-state: paused !important; }
+
+/* Button: hover lift only on hover-capable pointers; press feedback everywhere */
+@media (hover: none) {
+  a[class*="hover:-translate-x-0.5"]:hover, button[class*="hover:-translate-x-0.5"]:hover { transform: none; box-shadow: none; }
+}
+
+/* Step cards: subtle lift on hover-capable devices (transform only) */
+.step-card { transition: transform var(--duration-normal) var(--ease-out-expo), border-color var(--duration-normal); }
+@media (hover: hover) { .step-card:hover { transform: translateY(-4px); border-color: var(--color-orange); } }
+
+/* Countdown digit roll respects reduced motion (global rule already zeroes durations) */
+
+/* Submit spinner + error flash helpers (transform/opacity only) */
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner { width: 1em; height: 1em; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: spin .7s linear infinite; display: inline-block; }
+@keyframes errorShake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+.error-flash { animation: errorShake .3s var(--ease-out-expo) 1; }
+@media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 2s; } .error-flash { animation: none; } }

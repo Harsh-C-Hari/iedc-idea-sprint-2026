@@ -34,7 +34,7 @@ export default function Field({
       >
         {label}
         {isLeader && (
-          <span className="ml-2 text-[0.65rem] font-normal normal-case tracking-normal"
+          <span className="ml-2 text-xs font-normal normal-case tracking-normal"
                 style={{ opacity: 0.65 }}>
             (Team Lead)
           </span>

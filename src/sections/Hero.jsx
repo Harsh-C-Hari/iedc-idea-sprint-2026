@@ -49,7 +49,6 @@ export default function Hero() {
     if (!el || REDUCED) return
 
     function runEntrance() {
-      const wordmark = el.querySelector('[data-hero="wordmark"]')
       const sparkEl = el.querySelector('[data-hero="spark"]')
       const h1Words = el.querySelectorAll('[data-hero="h1-word"]')
       const supportEl = el.querySelector('[data-hero="support"]')
@@ -60,14 +59,15 @@ export default function Hero() {
 
       // Set hidden start states only after loader exits (keeps h1 LCP-eligible)
       // h1Words use clip-path only — never opacity:0 (plan constraint)
-      gsap.set(wordmark, { opacity: 0, y: -16 })
+      const wmLines = el.querySelectorAll('[data-hero="wm-line"]')
+      gsap.set(wmLines, { clipPath: 'inset(0 0 100% 0)', y: 10 })
       gsap.set(sparkEl, { opacity: 0, scale: 0.5, transformOrigin: 'center center' })
       gsap.set(h1Words, { clipPath: 'inset(0 0 100% 0)', y: 6 })
       gsap.set([supportEl, countdownEl, ctaEl, metaEl], { opacity: 0, y: 12 })
       gsap.set(fragEls, { opacity: 0, scale: 0.6, transformOrigin: 'center center' })
 
       const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
-      tl.to(wordmark, { opacity: 1, y: 0, duration: 0.30 }, 0)
+      tl.to(wmLines, { clipPath: 'inset(0 0 0% 0)', y: 0, duration: 0.45, stagger: 0.08 }, 0)
       tl.to(sparkEl, { opacity: 1, scale: 1, duration: 0.35, ease: 'back.out(1.6)' }, 0.05)
       tl.to(h1Words, { clipPath: 'inset(0 0 0% 0)', y: 0, duration: 0.35, stagger: 0.055 }, 0.08)
       tl.to(fragEls, { opacity: 1, scale: 1, duration: 0.45, stagger: 0.05, ease: 'back.out(1.3)' }, 0.28)
@@ -82,6 +82,17 @@ export default function Hero() {
     }
 
     return () => window.removeEventListener('loader:done', runEntrance)
+  }, { scope: outerRef, dependencies: [] })
+
+  // ── Pause ambient float while hero is off-screen ──────────────────────────
+  useGSAP(() => {
+    const el = outerRef.current
+    if (!el || typeof IntersectionObserver === 'undefined') return
+    const io = new IntersectionObserver(([e]) => {
+      el.classList.toggle('hero-paused', !e.isIntersecting)
+    })
+    io.observe(el)
+    return () => io.disconnect()
   }, { scope: outerRef, dependencies: [] })
 
   // ── Scroll-scrubbed far-layer shift (decorative background fragments only) ──
@@ -208,7 +219,7 @@ export default function Hero() {
 
         {/* ════ CONTENT — static (no cursor parallax, no transform) ════ */}
         <div className="relative z-10 max-w-6xl w-full my-auto">
-          {/* Wordmark "IDEA SPRINT 2026" */}
+          {/* Wordmark "IDEA SPRINT 2026" — solid orange-deep display type, 2026 outlined */}
           <div className="relative mb-2 lg:mb-0">
             <p
               aria-label="IDEA SPRINT 2026"
@@ -216,35 +227,40 @@ export default function Hero() {
               className="font-[family-name:var(--font-display)]
                          leading-[0.88] tracking-[-0.04em]
                          select-none pointer-events-none"
-              style={{
-                fontSize: 'clamp(2.8rem, 15vw, 11rem)',
-                WebkitTextStroke: '2px rgba(23,23,23,0.6)',
-                color: 'rgba(23,23,23,0.12)',
-              }}
+              style={{ fontSize: 'clamp(2.8rem, 15vw, 11rem)' }}
             >
-              <span className="block">IDEA</span>
-              <span className="block relative">
-                SPRINT
-                {/* Spark at IDEA/SPRINT transition */}
+              <span aria-hidden="true" className="block overflow-hidden">
+                <span data-hero="wm-line" className="block text-[var(--color-orange-deep)]">IDEA</span>
+              </span>
+              <span aria-hidden="true" className="block">
+               <span className="relative inline-block">
+                <span className="block overflow-hidden">
+                  <span data-hero="wm-line" className="block text-[var(--color-orange-deep)]">SPRINT</span>
+                </span>
+                {/* Spark anchored to the end of SPRINT */}
                 <span
                   aria-hidden="true"
                   data-hero="spark"
                   className="absolute"
-                  style={{
-                    right: 'clamp(-2rem, -3vw, -4rem)',
-                    top: '0',
-                    transform: 'translateY(-35%)',
-                  }}
+                  style={{ left: '100%', top: '0', width: 'max-content', transform: 'translate(-30%,-55%)' }}
                 >
-                  <Spark size={72} color="orange" className="hidden sm:block" />
-                  <Spark size={48} color="orange" className="sm:hidden" />
+                  <Spark size={64} color="ink" className="hidden sm:block" />
+                  <Spark size={44} color="ink" className="sm:hidden" />
                 </span>
+               </span>
               </span>
               <span
-                className="block text-[var(--color-near-black)] opacity-85"
+                aria-hidden="true"
+                className="block overflow-hidden"
                 style={{ fontSize: '0.5em', letterSpacing: '-0.02em' }}
               >
-                2026
+                <span
+                  data-hero="wm-line"
+                  className="block"
+                  style={{ color: 'transparent', WebkitTextStroke: '2px var(--color-near-black)' }}
+                >
+                  2026
+                </span>
               </span>
             </p>
           </div>
@@ -311,10 +327,18 @@ export default function Hero() {
               href="#about"
               variant="outline"
               size="lg"
-              className="w-full sm:w-auto"
+              className="hidden sm:inline-flex w-full sm:w-auto"
             >
               Explore
             </Button>
+            <a
+              href="#about"
+              className="sm:hidden self-center font-[family-name:var(--font-body)] text-sm font-semibold
+                         uppercase tracking-wide underline underline-offset-4 py-3
+                         text-[var(--color-near-black)] focus-visible:outline-[var(--color-near-black)]"
+            >
+              Explore ↓
+            </a>
           </div>
 
           {/* Metadata row */}
@@ -327,7 +351,7 @@ export default function Hero() {
               <li
                 key={item}
                 className="font-[family-name:var(--font-body)] text-xs uppercase tracking-widest
-                           text-[var(--color-near-black)] opacity-50"
+                           text-[var(--color-near-black)] opacity-70"
               >
                 {item}
               </li>

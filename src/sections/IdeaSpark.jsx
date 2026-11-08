@@ -44,7 +44,7 @@ function SparkFallback() {
     <div
       aria-hidden="true"
       data-testid="spark-fallback"
-      className="flex items-center justify-center w-full h-full"
+      className="scene-skel"
     >
       <Spark size={160} color="lime" />
     </div>
@@ -192,7 +192,7 @@ export default function IdeaSpark() {
             <fieldset className="border-0 p-0 m-0 mb-8">
               <legend
                 className="font-[family-name:var(--font-body)] text-xs uppercase tracking-widest
-                           text-[var(--color-cream)] opacity-50 mb-4"
+                           text-[var(--color-cream)] opacity-70 mb-4"
               >
                 Choose a challenge category
               </legend>
@@ -287,7 +287,7 @@ export default function IdeaSpark() {
               ) : (
                 <p
                   className="font-[family-name:var(--font-body)] text-sm
-                             text-[var(--color-cream)] opacity-30 italic"
+                             text-[var(--color-cream)] opacity-70 italic"
                 >
                   {selectedKey
                     ? 'Press Generate to get a starting prompt.'

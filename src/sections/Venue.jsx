@@ -18,6 +18,7 @@
  *   • Single space after period, no duplicate "5th Floor", opacity-70 for WCAG AA.
  */
 import SectionShell from '../components/ui/SectionShell.jsx'
+import ImageSkeleton from '../components/ui/ImageSkeleton.jsx'
 import eventConfig from '../config/eventConfig.js'
 
 const SEARCH_URL = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(eventConfig.venue.college)}`
@@ -62,25 +63,23 @@ function MapFacade() {
       >
         <div className="absolute inset-0 w-full h-full">
           {mapImage ? (
-            <picture>
-              <source srcSet="/images/cec-map.webp" type="image/webp" />
-              <img
-                src={`/images/${mapImage}`}
-                alt="Map showing College of Engineering Chengannur"
-                width="1200"
-                height="900"
-                loading="lazy"
-                decoding="async"
-                className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025] motion-reduce:transform-none"
-              />
-            </picture>
+            <ImageSkeleton
+              base="/images/cec-map"
+              widths={[640, 1024, 1200]}
+              sizes="(min-width:1024px) 540px, 100vw"
+              alt="Map showing College of Engineering Chengannur"
+              width={1200}
+              height={900}
+              className="absolute inset-0 h-full w-full"
+              imgClassName="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025] motion-reduce:transform-none"
+            />
           ) : (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-[var(--color-near-black)]/5">
               <div className="text-center px-4">
                 <p className="font-[family-name:var(--font-body)] text-sm font-semibold text-[var(--color-near-black)] mb-1">
                   {eventConfig.venue.college}
                 </p>
-                <p className="font-[family-name:var(--font-body)] text-xs text-[var(--color-near-black)] opacity-60">
+                <p className="font-[family-name:var(--font-body)] text-xs text-[var(--color-near-black)] opacity-70">
                   {eventConfig.venue.room}
                 </p>
               </div>
@@ -91,7 +90,7 @@ function MapFacade() {
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10">
             <LocationPin />
             <span
-              className="mt-2 px-3 py-1 font-[family-name:var(--font-body)] text-[11px] font-medium tracking-wide
+              className="mt-2 px-3 py-1 font-[family-name:var(--font-body)] text-xs font-medium tracking-wide
                          bg-[var(--color-near-black)]/85 text-[var(--color-cream)] rounded-full backdrop-blur-xs shadow-xs
                          group-hover:bg-[var(--color-orange)] group-hover:text-[var(--color-near-black)]
                          transition-colors duration-200 flex items-center gap-1.5 border border-white/10"
@@ -115,9 +114,6 @@ function MapFacade() {
         >
           {linkLabel} ↗
         </a>
-        <span className="font-[family-name:var(--font-body)] text-[11px] text-[var(--color-near-black)] opacity-50 uppercase tracking-wider font-medium">
-          Click map to open
-        </span>
       </div>
     </div>
   )
@@ -159,7 +155,7 @@ export default function Venue() {
 
         {/* Heading block */}
         <div className="mb-12 lg:mb-16">
-          <p className="font-[family-name:var(--font-body)] text-xs uppercase tracking-widest opacity-50 mb-3">
+          <p className="font-[family-name:var(--font-body)] text-xs uppercase tracking-widest opacity-70 mb-3">
             Venue
           </p>
           <h2
@@ -181,18 +177,16 @@ export default function Venue() {
             {eventConfig.venue.photo ? (
               <div className="group rounded-[var(--radius-md)] overflow-hidden border border-[var(--color-near-black)]/12 mb-8 bg-white shadow-xs hover:shadow-md transition-shadow duration-300">
                 <div className="relative aspect-[2.35/1] overflow-hidden bg-[var(--color-near-black)]/5">
-                  <picture>
-                    <source srcSet="/images/cec-campus.webp" type="image/webp" />
-                    <img
-                      src={`/images/${eventConfig.venue.photo}`}
-                      alt={`${eventConfig.venue.college} campus`}
-                      width="1024"
-                      height="435"
-                      loading="lazy"
-                      decoding="async"
-                      className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.025] motion-reduce:transform-none"
-                    />
-                  </picture>
+                  <ImageSkeleton
+                    base="/images/cec-campus"
+                    widths={[640, 1024]}
+                    sizes="(min-width:1024px) 540px, 100vw"
+                    alt={`${eventConfig.venue.college} campus`}
+                    width={1024}
+                    height={435}
+                    className="absolute inset-0 h-full w-full"
+                    imgClassName="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.025] motion-reduce:transform-none"
+                  />
 
                   {/* Gradient scrim at bottom for text legibility */}
                   <div
@@ -203,7 +197,7 @@ export default function Venue() {
                   {/* Subtle location tag pill overlay */}
                   <span
                     className="absolute bottom-3 left-3 px-3 py-1
-                               font-[family-name:var(--font-body)] text-[11px] font-medium tracking-wide
+                               font-[family-name:var(--font-body)] text-xs font-medium tracking-wide
                                bg-[var(--color-near-black)]/85 text-[var(--color-cream)]
                                rounded-[var(--radius-full)] backdrop-blur-xs shadow-xs
                                flex items-center gap-1.5 border border-white/10"
@@ -218,7 +212,7 @@ export default function Venue() {
                   <span className="font-[family-name:var(--font-body)] text-xs text-[var(--color-near-black)] opacity-80 font-medium">
                     {eventConfig.venue.college}
                   </span>
-                  <span className="font-[family-name:var(--font-body)] text-[11px] text-[var(--color-near-black)] opacity-60 uppercase tracking-widest flex items-center gap-2 font-medium">
+                  <span className="font-[family-name:var(--font-body)] text-xs text-[var(--color-near-black)] opacity-70 uppercase tracking-widest flex items-center gap-2 font-medium">
                     <span className="relative flex h-2 w-2" aria-hidden="true">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--color-orange)] opacity-75 motion-reduce:hidden" />
                       <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--color-orange)]" />
@@ -236,7 +230,7 @@ export default function Venue() {
             {/* Venue details */}
             <dl className="flex flex-col gap-4">
               <div>
-                <dt className="font-[family-name:var(--font-body)] text-xs uppercase tracking-widest opacity-50 mb-1">
+                <dt className="font-[family-name:var(--font-body)] text-xs uppercase tracking-widest opacity-70 mb-1">
                   College
                 </dt>
                 <dd className="font-[family-name:var(--font-body)] font-semibold text-[var(--color-near-black)]">
@@ -244,7 +238,7 @@ export default function Venue() {
                 </dd>
               </div>
               <div>
-                <dt className="font-[family-name:var(--font-body)] text-xs uppercase tracking-widest opacity-50 mb-1">
+                <dt className="font-[family-name:var(--font-body)] text-xs uppercase tracking-widest opacity-70 mb-1">
                   Room
                 </dt>
                 <dd className="font-[family-name:var(--font-body)] font-semibold text-[var(--color-near-black)]">
@@ -252,7 +246,7 @@ export default function Venue() {
                 </dd>
               </div>
               <div>
-                <dt className="font-[family-name:var(--font-body)] text-xs uppercase tracking-widest opacity-50 mb-1">
+                <dt className="font-[family-name:var(--font-body)] text-xs uppercase tracking-widest opacity-70 mb-1">
                   When
                 </dt>
                 <dd className="font-[family-name:var(--font-body)] font-semibold text-[var(--color-near-black)]">

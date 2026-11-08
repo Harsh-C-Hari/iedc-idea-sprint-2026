@@ -1,34 +1,38 @@
+/**
+ * optimize-images.mjs — builds AVIF / WebP / JPG variants from the master JPGs.
+ * Masters live in assets-src/ (outside public, never shipped).
+ * masters are read from assets-src/*.jpg when present, else from the JPG itself.
+ * Widths never exceed the source width (no upscaling).
+ * Run: node scripts/optimize-images.mjs
+ */
 import sharp from 'sharp'
 import fs from 'fs'
 import path from 'path'
 
-const destDir = path.resolve('public/images')
+const dir = path.resolve('public/images')
+const srcDir = path.resolve('assets-src')
+const WIDTHS = [640, 1024, 1600]
+const jobs = ['cec-campus', 'cec-map']
 
-async function optimize() {
-  if (!fs.existsSync(destDir)) {
-    fs.mkdirSync(destDir, { recursive: true })
-  }
-
-  // 1. Campus photo
-  const campusSource = path.join(destDir, 'cec-campus.jpg')
-  if (fs.existsSync(campusSource)) {
-    console.log('Optimizing cec-campus images...')
-    await sharp(campusSource)
-      .sharpen({ sigma: 0.8, m1: 0.4, m2: 1.2 })
-      .webp({ quality: 92, effort: 6 })
-      .toFile(path.join(destDir, 'cec-campus.webp'))
-    console.log('Generated public/images/cec-campus.webp')
-  }
-
-  // 2. Map preview
-  const mapSource = path.join(destDir, 'cec-map.jpg')
-  if (fs.existsSync(mapSource)) {
-    console.log('Optimizing cec-map images...')
-    await sharp(mapSource)
-      .webp({ quality: 88, effort: 6 })
-      .toFile(path.join(destDir, 'cec-map.webp'))
-    console.log('Generated public/images/cec-map.webp')
+async function run() {
+  fs.mkdirSync(srcDir, { recursive: true })
+  for (const name of jobs) {
+    const master = path.join(srcDir, `${name}.jpg`)
+    const live = path.join(dir, `${name}.jpg`)
+    if (!fs.existsSync(master)) {
+      if (!fs.existsSync(live)) continue
+      fs.copyFileSync(live, master)
+    }
+    const meta = await sharp(master).metadata()
+    const widths = [...new Set(WIDTHS.filter((w) => w < meta.width).concat(meta.width))]
+    for (const w of widths) {
+      const base = sharp(master).resize({ width: w, withoutEnlargement: true })
+      const out = path.join(dir, `${name}-${w}`)
+      await base.clone().avif({ quality: 50, effort: 6 }).toFile(`${out}.avif`)
+      await base.clone().webp({ quality: 78, effort: 6 }).toFile(`${out}.webp`)
+      await base.clone().jpeg({ quality: 78, mozjpeg: true }).toFile(`${out}.jpg`)
+      console.log(name, w, 'avif/webp/jpg', ['avif', 'webp', 'jpg'].map((e) => fs.statSync(`${out}.${e}`).size))
+    }
   }
 }
-
-optimize().catch(console.error)
+run().catch((e) => { console.error(e); process.exit(1) })
