@@ -115,7 +115,8 @@ function FactStrip() {
             data-fact-item
             className={`flex flex-col justify-center gap-1.5 py-4 sm:py-0
                        ${idx % 2 === 0 ? 'pr-4 sm:px-6' : 'pl-4 sm:px-6'}
-                       lg:px-8 first:pl-0 last:pr-0`}
+                       lg:px-8 first:pl-0 last:pr-0
+                       max-sm:last:border-b max-sm:last:border-[var(--color-cream)]/10`}
           >
             <span
               className="font-[family-name:var(--font-display)]
