@@ -74,7 +74,7 @@ function MapFacade() {
           {/* Zoom layer: image, tint, pin and pulse scale together around the pin, so the pin stays on the marker */}
           <div
             className="absolute inset-0 transition-transform duration-500 ease-out will-change-transform
-                       group-hover:scale-[1.12] group-focus-within:scale-[1.12] motion-reduce:transition-none motion-reduce:transform-none"
+                       group-hover:scale-[1.12] group-has-[:focus-visible]:scale-[1.12] motion-reduce:transition-none motion-reduce:transform-none"
             style={{ transformOrigin: `${pin.x}% ${pin.y}%` }}
           >
           {mapImage ? (
@@ -232,7 +232,7 @@ export default function Venue() {
                     width={1024}
                     height={435}
                     className="absolute inset-0 h-full w-full transition-transform duration-700 ease-out will-change-transform
-                               group-hover:scale-[1.08] group-focus-within:scale-[1.08] motion-reduce:transition-none motion-reduce:transform-none"
+                               group-hover:scale-[1.08] motion-reduce:transition-none motion-reduce:transform-none"
                     imgClassName="w-full h-full object-cover object-center"
                   />
 
