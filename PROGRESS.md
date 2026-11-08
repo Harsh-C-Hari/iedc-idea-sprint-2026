@@ -66,3 +66,34 @@
 ## Follow-up fixes (after Phase 6)
 - Hero: removed `lg:mx-auto` again so the content block is left-anchored (64px from the left edge) like the original design; wordmark -> Explore sits to the left. Desktop fit assertions are unaffected (vertical only).
 - Timeline mobile day toggle: the toggle now lives in its own full-bleed band (`.day-toggle-wrap`, < lg and JS only) whose background follows the active day (near-black for Day 1, cream for Day 2), so it always matches the timeline panel below. On Day 2 the buttons use cream-surface variants (`outline` + `primary` with an orange offset block). Desktop is unchanged (band is display:none at lg).
+
+## Hero event card redesign — Phase 1: dark card, offset block, button, focus ring (done)
+- Card wrapper (lg only): near-black surface, `--radius-sm`, solid 6px orange offset block (`shadow-[6px_6px_0_0_var(--color-orange)]`, same 6px offset the `.brutal` card spec uses), `relative`, `--focus-ring: lime`. No hover lift.
+- `EventDate` and `Countdown` got an `onDarkAtLg` prop (default `false`); default class strings are unchanged. When true, lg-only classes: cream date lines / labels, lime digits, orange colons, cream "SPRINT COMPLETED". "LIVE NOW" stays orange.
+- Register button: lg-scoped className overrides on the same single `Button` (orange face, near-black text, orange-hover on hover, lime block). Computed styles verified normal and hover. Button.jsx untouched.
+- Focus: Tab order Explore -> Register unchanged; Register ring is 3px lime.
+- Desktop fit assertions: ALL PASS at 1920x937, 1536x730, 1440x800, 1366x650, 1280x600, 1024x700, 2560x1080, 1920x1200.
+- Mobile/tablet frozen diff vs reference at 320x568, 360x740, 390x844, 430x932, 768x1024, 1023x768: identical (the animated fragments are hidden in the freeze; a 1px flicker at 390x844 also occurs between two runs of the untouched reference).
+- Tiles (Phase 2), sticker + cluster (Phase 3), a11y/docs (Phase 4) still to do.
+
+## Hero event card redesign — Phase 2: countdown tiles (done)
+- At lg (only when `onDarkAtLg`), the countdown row is an equal-column grid (4 columns before, 3 live, gap 8px), colons hidden (`lg:hidden`). Each `Unit` is a tile: cream at 10% fill, 1px cream-25% border, `--radius-sm`, lime tabular digits, cream 70% label. Digits are 2.75rem at lg (default stays 2.85rem on every other usage).
+- Measured: tiles 77px wide (105px live), digits 58.7px, no overflow, one row, tile sizes constant over 3s of ticking; same at 1440x800, 1024x700 and 1920x937. "SPRINT COMPLETED" renders in cream.
+- Fit assertions: ALL PASS at all 8 desktop viewports.
+- Mobile/tablet frozen diff vs reference at 6 sizes: identical (two runs, fresh dev server).
+- **Fix of a Phase 1 slip:** class strings written as `mt-1${...}` hid the `mt-1` token from Tailwind's scanner, so the label margin was dropped on a fresh build (a long-running dev server had it cached). All appended conditionals now have a space before `${`. Lesson: always restart/`--force` the dev server before the mobile diff.
+
+## Hero event card redesign — Phase 3: Spark sticker + 3D cluster (done)
+- Sticker: decorative `Spark` (96px, orange, `aria-hidden`, `pointer-events-none`, `hidden lg:block`), rotated 12deg on an inner wrapper, anchored to the card's top-right corner (`-top-[3.25rem] -right-[2.75rem]`). The outer wrapper carries `data-hero="frag"`, so it reuses the existing entrance (ends at opacity 1, scale 1; no float animation added). The card has no `overflow-hidden`; the hero's own clip does not cut the sticker at any tested size. 96px is the largest size that stays inside the viewport at 1280 and 1024 (112px poked out).
+- Cluster: now `hidden min-[1800px]:flex` (still `short-desktop:!hidden`), so it only appears when there is room to the right of the card (card + block + sticker end ~x=1262). Its own central `Spark` was removed so there is one spark moment (the sticker).
+- `scratch-tests/sticker.mjs` asserts at 11 viewports (incl. 1799 vs 1800): sticker fully inside viewport and >=8px below the 64px navbar, not over the date text, ends at opacity 1 / no transform, cluster found, shown only >=1800 wide and tall, and its bounding box never within 12px of card+block+sticker. ALL PASS.
+- Fit assertions (8 viewports): ALL PASS. `npm run build` passes.
+- Mobile/tablet frozen diff vs reference at 6 sizes: identical (a single 1-shade pixel at 390x844 flickers on some runs of the untouched reference too).
+
+## Hero event card redesign — Phase 4: accessibility, regression, docs, final report (done)
+- Contrast (computed, WCAG): lime digits on card 14.49:1 (on tile surface 11.27:1); cream date line 1 15.11:1; cream 70% date line 2 / "Starts in" 7.85:1; cream 70% unit labels on tiles 6.60:1; LIVE NOW orange 5.29:1; Register text near-black on orange 5.29:1 (6.56:1 hover); lime focus ring 14.49:1. Only miss: decorative orange block vs cream page 2.86:1 (not text, not a control boundary; the card edge itself is 15:1).
+- `scratch-tests/a11y.mjs`: ALL PASS — hero tab order Explore -> Register, 3px lime ring, Enter -> `#registration`; date reads as one sentence; countdown `role="timer"`, no `aria-live` in the Hero; sticker and cluster `aria-hidden`, sticker not focusable; all Hero elements settle visible, sticker ends opacity 1 / scale 1 / no animation, reduced motion static and visible.
+- Desktop fit assertions: ALL PASS at 1920x937, 1536x730, 1440x800, 1366x650, 1280x600, 1024x700, 2560x1080, 1920x1200. Sticker/cluster assertions: ALL PASS at 11 viewports.
+- Mobile/tablet frozen diff vs reference at 6 sizes (two runs, fresh dev server): identical.
+- `npm run build` passes; only the pre-existing three.js chunk-size warning.
+- `doc/QA-CHECKLIST.md` updated (4 lines). Deferred / not done: nothing from the plan. Open questions resolved on defaults: 24rem column kept, cluster hidden below 1800px, orange sticker.

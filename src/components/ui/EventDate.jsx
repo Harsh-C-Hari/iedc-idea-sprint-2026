@@ -64,23 +64,23 @@ export function getEventDateParts(startISO = eventConfig.startISO, endISO = even
   return { startText, endText, joiner, t1, t2, spoken, duration: durationLabel(startISO, endISO) }
 }
 
-export default function EventDate({ className = '' }) {
+export default function EventDate({ className = '', onDarkAtLg = false }) {
   const { startText, endText, joiner, t1, t2, spoken, duration } = getEventDateParts()
   return (
     <div data-event-date className={className}>
       <p className="sr-only">{spoken}</p>
       <div aria-hidden="true">
         <p
-          className="font-[family-name:var(--font-display)] text-[1.75rem] sm:text-[2rem]
-                     leading-none tracking-[-0.02em] text-[var(--color-near-black)]"
+          className={`font-[family-name:var(--font-display)] text-[1.75rem] sm:text-[2rem]
+                     leading-none tracking-[-0.02em] text-[var(--color-near-black)] ${onDarkAtLg ? ' lg:text-[var(--color-cream)]' : ''}`}
         >
           <time dateTime={eventConfig.startISO}>{startText}</time>
           {joiner}
           <time dateTime={eventConfig.endISO}>{endText}</time>
         </p>
         <p
-          className="font-[family-name:var(--font-body)] text-sm leading-snug
-                     text-[var(--color-near-black)] opacity-70 mt-2"
+          className={`font-[family-name:var(--font-body)] text-sm leading-snug
+                     text-[var(--color-near-black)] opacity-70 mt-2 ${onDarkAtLg ? ' lg:text-[var(--color-cream)]' : ''}`}
         >
           <time dateTime={eventConfig.startISO}>{t1}</time> to{' '}
           <time dateTime={eventConfig.endISO}>{t2}</time> · {duration}

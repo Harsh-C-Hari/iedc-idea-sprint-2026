@@ -85,7 +85,7 @@ export default function MobileMenu({ id, isOpen, onClose, triggerRef, activeId =
 
       <nav aria-label="Mobile navigation">
         <ul className="list-none m-0 p-0 flex flex-col items-center gap-6">
-          {nav.map(({ label, href }) => (
+          {nav.filter((item) => item.href !== '#registration').map(({ label, href }) => (
             <li key={href}>
               <a
                 href={href}

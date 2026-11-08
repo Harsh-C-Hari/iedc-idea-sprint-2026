@@ -167,18 +167,9 @@ export default function Hero() {
           {/* Floating 3D Geometric Cluster (Right side background, desktop) */}
           <div
             aria-hidden="true"
-            className="hidden lg:flex short-desktop:!hidden items-center justify-center absolute right-[2%] xl:right-[6%] top-1/2 -translate-y-1/2 pointer-events-none select-none z-0 lg:opacity-40"
+            className="hidden min-[1800px]:flex short-desktop:!hidden items-center justify-center absolute right-[2%] xl:right-[6%] top-1/2 -translate-y-1/2 pointer-events-none select-none z-0 lg:opacity-40"
           >
             <div className="relative w-[340px] xl:w-[400px] aspect-square flex items-center justify-center">
-              {/* Central primary Spark */}
-              <div
-                data-hero="frag"
-                className="relative z-10"
-                style={{ animation: 'heroFloat1 8s ease-in-out infinite' }}
-              >
-                <Spark size={110} color="orange" />
-              </div>
-
               {/* Orbiting large Ring */}
               <div
                 data-hero="frag"
@@ -335,12 +326,23 @@ export default function Hero() {
 
           {/* Event card — date, countdown and CTA read as one unit (when → how long → act) */}
           <div data-hero="event" className="mt-8 short-mobile:mt-5 lg:mt-0 lg:col-start-2 lg:row-start-1
-                     lg:bg-[var(--color-cream)] lg:border-2 lg:border-[var(--color-near-black)] lg:rounded-[var(--radius-sm)] lg:p-6">
-          <EventDate />
+                     lg:relative lg:bg-[var(--color-near-black)] lg:border-2 lg:border-[var(--color-near-black)] lg:rounded-[var(--radius-sm)] lg:p-6
+                     lg:shadow-[6px_6px_0_0_var(--color-orange)] lg:[--focus-ring:var(--color-lime)]">
+          {/* Spark sticker — brand moment on the card's top-right corner (lg+ only, decorative) */}
+          <div
+            aria-hidden="true"
+            data-hero="frag"
+            className="hidden lg:block absolute -top-[3.25rem] -right-[2.75rem] z-10 pointer-events-none select-none"
+          >
+            <div className="rotate-[12deg]">
+              <Spark size={96} color="orange" />
+            </div>
+          </div>
+          <EventDate onDarkAtLg />
 
           {/* Countdown */}
           <div data-hero="countdown" className="mt-6 short-mobile:mt-4">
-            <Countdown />
+            <Countdown onDarkAtLg />
           </div>
 
           {/* CTAs */}
@@ -352,7 +354,8 @@ export default function Hero() {
               size="lg"
               disabled={ctaDisabled(status)}
               aria-disabled={ctaDisabled(status)}
-              className="w-full sm:w-auto lg:w-full"
+              className="w-full sm:w-auto lg:w-full lg:text-[var(--color-near-black)] lg:[--b-face:var(--color-orange)]
+                         lg:hover:[--b-face:var(--color-orange-hover)] lg:[--b-color:var(--color-lime)]"
             >
               {ctaLabel(status)}
             </Button>
