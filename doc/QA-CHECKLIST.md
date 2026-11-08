@@ -10,7 +10,7 @@ _Plan section G · Audited 2026-11-07 · Build `9719e46`_
 | A1 | Skip link present and functional | ✅ PASS | `<a href="#main-content" class="skip-link">` in App.jsx L59; CSS `.skip-link` moves off-screen via `transform`, reveals on `:focus` |
 | A2 | All images have `alt` or `aria-hidden` | ✅ PASS | Spark SVG has `aria-hidden="true"`; Venue map `aria-hidden="true"`; decorative fragments `aria-hidden="true"` |
 | A3 | All interactive elements ≥ 44 × 44 px touch target | ✅ PASS | Button.jsx enforces `min-h-[48px]`; MobileMenu CTA `min-h-[48px]`; BackToTop has adequate tap area |
-| A4 | Focus rings visible on all interactive elements | ✅ PASS | Button.jsx: `focus-visible:outline-[3px] focus-visible:outline-[var(--color-near-black)]`; Footer links: `focus-visible:outline-[var(--color-cream)]`; Registration inputs use `focus-visible:border-[var(--color-near-black)]` |
+| A4 | Focus rings visible on all interactive elements | ✅ PASS | Button.jsx: `focus-visible:outline-[3px] focus-visible:outline-[var(--color-near-black)]`; Footer links: `focus-visible:outline-[var(--color-cream)]`; Registration inputs use `focus-visible:border-[var(--color-near-black)]`. Footer icon links (SocialLinks.jsx): 44×44 targets (40 at ≤360px), 3px cream focus outline, lime hover/focus; icon-only so each has a descriptive `aria-label`, SVGs `aria-hidden`. |
 | A5 | `aria-live="polite"` on prompt card | ✅ PASS | IdeaSpark.jsx L236 |
 | A6 | Registration error summary: `aria-live="assertive"`, focussed on failed Next | ✅ PASS | Registration.jsx L85; `summaryRef` receives `.focus()` on failed step advance |
 | A7 | Registration form: all inputs labelled | ✅ PASS | Field.jsx uses `htmlFor={id}` label + `id` on input; Select.jsx and Stepper.jsx follow same pattern |
@@ -32,7 +32,7 @@ _Plan section G · Audited 2026-11-07 · Build `9719e46`_
 | B4 | Lime `#D9F36A` on near-black `#171717` (accent text, wipes) | ≈ 11.6 : 1 | ✅ PASS |
 | B5 | "2026" outline `#171717` stroke on cream `#F2EBDD` (outlined display type) | ≈ 14.1 : 1 | ✅ PASS (≥ 3 : 1 large text) |
 | B6 | Orange on cream — small text **prohibited**; only exception is `--color-orange-deep` `#D94A1A` on the ≥ 24 px hero wordmark, countdown colons and step numerals | ≈ 3.58 : 1 | ✅ PASS (≥ 3 : 1 large text); no small orange text on cream |
-| B6a | Small muted text (labels, meta, footer) raised from 30–60 % to 70 % opacity and ≥ 12 px | ≥ 4.5 : 1 | ✅ PASS — site audit: 27 → 0 real failures (1 false positive: outlined "2026") |
+| B6a | Small muted text (labels, meta, footer) raised from 30–60 % to 70 % opacity and ≥ 12 px | ≥ 4.5 : 1 | ✅ PASS — site audit: 27 → 0 real failures (1 false positive: outlined "2026"). Footer compaction: nav links and © text keep their 70–80 % opacity; icon glyphs cream/80 on near-black (≥ 9:1); icon border is decorative. |
 | B7 | Lime on cream — **prohibited** | — | ✅ PASS — lime is only used on near-black backgrounds or as a fill with near-black text |
 
 ---
@@ -46,7 +46,7 @@ _Plan section G · Audited 2026-11-07 · Build `9719e46`_
 | C3 | About (manifesto + journey) animations skip | ✅ PASS | About.jsx L23 `REDUCED` guard; L61 and L134 early returns |
 | C4 | Timeline animation skips | ✅ PASS | Timeline.jsx L27 `REDUCED`; L97 early return |
 | C5 | Challenge (TravellingSpark, fact strip) animations skip | ✅ PASS | Challenge.jsx L27 `REDUCED`; L79, L139, L213 early returns |
-| C6 | Footer clip reveal skips | ✅ PASS | Footer.jsx: `if (REDUCED) return` |
+| C6 | Footer clip reveal skips | ✅ PASS | Footer.jsx: `if (REDUCED) return`. Footer compaction (icons + compact grid) adds no animation; hover is a colour transition only. |
 | C7 | SparkScene (3D) skips entirely on reduced motion | ✅ PASS | `webgl.js` `canUseWebGL()` returns `false` when `reducedMotion` → SVG fallback shown |
 | C8 | CSS global `prefers-reduced-motion` rule present | ✅ PASS | `src/styles/index.css` L130: `@media (prefers-reduced-motion: reduce) { * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important } }` |
 | C9 | Countdown ticks without motion concerns | ✅ PASS | `useCountdown` uses number state only; no CSS animation involved in digit change |

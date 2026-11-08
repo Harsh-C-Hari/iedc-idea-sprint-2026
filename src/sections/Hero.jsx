@@ -322,15 +322,18 @@ export default function Hero() {
             >
               {ctaLabel(status)}
             </Button>
-            <Button
-              as="a"
-              href="#about"
-              variant="outline"
-              size="lg"
-              className="hidden sm:inline-flex w-full sm:w-auto"
-            >
-              Explore
-            </Button>
+            {/* Wrapper owns visibility: Button's base `display` would beat `hidden` on the Button itself. */}
+            <div className="hidden sm:block">
+              <Button
+                as="a"
+                href="#about"
+                variant="outline"
+                size="lg"
+                className="w-full sm:w-auto"
+              >
+                Explore
+              </Button>
+            </div>
             <a
               href="#about"
               className="sm:hidden self-center font-[family-name:var(--font-body)] text-sm font-semibold

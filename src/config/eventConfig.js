@@ -144,14 +144,25 @@ const eventConfig = {
      * LinkedIn URL. Verified by organizers. Hidden when null.
      */
     linkedin: 'https://www.linkedin.com/company/iedc-bootcamp-cec/',
+
+    /**
+     * GitHub URL. The organization has no GitHub, so this stays null (icon hidden).
+     * Never invent URLs.
+     */
+    github: null,
+
+    /**
+     * X (Twitter) URL. Supplied by organizers. Hidden when null.
+     */
+    x: 'https://x.com/iedc_cec',
   },
 
   contact: {
     /**
      * Contact email address.
-     * null until approved by organizers (plan section F Q5). Hidden when null.
+     * Supplied by organizers. Hidden when null.
      */
-    email: null,
+    email: 'iedc@ceconline.edu',
 
     /**
      * Organiser website (verified). Hidden when null.

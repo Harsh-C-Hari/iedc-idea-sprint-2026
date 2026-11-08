@@ -2,8 +2,7 @@
  * Navbar.jsx — fixed minimal navigation bar.
  *
  * Layout (plan section D):
- *   • IEDC BOOTCAMP CEC wordmark — left (shortened to "IEDC CEC" below sm to
- *     avoid crowding the Register button at 390px)
+ *   • IEDC logo mark — left, links to the hero (all breakpoints)
  *   • Section links — centre, hidden below 1024px
  *   • Register button — right, always visible including on mobile
  *
@@ -80,7 +79,7 @@ export default function Navbar() {
         className="fixed top-0 inset-x-0 z-[var(--z-nav)] h-16 flex items-center px-5 md:px-8
                    bg-[var(--color-near-black)] text-[var(--color-cream)]"
       >
-        {/* Wordmark — "IEDC CEC" on mobile to avoid crowding the Register button */}
+        {/* IEDC logo mark — same on every breakpoint */}
         <a
           href="#hero"
           aria-label="IEDC BOOTCAMP CEC — back to top"
@@ -88,7 +87,7 @@ export default function Navbar() {
                      text-[var(--color-cream)] no-underline shrink-0 mr-4
                      focus-visible:outline-[var(--color-cream)]"
         >
-          <picture className="sm:hidden block">
+          <picture className="block">
             <source srcSet="/images/iedc-mark-cream.webp" type="image/webp" />
             <img
               src="/images/iedc-mark-cream.png"
@@ -96,10 +95,9 @@ export default function Navbar() {
               width="560"
               height="224"
               decoding="async"
-              className="block h-7 w-auto"
+              className="block h-7 sm:h-8 w-auto"
             />
           </picture>
-          <span className="hidden sm:inline">IEDC BOOTCAMP CEC</span>
         </a>
 
         {/* Desktop nav — centre (omits Register since it is already the dedicated CTA on the right) */}

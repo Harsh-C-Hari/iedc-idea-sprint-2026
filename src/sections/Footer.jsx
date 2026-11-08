@@ -5,8 +5,8 @@
  *   • Closing headline from data/content.js (footerHeadline) — verbatim
  *   • IEDC BOOTCAMP CEC wordmark (typographic — no logo until verified)
  *   • IDEA SPRINT 2026
- *   • Nav links (all six sections)
- *   • Instagram, LinkedIn, website and email each hidden when null in config
+ *   • Nav links (all six sections), compact grid
+ *   • Social as icon buttons (SocialLinks); each hidden when null in config
  *   • Email only when approved in config (not null)
  *   • © 2026 IEDC BOOTCAMP CEC
  *
@@ -19,6 +19,7 @@
 import { useRef } from 'react'
 import { useGSAP } from '@gsap/react'
 import SectionShell from '../components/ui/SectionShell.jsx'
+import SocialLinks from '../components/ui/SocialLinks.jsx'
 import nav from '../data/nav.js'
 import eventConfig from '../config/eventConfig.js'
 import { footerHeadline } from '../data/content.js'
@@ -31,18 +32,9 @@ const REDUCED =
 
 /** Shared footer link style: 44px touch target, visible focus ring, readable on near-black */
 const linkCls = `font-[family-name:var(--font-body)] text-sm text-[var(--color-cream)]
-  opacity-80 hover:opacity-100 no-underline inline-flex items-center min-h-[44px] py-2
+  opacity-80 hover:opacity-100 no-underline inline-flex items-center min-h-[44px]
   transition-opacity duration-[var(--duration-fast)]
   focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-cream)]`
-
-/** External link: new tab, noopener, descriptive accessible name */
-function ExtLink({ href, label, children }) {
-  return (
-    <a href={href} target="_blank" rel="noopener noreferrer" aria-label={label} className={linkCls}>
-      {children}<span aria-hidden="true" className="ml-1">↗</span>
-    </a>
-  )
-}
 
 /** Back to top button */
 function BackToTop() {
@@ -65,19 +57,13 @@ function BackToTop() {
                  text-[var(--color-cream)] opacity-70 hover:opacity-100
                  transition-opacity duration-[var(--duration-fast)]
                  focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-cream)]
-                 flex items-center gap-2 min-h-[44px]"
+                 flex items-center justify-center gap-2 min-h-[44px] min-w-[44px] shrink-0"
     >
-      <span aria-hidden="true">↑</span> Back to top
+      <span aria-hidden="true">↑</span>
+      <span aria-hidden="true" className="hidden sm:inline">Back to top</span>
     </button>
   )
 }
-
-const hasContact = Boolean(
-  eventConfig.social.instagram ||
-  eventConfig.social.linkedin ||
-  eventConfig.contact.email ||
-  eventConfig.contact.website
-)
 
 export default function Footer() {
   const footerRef = useRef(null)
@@ -110,13 +96,13 @@ export default function Footer() {
       id="footer"
       ref={footerRef}
       className="bg-[var(--color-near-black)] text-[var(--color-cream)]
-                 px-5 md:px-8 lg:px-16 pt-20 pb-10 overflow-hidden"
+                 px-5 md:px-8 lg:px-16 pt-14 md:pt-20 pb-[max(1.5rem,env(safe-area-inset-bottom))] md:pb-6 overflow-hidden"
       role="contentinfo"
     >
       <div className="max-w-6xl mx-auto">
 
         {/* Closing headline */}
-        <div className="mb-12 lg:mb-16">
+        <div className="mb-8 lg:mb-12">
           <p
             aria-label={footerHeadline.join(' ')}
             className="font-[family-name:var(--font-display)]
@@ -136,7 +122,7 @@ export default function Footer() {
         </div>
 
         {/* Event name — one line, scaled to the full container width via container units */}
-        <div className="border-t border-[var(--color-cream)]/10 pt-8 mb-12"
+        <div className="border-t border-[var(--color-cream)]/10 pt-6 mb-8"
              style={{ containerType: 'inline-size' }}>
           <p
             className="font-[family-name:var(--font-display)] uppercase whitespace-nowrap
@@ -148,12 +134,13 @@ export default function Footer() {
           </p>
         </div>
 
-        {/* Logo + links */}
-        <div className="pb-10 flex flex-col md:flex-row justify-between items-start gap-10">
+        {/* Brand + social | Explore — one row from md up, no column drives dead space */}
+        <div className="grid gap-8 md:grid-cols-12 md:gap-x-10 items-start">
 
-          {/* Logo + organiser (space reserved: 560x333) */}
-          <div className="flex flex-col gap-4">
-            <picture>
+          {/* Brand column: logo, organiser line, social icons directly beneath */}
+          <div className="md:col-span-7 lg:col-span-6 grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-3
+                          md:flex md:flex-row md:items-center md:gap-5">
+            <picture className="col-start-1 row-start-1">
               <source srcSet="/images/iedc-logo-cream.webp" type="image/webp" />
               <img
                 src="/images/iedc-logo-cream.png"
@@ -162,87 +149,40 @@ export default function Footer() {
                 height="333"
                 loading="lazy"
                 decoding="async"
-                className="w-40 md:w-48 h-auto"
+                className="w-32 md:w-40 h-auto md:shrink-0"
                 style={{ aspectRatio: '560 / 333' }}
               />
             </picture>
-            <p className="font-[family-name:var(--font-body)] text-sm text-[var(--color-cream)]/80">
-              {eventConfig.organizer} · {eventConfig.college}
-            </p>
+            {/* display:contents on mobile keeps the grid placement; from md it stacks beside the logo */}
+            <div className="contents md:flex md:flex-col md:items-start md:gap-3 md:min-w-0">
+              <p className="col-span-2 row-start-2 font-[family-name:var(--font-body)] text-sm text-[var(--color-cream)]/80">
+                {eventConfig.organizer} · {eventConfig.college}
+              </p>
+              <SocialLinks className="col-start-2 row-start-1 justify-end md:justify-start" />
+            </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-10 md:gap-16 md:ml-auto text-left">
-            {/* Contact + social — each hidden when null (plan section H) */}
-            {hasContact && (
-              <div>
-                <h2 className="font-[family-name:var(--font-body)] text-xs uppercase tracking-widest
-                               text-[var(--color-cream)]/70 mb-2">
-                  Contact &amp; social
-                </h2>
-                <ul className="list-none p-0 m-0 flex flex-col items-start">
-                  {eventConfig.social.linkedin && (
-                    <li>
-                      <ExtLink
-                        href={eventConfig.social.linkedin}
-                        label={`${eventConfig.organizer} on LinkedIn (opens in new tab)`}
-                      >
-                        LinkedIn
-                      </ExtLink>
-                    </li>
-                  )}
-                  {eventConfig.social.instagram && (
-                    <li>
-                      <ExtLink
-                        href={eventConfig.social.instagram}
-                        label={`${eventConfig.organizer} on Instagram (opens in new tab)`}
-                      >
-                        Instagram
-                      </ExtLink>
-                    </li>
-                  )}
-                  {eventConfig.contact.website && (
-                    <li>
-                      <ExtLink
-                        href={eventConfig.contact.website}
-                        label={`${eventConfig.organizer} website, ${eventConfig.contact.websiteLabel || eventConfig.contact.website} (opens in new tab)`}
-                      >
-                        {eventConfig.contact.websiteLabel || eventConfig.contact.website}
-                      </ExtLink>
-                    </li>
-                  )}
-                  {eventConfig.contact.email && (
-                    <li>
-                      <a href={`mailto:${eventConfig.contact.email}`} className={linkCls}>
-                        {eventConfig.contact.email}
-                      </a>
-                    </li>
-                  )}
-                </ul>
-              </div>
-            )}
-
-            {/* Nav links */}
-            <nav aria-label="Footer navigation">
-              <h2 className="font-[family-name:var(--font-body)] text-xs uppercase tracking-widest
-                             text-[var(--color-cream)]/70 mb-2">
-                Explore
-              </h2>
-              <ul className="list-none p-0 m-0 flex flex-col items-start">
-                {nav.map(({ label, href }) => (
-                  <li key={href}>
-                    <a href={href} className={linkCls}>{label}</a>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          </div>
+          {/* Explore column: compact link grid */}
+          <nav aria-label="Footer navigation" className="md:col-span-5 lg:col-span-6">
+            <h2 className="font-[family-name:var(--font-body)] text-xs uppercase tracking-widest
+                           text-[var(--color-cream)]/70 mb-1">
+              Explore
+            </h2>
+            <ul className="list-none p-0 m-0 grid grid-cols-2 min-[360px]:grid-cols-3 gap-x-4 xl:flex xl:gap-x-8">
+              {nav.map(({ label, href }) => (
+                <li key={href}>
+                  <a href={href} className={linkCls}>{label}</a>
+                </li>
+              ))}
+            </ul>
+          </nav>
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-10 pt-6 border-t border-[var(--color-cream)]/10
-                        flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="mt-8 pt-5 border-t border-[var(--color-cream)]/10
+                        flex flex-row justify-between items-center gap-4">
           <p className="font-[family-name:var(--font-body)] text-xs text-[var(--color-cream)] opacity-70">
-            © 2026 IEDC BOOTCAMP CEC. All rights reserved.
+            © 2026 IEDC BOOTCAMP CEC.<span className="hidden sm:inline"> All rights reserved.</span>
           </p>
           <BackToTop />
         </div>
