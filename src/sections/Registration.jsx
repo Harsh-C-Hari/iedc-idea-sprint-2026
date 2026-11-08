@@ -162,7 +162,7 @@ function TeamStep({ state, setTeamName, setTeamSize, touch }) {
                 className={`
                   brutal inline-flex items-center justify-center w-14 h-12
                   font-[family-name:var(--font-display)] text-lg
-                  rounded-[var(--radius-sm)] cursor-pointer select-none [--b-bw:2px]
+                  rounded-[var(--radius-sm)] cursor-pointer select-none [--b-bw:2px] [--b-color:var(--color-orange)]
                   ${teamSize === n
                     ? '[--b-face:var(--color-cream)] [--b-edge:var(--color-cream)] text-[var(--color-near-black)]'
                     : '[--b-face:var(--color-near-black)] [--b-edge:var(--line)] text-[var(--color-cream)]'}
