@@ -7,8 +7,9 @@
  *   • "20 Nov, 5:00 PM to 21 Nov, 5:00 PM" (written out in full)
  *
  * MapFacade (Phase 3A):
- *   • Static map preview using cec-map.webp / cec-map.jpg
- *   • Animated LocationPin overlay with "Map preview" label chip
+ *   • Static map preview built from assets-src/cec-map.jpg (AVIF / WebP / JPG variants)
+ *   • Animated LocationPin anchored to the college marker (eventConfig.venue.mapPin)
+ *   • Cream tint over the map so the Google palette sits inside the site palette
  *   • "Load interactive map" button shown only if mapEmbedUrl is configured
  *   • Iframe NEVER created at load time (document.querySelectorAll('iframe').length === 0)
  *   • "Open in Google Maps" link if mapsUrl set, else "Search on Google Maps" fallback
@@ -23,23 +24,25 @@ import eventConfig from '../config/eventConfig.js'
 
 const SEARCH_URL = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(eventConfig.venue.college)}`
 
-/** Animated SVG location pin */
+/** Animated SVG location pin — drawn so the tip is at the bottom-centre of the box */
 function LocationPin({ color = 'var(--color-orange)' }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 32"
-      width="40"
-      height="53"
+      viewBox="-2 -2 28 34"
       aria-hidden="true"
-      className="animate-bounce"
+      overflow="visible"
+      className="block w-8 sm:w-9 lg:w-10 h-auto overflow-visible animate-bounce motion-reduce:animate-none drop-shadow-[0_2px_2px_rgb(23_23_23_/_0.35)]"
       style={{ animationDuration: '1.8s' }}
     >
       <path
         d="M12 0C5.373 0 0 5.373 0 12c0 8 12 20 12 20S24 20 24 12C24 5.373 18.627 0 12 0z"
         fill={color}
+        stroke="var(--color-near-black)"
+        strokeWidth="1.25"
+        strokeLinejoin="round"
       />
-      <circle cx="12" cy="12" r="4" fill="white" opacity="0.9" />
+      <circle cx="12" cy="12" r="4" fill="white" opacity="0.95" />
     </svg>
   )
 }
@@ -48,6 +51,9 @@ function LocationPin({ color = 'var(--color-orange)' }) {
 function MapFacade() {
   const mapImage = eventConfig.venue.mapImage
   const mapsUrl  = eventConfig.venue.mapsUrl
+  const { width: mapW, height: mapH } = eventConfig.venue.mapSize
+  const pin = eventConfig.venue.mapPin
+  const marker = eventConfig.venue.mapMarker
   const linkUrl  = mapsUrl ?? SEARCH_URL
   const linkLabel = mapsUrl ? 'Open in Google Maps' : 'Search on Google Maps'
 
@@ -62,17 +68,23 @@ function MapFacade() {
         target="_blank"
         rel="noopener noreferrer"
         aria-label={`Open ${eventConfig.venue.college} in Google Maps`}
-        className="relative block bg-[var(--color-cream)] w-full aspect-[4/3] overflow-hidden cursor-pointer focus-visible:outline-[var(--color-near-black)] focus-visible:outline-offset-[-6px]"
+        className="relative block bg-[var(--color-cream)] w-full overflow-hidden cursor-pointer focus-visible:outline-[var(--color-near-black)] focus-visible:outline-offset-[-6px]"
       >
-        <div className="absolute inset-0 w-full h-full">
+        <div className="relative w-full" style={{ aspectRatio: `${mapW} / ${mapH}` }}>
+          {/* Zoom layer: image, tint, pin and pulse scale together around the pin, so the pin stays on the marker */}
+          <div
+            className="absolute inset-0 transition-transform duration-500 ease-out will-change-transform
+                       group-hover:scale-[1.12] group-focus-within:scale-[1.12] motion-reduce:transition-none motion-reduce:transform-none"
+            style={{ transformOrigin: `${pin.x}% ${pin.y}%` }}
+          >
           {mapImage ? (
             <ImageSkeleton
               base="/images/cec-map"
-              widths={[640, 1024, 1200]}
+              widths={[640, mapW]}
               sizes="(min-width:1024px) 540px, 100vw"
-              alt="Map showing College of Engineering Chengannur"
-              width={1200}
-              height={900}
+              alt={`Street map of central Chengannur showing ${eventConfig.venue.college} east of the KSRTC depot, near the District Hospital`}
+              width={mapW}
+              height={mapH}
               className="absolute inset-0 h-full w-full"
               imgClassName="w-full h-full object-cover"
             />
@@ -89,19 +101,48 @@ function MapFacade() {
             </div>
           )}
 
-          {/* Animated LocationPin + interactive "Open on Google Maps" chip */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10">
+          {/* Warm cream tint: pulls the grey Google palette toward the site's cream */}
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 bg-[var(--color-cream)] mix-blend-multiply opacity-60 pointer-events-none"
+          />
+
+          {/* Pin: its tip sits exactly on the college marker (left/top are % of the image) */}
+          <div
+            aria-hidden="true"
+            className="absolute z-10 pointer-events-none -translate-x-1/2 -translate-y-full"
+            style={{ left: `${pin.x}%`, top: `${pin.y}%` }}
+          >
             <LocationPin />
-            <span
-              className="mt-2 px-3 py-1 font-[family-name:var(--font-body)] text-xs font-medium tracking-wide
-                         bg-[var(--color-near-black)]/85 text-[var(--color-cream)] rounded-full backdrop-blur-xs shadow-xs
-                         group-hover:bg-[var(--color-orange)] group-hover:text-[var(--color-near-black)]
-                         transition-colors duration-200 flex items-center gap-1.5 border border-white/10"
-            >
-              <span>Open on Google Maps</span>
-              <span aria-hidden="true" className="text-xs">↗</span>
-            </span>
           </div>
+          {/* Ring around the graduation-cap marker: sized as % of the map so it hugs the icon at every width */}
+          <span
+            aria-hidden="true"
+            className="absolute z-[5] pointer-events-none -translate-x-1/2 -translate-y-1/2 block aspect-square"
+            style={{ left: `${marker.x}%`, top: `${marker.y}%`, width: `${marker.size}%` }}
+          >
+            <span className="animate-ping absolute inset-0 rounded-full bg-[var(--color-orange)] opacity-60 motion-reduce:hidden" />
+            <span className="absolute inset-0 rounded-full border-[1.5px] lg:border-2 border-[var(--color-orange)] bg-[var(--color-orange)]/15 shadow-[0_0_0_1px_rgb(23_23_23_/_0.55)]" />
+          </span>
+          </div>
+
+          {/* Fixed edge outline (does not zoom) so the map reads as a card on the cream page */}
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 ring-1 ring-inset ring-[var(--color-near-black)]/15 pointer-events-none z-[6]"
+          />
+
+          {/* "Open on Google Maps" chip — bottom-centre keeps it off the map labels */}
+          <span
+            className="absolute z-10 bottom-3 left-1/2 -translate-x-1/2 pointer-events-none whitespace-nowrap
+                       px-3 py-1 font-[family-name:var(--font-body)] text-xs font-medium tracking-wide
+                       bg-[var(--color-near-black)]/90 text-[var(--color-cream)] rounded-full backdrop-blur-xs shadow-xs
+                       group-hover:bg-[var(--color-orange)] group-hover:text-[var(--color-near-black)]
+                       transition-colors duration-200 flex items-center gap-1.5 border border-white/10"
+          >
+            <span>Open on Google Maps</span>
+            <span aria-hidden="true" className="text-xs">↗</span>
+          </span>
         </div>
       </a>
 
@@ -190,7 +231,8 @@ export default function Venue() {
                     alt={`${eventConfig.venue.college} campus`}
                     width={1024}
                     height={435}
-                    className="absolute inset-0 h-full w-full"
+                    className="absolute inset-0 h-full w-full transition-transform duration-700 ease-out will-change-transform
+                               group-hover:scale-[1.08] group-focus-within:scale-[1.08] motion-reduce:transition-none motion-reduce:transform-none"
                     imgClassName="w-full h-full object-cover object-center"
                   />
 

@@ -24,7 +24,8 @@ async function run() {
       fs.copyFileSync(live, master)
     }
     const meta = await sharp(master).metadata()
-    const widths = [...new Set(WIDTHS.filter((w) => w < meta.width).concat(meta.width))]
+    // Skip sizes within 64px of the source width so we don't ship near-duplicate files
+    const widths = [...new Set(WIDTHS.filter((w) => w < meta.width - 64).concat(meta.width))]
     for (const w of widths) {
       const base = sharp(master).resize({ width: w, withoutEnlargement: true })
       const out = path.join(dir, `${name}-${w}`)

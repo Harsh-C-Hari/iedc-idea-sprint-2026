@@ -127,6 +127,26 @@ const eventConfig = {
     mapImage: 'cec-map.jpg',
 
     /**
+     * Pixel size of the master map image (assets-src/cec-map.jpg).
+     * Used to reserve the exact aspect ratio so the pin never drifts.
+     */
+    mapSize: { width: 1033, height: 730 },
+
+    /**
+     * Graduation-cap marker printed on the map image (next to the college name).
+     * x / y = centre of the cap disc, as % of image width / height.
+     * size  = ring diameter as % of image width (so it scales with the map).
+     * Measured from assets-src/cec-map.jpg; update if the map image is swapped.
+     */
+    mapMarker: { x: 68.1, y: 51.6, size: 2.8 },
+
+    /**
+     * Tip of the animated pin, as % of image width / height.
+     * Sits just above the ring so the cap icon stays visible inside it.
+     */
+    mapPin: { x: 68.1, y: 49.6 },
+
+    /**
      * Campus photo path (relative to /public/images/).
      * cec-campus.jpg with webp alternative in public/images/.
      */
