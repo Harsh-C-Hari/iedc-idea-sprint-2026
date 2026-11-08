@@ -12,11 +12,12 @@
  *   • Single h1, clip-reveal only. Never revealed from opacity: 0.
  *   • Respects prefers-reduced-motion.
  */
-import { useRef } from 'react'
+import { Fragment, useRef } from 'react'
 import { useGSAP } from '@gsap/react'
 import SectionShell from '../components/ui/SectionShell.jsx'
 import Button from '../components/ui/Button.jsx'
 import Countdown from '../components/ui/Countdown.jsx'
+import EventDate from '../components/ui/EventDate.jsx'
 import Spark from '../components/art/Spark.jsx'
 import { Cube, Ring, Disc, Sphere } from '../components/art/Fragments.jsx'
 import eventConfig from '../config/eventConfig.js'
@@ -31,6 +32,15 @@ function ctaLabel(status) {
 function ctaDisabled(status) {
   return status === 'closed'
 }
+
+/**
+ * Desktop (lg+) wordmark treatment — the agreed Option C vs. its fallback C-2.
+ *   'one-line' : IDEA SPRINT 2026 on a single line, sized by column width (cqw) with a height cap.
+ *   'stacked'  : IDEA / SPRINT / 2026 stacked, sized by viewport height.
+ * Both keep the three data-hero="wm-line" spans for the GSAP reveal.
+ */
+const DESKTOP_WORDMARK = 'stacked' // 'one-line' | 'stacked'
+const ONE_LINE = DESKTOP_WORDMARK === 'one-line'
 
 const REDUCED =
   typeof window !== 'undefined'
@@ -157,7 +167,7 @@ export default function Hero() {
           {/* Floating 3D Geometric Cluster (Right side background, desktop) */}
           <div
             aria-hidden="true"
-            className="hidden lg:flex items-center justify-center absolute right-[2%] xl:right-[6%] top-1/2 -translate-y-1/2 pointer-events-none select-none z-0"
+            className="hidden lg:flex short-desktop:!hidden items-center justify-center absolute right-[2%] xl:right-[6%] top-1/2 -translate-y-1/2 pointer-events-none select-none z-0 lg:opacity-40"
           >
             <div className="relative w-[340px] xl:w-[400px] aspect-square flex items-center justify-center">
               {/* Central primary Spark */}
@@ -218,22 +228,28 @@ export default function Hero() {
         </div>
 
         {/* ════ CONTENT — static (no cursor parallax, no transform) ════ */}
-        <div className="relative z-10 max-w-6xl w-full my-auto">
+        <div className="relative z-10 max-w-6xl w-full my-auto
+                        lg:grid lg:grid-cols-[minmax(0,1fr)_24rem] lg:gap-x-12 lg:items-center">
+          {/* Left column (lg+): wordmark, headline, supporting copy, Explore link. Plain block below lg. */}
+          <div data-hero-col="left" className="lg:col-start-1 lg:row-start-1 lg:[container-type:inline-size]">
           {/* Wordmark "IDEA SPRINT 2026" — solid orange-deep display type, 2026 outlined */}
           <div className="relative mb-2 lg:mb-0">
             <p
               aria-label="IDEA SPRINT 2026"
               data-hero="wordmark"
-              className="font-[family-name:var(--font-display)]
+              className={`font-[family-name:var(--font-display)]
                          leading-[0.88] tracking-[-0.04em]
-                         select-none pointer-events-none"
-              style={{ fontSize: 'clamp(2.8rem, 15vw, 11rem)' }}
+                         select-none pointer-events-none
+                         [font-size:clamp(2.8rem,15vw,11rem)]
+                         ${ONE_LINE
+                           ? 'lg:flex lg:items-end lg:whitespace-nowrap lg:gap-x-[0.2em] lg:leading-[0.95] lg:[font-size:min(10.2cqw,14vh)]'
+                           : 'lg:[font-size:min(9rem,15vh)]'}`}
             >
               <span aria-hidden="true" className="block overflow-hidden">
                 <span data-hero="wm-line" className="block text-[var(--color-orange-deep)]">IDEA</span>
               </span>
               <span aria-hidden="true" className="block">
-               <span className="relative inline-block">
+               <span className={`relative inline-block ${ONE_LINE ? 'lg:block' : ''}`}>
                 <span className="block overflow-hidden">
                   <span data-hero="wm-line" className="block text-[var(--color-orange-deep)]">SPRINT</span>
                 </span>
@@ -241,7 +257,7 @@ export default function Hero() {
                 <span
                   aria-hidden="true"
                   data-hero="spark"
-                  className="absolute"
+                  className={`absolute ${ONE_LINE ? 'lg:hidden' : ''}`}
                   style={{ left: '100%', top: '0', width: 'max-content', transform: 'translate(-30%,-55%)' }}
                 >
                   <Spark size={64} color="ink" className="hidden sm:block" />
@@ -251,8 +267,8 @@ export default function Hero() {
               </span>
               <span
                 aria-hidden="true"
-                className="block overflow-hidden"
-                style={{ fontSize: '0.5em', letterSpacing: '-0.02em' }}
+                className={`block overflow-hidden [font-size:0.5em] ${ONE_LINE ? 'lg:[font-size:1em]' : ''}`}
+                style={{ letterSpacing: '-0.02em' }}
               >
                 <span
                   data-hero="wm-line"
@@ -272,22 +288,24 @@ export default function Hero() {
             className="font-[family-name:var(--font-display)]
                        leading-[1.0] tracking-[-0.025em]
                        text-[var(--color-near-black)]
-                       max-w-[18ch] mt-6 lg:mt-10 focus:outline-none"
-            style={{ fontSize: 'clamp(1.65rem, 6.2vw, 5.25rem)' }}
+                       max-w-[18ch] mt-6 short-mobile:mt-4 focus:outline-none
+                       [font-size:clamp(1.65rem,6.2vw,5.25rem)]
+                       lg:mt-5 lg:max-w-none lg:flex lg:flex-wrap lg:gap-x-[0.3em] lg:whitespace-nowrap
+                       lg:[font-size:min(7.1cqw,7.4vh)]"
           >
-            {['24 HOURS.', 'ONE IDEA.', 'ENDLESS', 'POSSIBILITIES.'].map((word) => (
-              <span key={word} className="block overflow-hidden">
-                <span data-hero="h1-word" className="block">{word}</span>
-              </span>
+            {['24 HOURS.', 'ONE IDEA.', 'ENDLESS', 'POSSIBILITIES.'].map((word, i) => (
+              <Fragment key={word}>
+                <span className="block overflow-hidden">
+                  <span data-hero="h1-word" className="block">{word}</span>
+                </span>
+                {/* Desktop only: flex line break so the headline reads as two lines (same words). */}
+                {i === 1 && <span aria-hidden="true" className="hidden lg:block basis-full h-0" />}
+              </Fragment>
             ))}
           </h1>
 
           {/* Decorative near-layer fragments (overlapping type) — static, no parallax */}
           <div aria-hidden="true" className="pointer-events-none select-none">
-            <div data-hero="frag" className="absolute hidden lg:block"
-              style={{ top: '54%', left: 'clamp(14rem, 32vw, 28rem)' }}>
-              <Ring size={52} color="#F05A28" opacity={0.22} />
-            </div>
             <div data-hero="frag" className="absolute hidden sm:block"
               style={{ top: '72%', left: 'clamp(10rem, 28vw, 24rem)' }}>
               <Disc size={22} color="#D9F36A" opacity={0.30} />
@@ -299,18 +317,34 @@ export default function Hero() {
             data-hero="support"
             className="font-[family-name:var(--font-body)] text-[1rem] md:text-[1.125rem]
                        leading-relaxed text-[var(--color-near-black)] opacity-70
-                       max-w-[48ch] mt-6"
+                       max-w-[48ch] mt-6 short-mobile:mt-4 lg:mt-4 lg:text-base"
           >
             {heroSupporting}
           </p>
 
+          {/* Explore — desktop text link (tablet keeps the outline button, phones the arrow link) */}
+          <a
+            href="#about"
+            className="hidden lg:inline-flex mt-5 min-h-[44px] items-center font-[family-name:var(--font-body)] text-sm font-semibold
+                       uppercase tracking-wide underline underline-offset-4
+                       text-[var(--color-near-black)] focus-visible:outline-[var(--color-near-black)]"
+          >
+            Explore ↓
+          </a>
+          </div>
+
+          {/* Event card — date, countdown and CTA read as one unit (when → how long → act) */}
+          <div data-hero="event" className="mt-8 short-mobile:mt-5 lg:mt-0 lg:col-start-2 lg:row-start-1
+                     lg:bg-[var(--color-cream)] lg:border-2 lg:border-[var(--color-near-black)] lg:rounded-[var(--radius-sm)] lg:p-6">
+          <EventDate />
+
           {/* Countdown */}
-          <div data-hero="countdown" className="mt-8">
+          <div data-hero="countdown" className="mt-6 short-mobile:mt-4">
             <Countdown />
           </div>
 
           {/* CTAs */}
-          <div data-hero="cta" className="mt-8 flex flex-col sm:flex-row gap-4">
+          <div data-hero="cta" className="mt-8 short-mobile:mt-5 flex flex-col sm:flex-row lg:flex-col gap-4">
             <Button
               as="a"
               href="#registration"
@@ -318,12 +352,12 @@ export default function Hero() {
               size="lg"
               disabled={ctaDisabled(status)}
               aria-disabled={ctaDisabled(status)}
-              className="w-full sm:w-auto"
+              className="w-full sm:w-auto lg:w-full"
             >
               {ctaLabel(status)}
             </Button>
             {/* Wrapper owns visibility: Button's base `display` would beat `hidden` on the Button itself. */}
-            <div className="hidden sm:block">
+            <div className="hidden sm:block lg:hidden">
               <Button
                 as="a"
                 href="#about"
@@ -343,12 +377,13 @@ export default function Hero() {
               Explore ↓
             </a>
           </div>
+          </div>
 
           {/* Metadata row */}
           <ul
             data-hero="meta"
             aria-label="Event details"
-            className="mt-10 flex flex-wrap gap-x-6 gap-y-2 list-none p-0 m-0"
+            className="mt-10 flex flex-wrap gap-x-6 gap-y-2 list-none p-0 m-0 lg:hidden"
           >
             {heroMeta.map((item) => (
               <li

@@ -279,7 +279,9 @@ function TimelineHeader({ progress, phase, nowPct, activeDay, onDay, liveDay }) 
   const caption =
     phase === 'live' ? `Live now · ${nowPct}% of the 24 hours` :
     phase === 'after' ? 'Event ended' : 'Starts 20 Nov · 5:00 PM IST'
+  const onDay1 = activeDay === 1
   return (
+    <>
     <div className="bg-[var(--color-near-black)] text-[var(--color-cream)] px-5 md:px-8 lg:px-16 pt-16 lg:pt-20">
       <div className="max-w-4xl mx-auto">
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
@@ -313,20 +315,29 @@ function TimelineHeader({ progress, phase, nowPct, activeDay, onDay, liveDay }) 
             style={{ transform: `scaleX(${progress})` }}
           />
         </div>
-
-        {/* Day toggle: < lg and JS only (see .day-toggle in index.css) */}
-        <div role="group" aria-label="Choose schedule day" className="day-toggle gap-5 mt-8 pr-1 pb-1">
+      </div>
+    </div>
+    {/* Day toggle band (< lg, JS only): full-bleed, takes the active day's panel colour so the
+        buttons sit on the same background as the timeline below them. */}
+    <div
+      className={`day-toggle-wrap px-5 md:px-8 pt-8 pb-1
+        ${onDay1 ? 'bg-[var(--color-near-black)] text-[var(--color-cream)]'
+                 : 'bg-[var(--color-cream)] text-[var(--color-near-black)]'}`}
+    >
+      <div className="max-w-4xl mx-auto">
+        <div role="group" aria-label="Choose schedule day" className="day-toggle gap-5 pr-1 pb-1">
           {schedule.map((d) => {
             const on = activeDay === d.day
+            const variant = onDay1 ? (on ? 'lime' : 'outline-light') : (on ? 'primary' : 'outline')
             return (
               <Button
                 key={d.day}
                 type="button"
-                variant={on ? 'lime' : 'outline-light'}
+                variant={variant}
                 data-on={on ? 'true' : undefined}
                 aria-pressed={on}
                 onClick={() => onDay(d.day)}
-                className="flex-1"
+                className={`flex-1 ${onDay1 ? '' : '[--b-color:var(--color-orange)]'}`}
               >
                 Day {d.day}{liveDay === d.day ? ' · Live' : ''}
               </Button>
@@ -335,6 +346,7 @@ function TimelineHeader({ progress, phase, nowPct, activeDay, onDay, liveDay }) 
         </div>
       </div>
     </div>
+    </>
   )
 }
 

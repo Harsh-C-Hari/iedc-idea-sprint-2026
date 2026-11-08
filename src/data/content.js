@@ -91,8 +91,6 @@ export const heroSupporting =
 export const heroMeta = [
   'IEDC BOOTCAMP CEC',
   'College of Engineering Chengannur',
-  '20–21 November 2026',
-  '24 hours',
 ]
 
 /** About — intro section copy */

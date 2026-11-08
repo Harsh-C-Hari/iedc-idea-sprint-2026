@@ -6,6 +6,13 @@
 
 @import "tailwindcss";
 
+/* Short phones/tablets-in-landscape: trim vertical spacing so the Register button stays above the fold.
+   Never applies at lg+ (desktop has its own rules). */
+/* Short desktop windows (lg+ and <=720px tall): used to hide decor and tighten type. */
+@custom-variant short-desktop (@media (min-width: 1024px) and (max-height: 720px));
+
+@custom-variant short-mobile (@media (max-width: 1023px) and (max-height: 760px));
+
 /* --------------------------------------------------------------------------
    @font-face — self-hosted, hand-written per plan (section C)
    Archivo Black: one weight only (400). Never use font-bold on it —
@@ -525,9 +532,10 @@ input:focus-visible + .brutal {
      shows both days and no dead buttons.
    • Progress fill moves by transform only; static under reduced motion.
    ========================================================================== */
-.day-toggle { display: none; }
+.day-toggle, .day-toggle-wrap { display: none; }
 @media (max-width: 1023.98px) {
   .js .day-toggle { display: flex; }
+  .js .day-toggle-wrap { display: block; }
   .js [data-day-hidden="true"] { display: none; }
 }
 .timeline-progress { transition: transform var(--duration-slow) var(--ease-out-expo); }

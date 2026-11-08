@@ -16,11 +16,11 @@ import eventConfig from '../../config/eventConfig.js'
 function Unit({ value, label }) {
   const formatted = pad2(value)
   return (
-    <div className="flex flex-col items-center min-w-[3.5rem] overflow-hidden">
+    <div className="flex flex-col items-center min-w-[3.5rem] lg:min-w-[3.4rem] overflow-hidden">
       <span
         key={formatted}
         className="tabular-nums font-[family-name:var(--font-display)]
-                   text-[clamp(2rem,6vw,3.5rem)] leading-none text-[var(--color-near-black)]
+                   text-[clamp(2rem,6vw,3.5rem)] lg:text-[2.85rem] leading-none text-[var(--color-near-black)]
                    inline-block animate-[digitRoll_0.25s_cubic-bezier(0.16,1,0.3,1)]"
       >
         {formatted}
@@ -36,7 +36,7 @@ function Divider() {
   return (
     <span
       aria-hidden="true"
-      className="font-[family-name:var(--font-display)] text-[clamp(1.5rem,4vw,2.5rem)]
+      className="font-[family-name:var(--font-display)] text-[clamp(1.5rem,4vw,2.5rem)] lg:text-[1.75rem]
                  leading-none text-[var(--color-orange-deep)] pb-4 select-none"
     >
       :
@@ -68,7 +68,7 @@ export default function Countdown() {
         >
           LIVE NOW
         </span>
-        <div className="flex items-end gap-3">
+        <div className="flex items-end gap-3 lg:gap-1.5">
           <Unit value={hours} label="hrs" />
           <Divider />
           <Unit value={minutes} label="min" />
@@ -93,7 +93,7 @@ export default function Countdown() {
       >
         Starts in
       </span>
-      <div className="flex items-end gap-3 flex-wrap">
+      <div className="flex items-end gap-3 flex-wrap lg:flex-nowrap lg:gap-1.5">
         <Unit value={days} label="days" />
         <Divider />
         <Unit value={hours} label="hrs" />
