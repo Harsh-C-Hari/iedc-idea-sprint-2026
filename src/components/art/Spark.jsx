@@ -13,6 +13,8 @@
  * All content is aria-hidden — purely decorative.
  */
 
+import { useId } from 'react'
+
 const PALETTES = {
   orange: {
     cube:     '#F05A28',
@@ -54,7 +56,7 @@ const PALETTES = {
 
 export default function Spark({ size = 120, color = 'orange', className = '' }) {
   const p = PALETTES[color] ?? PALETTES.orange
-  const uid = `sp-${color}-${size}`
+  const uid = `sp-${useId().replace(/:/g, '')}`
 
   return (
     <svg

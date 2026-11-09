@@ -363,6 +363,11 @@
   65%       { transform: translateY(4px) rotate(1deg); }
 }
 
+@keyframes heroSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
 @keyframes heroFloat3 {
   0%, 100% { transform: translateY(0px) scale(1); }
   50%       { transform: translateY(-10px) scale(1.03); }

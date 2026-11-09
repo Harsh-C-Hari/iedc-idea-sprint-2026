@@ -71,7 +71,7 @@ export default function EventDate({ className = '', onDarkAtLg = false }) {
       <p className="sr-only">{spoken}</p>
       <div aria-hidden="true">
         <p
-          className={`font-[family-name:var(--font-display)] text-[1.75rem] sm:text-[2rem]
+          className={`font-[family-name:var(--font-display)] text-[clamp(1.3rem,6vw,1.75rem)] sm:text-[2rem]
                      leading-none tracking-[-0.02em] text-[var(--color-near-black)] ${onDarkAtLg ? ' lg:text-[var(--color-cream)]' : ''}`}
         >
           <time dateTime={eventConfig.startISO}>{startText}</time>
@@ -80,7 +80,7 @@ export default function EventDate({ className = '', onDarkAtLg = false }) {
         </p>
         <p
           className={`font-[family-name:var(--font-body)] text-sm leading-snug
-                     text-[var(--color-near-black)] opacity-70 mt-2 ${onDarkAtLg ? ' lg:text-[var(--color-cream)]' : ''}`}
+                     text-[var(--color-near-black)] opacity-70 mt-1.5 ${onDarkAtLg ? ' lg:text-[var(--color-cream)]' : ''}`}
         >
           <time dateTime={eventConfig.startISO}>{t1}</time> to{' '}
           <time dateTime={eventConfig.endISO}>{t2}</time> · {duration}

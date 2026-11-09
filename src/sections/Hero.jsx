@@ -59,7 +59,7 @@ export default function Hero() {
     if (!el || REDUCED) return
 
     function runEntrance() {
-      const sparkEl = el.querySelector('[data-hero="spark"]')
+      const sparkEl = el.querySelectorAll('[data-hero="spark"]')
       const h1Words = el.querySelectorAll('[data-hero="h1-word"]')
       const supportEl = el.querySelector('[data-hero="support"]')
       const countdownEl = el.querySelector('[data-hero="countdown"]')
@@ -131,7 +131,7 @@ export default function Hero() {
         labelId="hero-heading"
         theme="light"
         className="relative min-h-[100svh] flex flex-col justify-center
-                   pt-[calc(4rem+1.5rem)] pb-8 px-5 md:px-8 lg:px-16 overflow-hidden"
+                   pt-[calc(4rem+1.5rem)] max-lg:pt-[calc(4rem+1rem)] pb-8 max-lg:pb-5 px-5 md:px-8 lg:px-16 overflow-hidden"
       >
         {/* ════ BACKGROUND LAYER — decorative ambient float ════ */}
         <div
@@ -142,10 +142,10 @@ export default function Hero() {
           {/* Subtle Ring top-left */}
           <div
             data-hero="frag"
-            className="absolute"
-            style={{ top: '6%', left: '2%', animation: 'heroFloat1 9s ease-in-out infinite' }}
+            className="absolute lg:!right-auto lg:!left-[22%]"
+            style={{ top: '7%', right: '-14%', animation: 'heroSpin 40s linear infinite' }}
           >
-            <Ring size={120} color="#F05A28" opacity={0.10} />
+            <Ring size={300} color="#F05A28" opacity={0.16} />
           </div>
           {/* Subtle Disc mid-left */}
           <div
@@ -219,23 +219,34 @@ export default function Hero() {
         </div>
 
         {/* ════ CONTENT — static (no cursor parallax, no transform) ════ */}
-        <div className="relative z-10 max-w-6xl w-full my-auto
+        <div className="relative z-10 max-w-6xl w-full my-auto max-lg:flex max-lg:flex-col
                         lg:grid lg:grid-cols-[minmax(0,1fr)_24rem] lg:gap-x-12 lg:items-center">
           {/* Left column (lg+): wordmark, headline, supporting copy, Explore link. Plain block below lg. */}
-          <div data-hero-col="left" className="lg:col-start-1 lg:row-start-1 lg:[container-type:inline-size]">
+          <div data-hero-col="left" className="max-lg:contents lg:col-start-1 lg:row-start-1 lg:[container-type:inline-size]">
           {/* Wordmark "IDEA SPRINT 2026" — solid orange-deep display type, 2026 outlined */}
-          <div className="relative mb-2 lg:mb-0">
-            <p
-              aria-label="IDEA SPRINT 2026"
+          <div className="relative mb-2 lg:mb-0 max-lg:order-1">
+            <span
+              aria-hidden="true"
+              data-hero="spark"
+              className="lg:hidden absolute pointer-events-none z-10 rotate-[12deg]"
+              style={{ right: '4%', top: '2%' }}
+            >
+              <Spark size={104} color="ink" className="hidden min-[420px]:block" />
+              <Spark size={84} color="ink" className="min-[420px]:hidden" />
+            </span>
+            <h1
+              id="hero-heading"
+              tabIndex={-1}
               data-hero="wordmark"
-              className={`font-[family-name:var(--font-display)]
+              className={`relative font-[family-name:var(--font-display)]
                          leading-[0.88] tracking-[-0.04em]
-                         select-none pointer-events-none
-                         [font-size:clamp(2.8rem,15vw,11rem)]
+                         select-none pointer-events-none focus:outline-none
+                         [font-size:clamp(2.8rem,min(22.5vw,15svh),11rem)]
                          ${ONE_LINE
                            ? 'lg:flex lg:items-end lg:whitespace-nowrap lg:gap-x-[0.2em] lg:leading-[0.95] lg:[font-size:min(10.2cqw,14vh)]'
                            : 'lg:[font-size:min(9rem,15vh)]'}`}
             >
+              <span className="sr-only">Idea Sprint 2026</span>
               <span aria-hidden="true" className="block overflow-hidden">
                 <span data-hero="wm-line" className="block text-[var(--color-orange-deep)]">IDEA</span>
               </span>
@@ -244,45 +255,43 @@ export default function Hero() {
                 <span className="block overflow-hidden">
                   <span data-hero="wm-line" className="block text-[var(--color-orange-deep)]">SPRINT</span>
                 </span>
-                {/* Spark anchored to the end of SPRINT */}
+                {/* Spark anchored to the end of SPRINT (desktop) */}
                 <span
                   aria-hidden="true"
                   data-hero="spark"
-                  className={`absolute ${ONE_LINE ? 'lg:hidden' : ''}`}
+                  className={`absolute hidden lg:block ${ONE_LINE ? 'lg:hidden' : ''}`}
                   style={{ left: '100%', top: '0', width: 'max-content', transform: 'translate(-30%,-55%)' }}
                 >
-                  <Spark size={64} color="ink" className="hidden sm:block" />
-                  <Spark size={44} color="ink" className="sm:hidden" />
+                  <div className="rotate-[12deg]"><Spark size={100} color="ink" /></div>
                 </span>
                </span>
               </span>
               <span
                 aria-hidden="true"
-                className={`block overflow-hidden [font-size:0.5em] ${ONE_LINE ? 'lg:[font-size:1em]' : ''}`}
-                style={{ letterSpacing: '-0.02em' }}
+                className={`block overflow-hidden lg:mt-[0.12em] lg:[font-size:0.42em] max-lg:absolute max-lg:right-0 max-lg:bottom-0 max-lg:translate-y-[42%] max-lg:p-1 max-lg:[font-size:0.34em] ${ONE_LINE ? 'lg:[font-size:1em]' : ''}`}
+                style={{ letterSpacing: '0.01em' }}
               >
                 <span
                   data-hero="wm-line"
-                  className="block"
-                  style={{ color: 'transparent', WebkitTextStroke: '2px var(--color-near-black)' }}
+                  className="inline-block bg-[var(--color-near-black)] text-[var(--color-lime)] px-[0.3em] pt-[0.06em] pb-[0.02em] -rotate-[2deg] leading-[1.05]"
                 >
                   2026
                 </span>
               </span>
-            </p>
+            </h1>
           </div>
 
-          {/* h1 — dominant, clip-reveal only. NEVER from opacity:0. */}
-          <h1
-            id="hero-heading"
-            tabIndex={-1}
+          {/* tagline — dominant, clip-reveal only. NEVER from opacity:0. */}
+          <p
+            data-hero="tagline"
             className="font-[family-name:var(--font-display)]
-                       leading-[1.0] tracking-[-0.025em]
+                       leading-[1.12] lg:leading-[1.0] tracking-[-0.025em]
                        text-[var(--color-near-black)]
-                       max-w-[18ch] mt-6 short-mobile:mt-4 focus:outline-none
-                       [font-size:clamp(1.65rem,6.2vw,5.25rem)]
-                       lg:mt-5 lg:max-w-none lg:flex lg:flex-wrap lg:gap-x-[0.3em] lg:whitespace-nowrap
-                       lg:[font-size:min(7.1cqw,7.4vh)]"
+                       mt-7 max-lg:order-2
+                       max-lg:flex max-lg:flex-wrap max-lg:gap-x-[0.3em]
+                       [font-size:clamp(1.15rem,4.6vw,5.25rem)]
+                       lg:mt-5 lg:flex lg:flex-wrap lg:gap-x-[0.3em] lg:whitespace-nowrap
+                       lg:[font-size:min(5.3cqw,5.4vh)]"
           >
             {['24 HOURS.', 'ONE IDEA.', 'ENDLESS', 'POSSIBILITIES.'].map((word, i) => (
               <Fragment key={word}>
@@ -290,10 +299,10 @@ export default function Hero() {
                   <span data-hero="h1-word" className="block">{word}</span>
                 </span>
                 {/* Desktop only: flex line break so the headline reads as two lines (same words). */}
-                {i === 1 && <span aria-hidden="true" className="hidden lg:block basis-full h-0" />}
+                {i === 1 && <span aria-hidden="true" className="block basis-full h-0" />}
               </Fragment>
             ))}
-          </h1>
+          </p>
 
           {/* Decorative near-layer fragments (overlapping type) — static, no parallax */}
           <div aria-hidden="true" className="pointer-events-none select-none">
@@ -308,7 +317,7 @@ export default function Hero() {
             data-hero="support"
             className="font-[family-name:var(--font-body)] text-[1rem] md:text-[1.125rem]
                        leading-relaxed text-[var(--color-near-black)] opacity-70
-                       max-w-[48ch] mt-6 short-mobile:mt-4 lg:mt-4 lg:text-base"
+                       max-w-[48ch] mt-6 max-lg:order-4 lg:mt-4 lg:text-base"
           >
             {heroSupporting}
           </p>
@@ -325,28 +334,18 @@ export default function Hero() {
           </div>
 
           {/* Event card — date, countdown and CTA read as one unit (when → how long → act) */}
-          <div data-hero="event" className="mt-8 short-mobile:mt-5 lg:mt-0 lg:col-start-2 lg:row-start-1
+          <div data-hero="event" className="mt-4 max-lg:order-3 lg:mt-0 lg:col-start-2 lg:row-start-1
                      lg:relative lg:bg-[var(--color-near-black)] lg:border-2 lg:border-[var(--color-near-black)] lg:rounded-[var(--radius-sm)] lg:p-6
                      lg:shadow-[6px_6px_0_0_var(--color-orange)] lg:[--focus-ring:var(--color-lime)]">
-          {/* Spark sticker — brand moment on the card's top-right corner (lg+ only, decorative) */}
-          <div
-            aria-hidden="true"
-            data-hero="frag"
-            className="hidden lg:block absolute -top-[3.25rem] -right-[2.75rem] z-10 pointer-events-none select-none"
-          >
-            <div className="rotate-[12deg]">
-              <Spark size={96} color="orange" />
-            </div>
-          </div>
           <EventDate onDarkAtLg />
 
           {/* Countdown */}
-          <div data-hero="countdown" className="mt-6 short-mobile:mt-4">
+          <div data-hero="countdown" className="mt-4 lg:mt-6">
             <Countdown onDarkAtLg />
           </div>
 
           {/* CTAs */}
-          <div data-hero="cta" className="mt-8 short-mobile:mt-5 flex flex-col sm:flex-row lg:flex-col gap-4">
+          <div data-hero="cta" className="mt-4 lg:mt-8 flex flex-col sm:flex-row lg:flex-col gap-4">
             <Button
               as="a"
               href="#registration"
@@ -354,7 +353,7 @@ export default function Hero() {
               size="lg"
               disabled={ctaDisabled(status)}
               aria-disabled={ctaDisabled(status)}
-              className="w-full sm:w-auto lg:w-full lg:text-[var(--color-near-black)] lg:[--b-face:var(--color-orange)]
+              className="w-full sm:w-auto max-lg:!min-h-[52px] max-lg:!py-3 lg:w-full lg:text-[var(--color-near-black)] lg:[--b-face:var(--color-orange)]
                          lg:hover:[--b-face:var(--color-orange-hover)] lg:[--b-color:var(--color-lime)]"
             >
               {ctaLabel(status)}
@@ -371,14 +370,6 @@ export default function Hero() {
                 Explore
               </Button>
             </div>
-            <a
-              href="#about"
-              className="sm:hidden self-center font-[family-name:var(--font-body)] text-sm font-semibold
-                         uppercase tracking-wide underline underline-offset-4 py-3
-                         text-[var(--color-near-black)] focus-visible:outline-[var(--color-near-black)]"
-            >
-              Explore ↓
-            </a>
           </div>
           </div>
 
@@ -386,7 +377,7 @@ export default function Hero() {
           <ul
             data-hero="meta"
             aria-label="Event details"
-            className="mt-10 flex flex-wrap gap-x-6 gap-y-2 list-none p-0 m-0 lg:hidden"
+            className="mt-8 flex flex-wrap gap-x-6 gap-y-2 list-none p-0 m-0 max-lg:order-5 lg:hidden"
           >
             {heroMeta.map((item) => (
               <li
