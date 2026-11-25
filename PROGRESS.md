@@ -8,7 +8,7 @@
 - No source changes in this phase.
 
 ## Phase 1 — Shared date component + mobile/tablet integration (done)
-- New `src/components/ui/EventDate.jsx`: built from eventConfig (Intl, Asia/Kolkata), `20–21 NOV 2026` + `5:00 PM to 5:00 PM · 24 hours`, `<time dateTime>` elements, one sr-only sentence, visual lines aria-hidden. Marked with `data-event-date` (no GSAP hook, static).
+- New `src/components/ui/EventDate.jsx`: built from eventConfig (Intl, Asia/Kolkata), `20–21 DEC 2026` + `5:00 PM to 5:00 PM · 24 hours`, `<time dateTime>` elements, one sr-only sentence, visual lines aria-hidden. Marked with `data-event-date` (no GSAP hook, static).
 - Hero: new wrapper `data-hero="event"` holds EventDate + countdown + CTA (hooks stay on their own elements). Date directly above countdown.
 - `heroMeta` (content.js, only used by Hero) no longer contains the date or "24 hours".
 - `@custom-variant short-mobile` (<=1023px wide AND <=760px tall) in index.css; trims gaps only (h1, support, event wrapper, countdown, CTA). Support paragraph NOT hidden — not needed.
@@ -57,7 +57,7 @@
 ## Phase 6 — Regression, accessibility, docs, final report (done)
 - Mobile/tablet: pixel-identical to Phase 1 (which only added the date line + short-phone trims + meta row losing the date). Differences vs baseline are therefore exactly the allowed ones.
 - Keyboard: Tab from the headline goes Explore -> Register (document order); 3px focus ring visible on both; Enter on Register scrolls to `#registration`.
-- Screen reader: date reads as one sentence ("20 to 21 November 2026, 5:00 PM to 5:00 PM"), visual lines are aria-hidden; no `aria-live` in the Hero (countdown unchanged).
+- Screen reader: date reads as one sentence ("20 to 21 December 2026, 5:00 PM to 5:00 PM"), visual lines are aria-hidden; no `aria-live` in the Hero (countdown unchanged).
 - Contrast: date line 2 (70% near-black on cream) 6.11:1; line 1 15.11:1; the card has an opaque cream surface, so nothing sits over the 3D cluster.
 - Motion: with motion on, every Hero element ends at opacity 1 (entrance unchanged, no new animation); reduced motion shows everything static.
 - `npm run build` passes (only the pre-existing three.js chunk-size warning).

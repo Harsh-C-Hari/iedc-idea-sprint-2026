@@ -30,7 +30,7 @@ for (const [w,h,rm] of [[1440,800,false],[1920,937,false],[1440,800,true]]){
       live:hero.querySelectorAll('[aria-live]').length, timerRole:card.querySelector('[role=timer]')?.getAttribute('role'), timerLiveAttr:card.querySelector('[role=timer]')?.getAttribute('aria-live'),
       stickerHidden:st.getAttribute('aria-hidden'), stickerFocusable:st.querySelectorAll('a,button,[tabindex]').length, clusterHidden:cl?.getAttribute('aria-hidden')}
   })
-  say('sr: date reads as one sentence', /20 to 21 November 2026/.test(sr.sentence)&&sr.visualHidden==='true', sr.sentence)
+  say('sr: date reads as one sentence', /20 to 21 December 2026/.test(sr.sentence)&&sr.visualHidden==='true', sr.sentence)
   say('sr: countdown role=timer, no aria-live anywhere in hero', sr.timerRole==='timer'&&sr.live===0&&!sr.timerLiveAttr, `live=${sr.live}`)
   say('sr: sticker + cluster aria-hidden, sticker not focusable', sr.stickerHidden==='true'&&sr.clusterHidden==='true'&&sr.stickerFocusable===0)
 }

@@ -1,7 +1,7 @@
 # IDEA SPRINT 2026
 
 **24-hour student ideathon** by IEDC BOOTCAMP CEC, College of Engineering Chengannur.
-**20–21 November 2026 · 5:00 PM to 5:00 PM IST · SPDK Room, 5th Floor**
+**20–21 December 2026 · 5:00 PM to 5:00 PM IST · SPDK Room, 5th Floor**
 
 **Live:** https://iedc-idea-sprint-2026-vert.vercel.app/
 <!-- TODO(owner): confirm this is the final public URL. It is copied from index.html (canonical / og:url); nothing was invented. -->
@@ -36,7 +36,7 @@ npm run preview    # serve dist/ at http://localhost:4173
 On Windows run npm from `cmd`, not PowerShell.
 
 Testing the event states: append `?now=` with an ISO time to see the countdown and schedule at that moment, for example
-`?now=2026-11-20T18:45:00+05:30` (live: "Now" and "Next" appear) or `?now=2026-11-21T18:00:00+05:30` (ended).
+`?now=2026-12-20T18:45:00+05:30` (live: "Now" and "Next" appear) or `?now=2026-12-21T18:00:00+05:30` (ended).
 
 ## Design system
 

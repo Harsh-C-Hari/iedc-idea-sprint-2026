@@ -287,7 +287,7 @@ function DayPanel({ day, hiddenOnMobile, statusFor }) {
 function TimelineHeader({ progress, phase, nowPct, activeDay, onDay, liveDay }) {
   const caption =
     phase === 'live' ? `Live now · ${nowPct}% of the 24 hours` :
-    phase === 'after' ? 'Event ended' : 'Starts 20 Nov · 5:00 PM IST'
+    phase === 'after' ? 'Event ended' : 'Starts 20 Dec · 5:00 PM IST'
   const onDay1 = activeDay === 1
   return (
     <>

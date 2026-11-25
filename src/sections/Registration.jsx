@@ -53,7 +53,7 @@ function IdentityPanel({ deadlineISO }) {
       <ul className="list-none p-0 m-0 flex flex-col gap-3">
         {[
           eventConfig.college,
-          '20–21 November 2026',
+          '20–21 December 2026',
           `Team size: ${eventConfig.team.min}–${eventConfig.team.max} members`,
           ...(deadline
             ? [`Register by: ${deadline}${eventConfig.provisional_deadlineISO ? ' (provisional)' : ''}`]

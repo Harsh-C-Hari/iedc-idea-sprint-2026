@@ -16,7 +16,7 @@ const schedule = [
   {
     day: 1,
     label: 'THE SPARK BEGINS.',
-    date: '20 November 2026',
+    date: '20 December 2026',
     items: [
       { time: '5:00 PM', title: 'Registration and check-in' },
       { time: '5:30 PM', title: 'Inauguration ceremony' },
@@ -30,7 +30,7 @@ const schedule = [
   {
     day: 2,
     label: 'BRING IT TO LIFE.',
-    date: '21 November 2026',
+    date: '21 December 2026',
     items: [
       { time: '7:00 AM', title: 'Morning refreshments' },
       { time: '1:00 PM', title: 'Lunch' },

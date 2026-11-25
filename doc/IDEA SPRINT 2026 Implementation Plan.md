@@ -6,7 +6,7 @@ The approved design is buildable by the 8 Nov, 11:59 PM IST deadline (about 34 h
 
 ## A. Project understanding and the calls I'm making
 
-This is a single-page React microsite for a 24-hour student ideathon (20–21 Nov 2026, College of Engineering Chengannur). Its identity is warm cream, near-black, orange and lime; Archivo Black display type at poster scale; one recurring geometric spark; purposeful GSAP motion; and one real 3D moment (Idea Spark). Of the 100 scoring points, 85 go to creativity, web fundamentals, performance and UX, so a distinctive, fast, fully working page beats a heavy 3D one.
+This is a single-page React microsite for a 24-hour student ideathon (20–21 Dec 2026, College of Engineering Chengannur). Its identity is warm cream, near-black, orange and lime; Archivo Black display type at poster scale; one recurring geometric spark; purposeful GSAP motion; and one real 3D moment (Idea Spark). Of the 100 scoring points, 85 go to creativity, web fundamentals, performance and UX, so a distinctive, fast, fully working page beats a heavy 3D one.
 
 The approved direction is untouched. These are the places where the spec collides with its own targets, each with the smallest fix:
 
@@ -49,7 +49,7 @@ idea-sprint-2026/
 
 **Component hierarchy.** `App` renders a skip link, `Loader`, `Navbar`, then `<main>` with the seven sections in the approved order, then `Footer`. `SectionWipe` components sit on the cream/dark boundaries between sections. `Spark` and `Fragments` are the only artwork primitives and are reused by Loader, Hero, About, Idea Spark fallback, Challenge, and Footer.
 
-**Central config (`eventConfig.js`).** Fields: name, tagline, organizer, college, `timezone: 'Asia/Kolkata'`, `startISO: '2026-11-20T17:00:00+05:30'`, `endISO: '2026-11-21T17:00:00+05:30'`, `registration { status, deadlineISO, mode, endpoint }`, `team { min: 1, max: 4 }`, eligibility, `semesters`, `divisions`, `venue { college, room, mapsUrl, photo }`, `social { instagram, linkedin }`, `contact { email }`. Any unverified value is `null` and its UI is hidden, never filled with a placeholder. Using the explicit +05:30 offset makes the countdown correct on any device timezone.
+**Central config (`eventConfig.js`).** Fields: name, tagline, organizer, college, `timezone: 'Asia/Kolkata'`, `startISO: '2026-12-20T17:00:00+05:30'`, `endISO: '2026-12-21T17:00:00+05:30'`, `registration { status, deadlineISO, mode, endpoint }`, `team { min: 1, max: 4 }`, eligibility, `semesters`, `divisions`, `venue { college, room, mapsUrl, photo }`, `social { instagram, linkedin }`, `contact { email }`. Any unverified value is `null` and its UI is hidden, never filled with a placeholder. Using the explicit +05:30 offset makes the countdown correct on any device timezone.
 
 **State.** Local React state only:
 
@@ -132,8 +132,8 @@ All copy comes verbatim from the approved spec. Every section is a `<section id=
 ### 1. Hero
 
 - **Components:** `Hero`, `Spark`, `Fragments`, `Countdown`, `Button`.
-- **Layout:** the approved headline "24 HOURS. ONE IDEA. ENDLESS POSSIBILITIES." is the `h1` and the dominant element: highest contrast, first in reading order, set in stacked lines sized by its longest word ("POSSIBILITIES.", about 10–11 em wide in Archivo Black; measure in the browser). "IDEA SPRINT 2026" is oversized display type integrated into the same composition, stacked and staggered, with the spark at the IDEA/SPRINT transition. It is a wordmark (`p`) that supports the headline and does not outrank it; balance comes from tonal or outlined fill, scale and layering, and is judged visually in T13 at 360 and 1440 px. Below sit supporting copy, countdown, two CTAs and a metadata row (IEDC BOOTCAMP CEC, College of Engineering Chengannur, 20–21 November 2026, 24 hours). Fragments sit in two layers: most behind the type, one or two crossing letter boundaries without hurting legibility. All artwork is `aria-hidden`. SEO is handled by `<title>`, meta description, Open Graph tags and landmarks, never by changing the visual hierarchy.
-- **Countdown:** `before` shows days, hours, minutes, seconds; `live` shows LIVE and time left to 5:00 PM on 21 Nov; `after` shows SPRINT COMPLETED. It is a `<time>` element without a per-second live region. The primary CTA label follows `registration.status` (Register Now, Opening Soon, or Registration Closed); the secondary CTA scrolls to About.
+- **Layout:** the approved headline "24 HOURS. ONE IDEA. ENDLESS POSSIBILITIES." is the `h1` and the dominant element: highest contrast, first in reading order, set in stacked lines sized by its longest word ("POSSIBILITIES.", about 10–11 em wide in Archivo Black; measure in the browser). "IDEA SPRINT 2026" is oversized display type integrated into the same composition, stacked and staggered, with the spark at the IDEA/SPRINT transition. It is a wordmark (`p`) that supports the headline and does not outrank it; balance comes from tonal or outlined fill, scale and layering, and is judged visually in T13 at 360 and 1440 px. Below sit supporting copy, countdown, two CTAs and a metadata row (IEDC BOOTCAMP CEC, College of Engineering Chengannur, 20–21 December 2026, 24 hours). Fragments sit in two layers: most behind the type, one or two crossing letter boundaries without hurting legibility. All artwork is `aria-hidden`. SEO is handled by `<title>`, meta description, Open Graph tags and landmarks, never by changing the visual hierarchy.
+- **Countdown:** `before` shows days, hours, minutes, seconds; `live` shows LIVE and time left to 5:00 PM on 21 Dec; `after` shows SPRINT COMPLETED. It is a `<time>` element without a per-second live region. The primary CTA label follows `registration.status` (Register Now, Opening Soon, or Registration Closed); the secondary CTA scrolls to About.
 - **Motion:** entrance of 1.2 s or less (staggered word reveal, fragments flying into the assembled spark, then copy, countdown and CTA fade up); ambient float on 2–3 fragments (CSS, transform only); desktop-only cursor parallax on three layers through `gsap.quickTo` (about 12 px); a light scroll-scrubbed shift of the artwork.
 - **Mobile:** headline stacked over as many lines as needed so "POSSIBILITIES." fits at 320 px (smaller than desktop, so dominance comes from contrast and position), IDEA / SPRINT wordmark stacked and simplified, four fragments instead of nine, full-width CTA, no parallax.
 
@@ -178,7 +178,7 @@ All copy comes verbatim from the approved spec. Every section is a `<section id=
 ### 7. Venue
 
 - **Components:** `Venue`, `VenueInfo`, `MapFacade`, `LocationPin` (SVG).
-- **Content:** headline and copy from the spec; College of Engineering Chengannur; SPDK Room, 5th Floor; "20 Nov, 5:00 PM to 21 Nov, 5:00 PM" written out in full rather than "5:00 PM – 5:00 PM".
+- **Content:** headline and copy from the spec; College of Engineering Chengannur; SPDK Room, 5th Floor; "20 Dec, 5:00 PM to 21 Dec, 5:00 PM" written out in full rather than "5:00 PM – 5:00 PM".
 - **Layout:** large campus photo in a `<picture>` (AVIF/WebP, `srcset`, explicit width and height, lazy, not the LCP element) with the info block overlapping it asymmetrically; the map beside or below.
 - **MapFacade:** a static preview panel with an animated pin and a "Load interactive map" button that injects the iframe only on click, plus an "Open in Google Maps" link (`target="_blank" rel="noopener noreferrer"`). Copy keeps the room in text and never implies the pin marks the room itself.
 - **Fallbacks:** no photo yet means a geometric panel built from the fragments, not a stock image. No verified Maps link means a Google Maps search URL from the college name, labelled "Search on Google Maps".
@@ -218,7 +218,7 @@ Send the organizer questions in the first hour. None of them blocks coding, beca
 | # | Question | Fallback if unanswered by Sun 12:00 PM |
 | --- | --- | --- |
 | 1 | Where should registrations go (endpoint, Sheet or Supabase), who manages them, and what privacy wording is approved? | `preview` mode: full validated flow, honest "not connected yet" message, Copy summary, no success screen |
-| 2 | Confirm start and end (20 Nov 5:00 PM to 21 Nov 5:00 PM), the registration deadline of 18 Nov (and its time of day), and the full schedule, including whether the music session ends at 10:30 or 11:00 PM | Publish the spec's schedule with a visible "subject to change" note; assume end of day for the deadline |
+| 2 | Confirm start and end (20 Dec 5:00 PM to 21 Dec 5:00 PM), the registration deadline of 18 Dec (and its time of day), and the full schedule, including whether the music session ends at 10:30 or 11:00 PM | Publish the spec's schedule with a visible "subject to change" note; assume end of day for the deadline |
 | 3 | Confirm team size 1–4, individual entry, same-institution rule, eligibility wording, and the semester and division lists | Use the spec's values; show "College students" without extra rules |
 | 4 | Confirm SPDK Room, 5th Floor; send the Google Maps link and entrance; send a campus photo | Search-link fallback, geometric panel instead of a photo (section D) |
 | 5 | Official IEDC BOOTCAMP CEC logo, Instagram URL, LinkedIn URL, contact email | Typographic wordmark; hide social and contact items until verified. Nothing is invented |

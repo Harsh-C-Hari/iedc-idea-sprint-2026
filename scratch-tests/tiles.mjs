@@ -2,7 +2,7 @@ import { createRequire } from 'module'
 const require = createRequire('/home/claude/work/iedc-idea-sprint-2026-main/')
 const { chromium } = require('playwright')
 const b = await chromium.launch({ executablePath:'/opt/pw-browsers/chromium-1243/chrome-linux64/chrome', args:['--no-sandbox'] })
-const states={before:'',live:'?now=2026-11-20T18:30:00%2B05:30',after:'?now=2026-11-22T10:00:00%2B05:30'}
+const states={before:'',live:'?now=2026-12-20T18:30:00%2B05:30',after:'?now=2026-12-22T10:00:00%2B05:30'}
 for (const [w,h] of [[1440,800],[1024,700],[1920,937]]) for (const [st,q] of Object.entries(states)){
   const p=await (await b.newContext({viewport:{width:w,height:h}})).newPage()
   await p.goto('http://localhost:5173/'+q); await p.waitForTimeout(2200)

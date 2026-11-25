@@ -152,7 +152,7 @@ loader cleared AND the clip-path animation completed (~0.94 s later).
 ## Hero above-the-fold + event date
 
 - [ ] Desktop (>= 1024px): the Hero shows wordmark, headline, event date, countdown (one row) and the Register button at once, without scrolling (check 1920x937, 1440x800, 1366x650, 1280x600, 1024x700).
-- [ ] The event date (`20–21 NOV 2026`, `5:00 PM to 5:00 PM · 24 hours`) is visible directly above the countdown on mobile, tablet and desktop; it is built from `eventConfig`, never hard-coded.
+- [ ] The event date (`20–21 DEC 2026`, `5:00 PM to 5:00 PM · 24 hours`) is visible directly above the countdown on mobile, tablet and desktop; it is built from `eventConfig`, never hard-coded.
 - [ ] Exactly one Explore control is visible per breakpoint: arrow link on phones, outline button 640–1023px, text link at 1024px+.
 - [ ] Short phones (<= 760px tall): Register button stays above the fold (360x740).
 - [ ] Desktop (>= 1024px): the event card is near-black with a solid orange offset block, lime digits and an orange Register button; Tab ring on Register is lime.

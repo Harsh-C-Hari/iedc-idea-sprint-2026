@@ -4,7 +4,7 @@
  * Content (plan section D):
  *   • College of Engineering Chengannur
  *   • SPDK Room, 5th Floor
- *   • "20 Nov, 5:00 PM to 21 Nov, 5:00 PM" (written out in full)
+ *   • "20 Dec, 5:00 PM to 21 Dec, 5:00 PM" (written out in full)
  *
  * MapFacade (Phase 3A):
  *   • Static map preview built from assets-src/cec-map.jpg (AVIF / WebP / JPG variants)
@@ -299,7 +299,7 @@ export default function Venue() {
                   When
                 </dt>
                 <dd className="font-[family-name:var(--font-body)] font-semibold text-[var(--color-near-black)]">
-                  20 Nov, 5:00 PM to 21 Nov, 5:00 PM
+                  20 Dec, 5:00 PM to 21 Dec, 5:00 PM
                 </dd>
               </div>
             </dl>

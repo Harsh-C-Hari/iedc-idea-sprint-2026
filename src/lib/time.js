@@ -8,7 +8,7 @@
  */
 
 /**
- * Parse an ISO 8601 string (e.g. '2026-11-20T17:00:00+05:30') to a UTC ms timestamp.
+ * Parse an ISO 8601 string (e.g. '2026-12-20T17:00:00+05:30') to a UTC ms timestamp.
  * Uses the built-in Date parser which handles explicit offsets correctly in all
  * browsers. We do NOT rely on the device's local timezone.
  *
@@ -67,9 +67,9 @@ export function pad2(n) {
  * Read a ?now= query param (dev-only override) and return its ms value,
  * or null if the param is absent or invalid.
  *
- * Usage: ?now=2026-11-20T16:59:00+05:30  → before
- *        ?now=2026-11-20T17:30:00+05:30  → live
- *        ?now=2026-11-21T18:00:00+05:30  → after
+ * Usage: ?now=2026-12-20T16:59:00+05:30  → before
+ *        ?now=2026-12-20T17:30:00+05:30  → live
+ *        ?now=2026-12-21T18:00:00+05:30  → after
  *
  * @returns {number | null}
  */

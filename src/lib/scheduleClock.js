@@ -1,7 +1,7 @@
 /**
  * scheduleClock.js — pure helpers that turn schedule.js into absolute times.
  *
- * schedule.js stays the source of truth ("20 November 2026" + "5:00 PM"). Every slot is converted to a
+ * schedule.js stays the source of truth ("20 December 2026" + "5:00 PM"). Every slot is converted to a
  * UTC timestamp through an ISO string with an explicit +05:30 offset, so Now/Next is correct on any
  * device timezone. No dependencies, no side effects.
  */
@@ -11,7 +11,7 @@ const MONTHS = {
 }
 const p2 = (n) => String(n).padStart(2, '0')
 
-/** '20 November 2026' + '5:00 PM' -> '2026-11-20T17:00:00+05:30' (null if unparseable) */
+/** '20 December 2026' + '5:00 PM' -> '2026-12-20T17:00:00+05:30' (null if unparseable) */
 export function slotISO(dateStr, timeStr) {
   const d = /^(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})$/.exec(String(dateStr).trim())
   const t = /^(\d{1,2}):(\d{2})\s*(AM|PM)$/i.exec(String(timeStr).trim())

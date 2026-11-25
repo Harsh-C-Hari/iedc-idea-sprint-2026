@@ -4,8 +4,8 @@
  * Nothing is hard-coded: the text is built from startISO / endISO in the
  * event's own timezone, so it is right on any device timezone.
  *
- *   Line 1 (display):  20–21 NOV 2026        (same month)
- *                      20 NOV – 2 DEC 2026   (different months)
+ *   Line 1 (display):  20–21 DEC 2026        (same month)
+ *                      20 DEC 2026 – 2 JAN 2027 (different months)
  *   Line 2 (body):     5:00 PM to 5:00 PM · 24 hours
  *
  * Screen readers get one sentence (sr-only); the visual lines are aria-hidden

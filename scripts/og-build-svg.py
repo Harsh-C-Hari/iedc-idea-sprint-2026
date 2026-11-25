@@ -61,7 +61,7 @@ parts.append(f'<image x="{cx+(cw-lw)/2}" y="{cy+(ch-lh)/2}" width="{lw}" height=
 
 # Info bar
 parts.append(f'<rect y="495" width="1200" height="135" fill="{INK}"/>')
-p, _ = txt(body, '20–21 NOVEMBER 2026', 40, 60, 558, LIME, 1); parts.append(p)
+p, _ = txt(body, '20–21 DECEMBER 2026', 40, 60, 558, LIME, 1); parts.append(p)
 p, _ = txt(body, '5:00 PM – 5:00 PM', 40, 1140, 558, CREAM, 1, 'end'); parts.append(p)
 p, vw = txt(body, 'SPDK ROOM, 5TH FLOOR · COLLEGE OF ENGINEERING CHENGANNUR', 26, 60, 603, CREAM, 1.5); parts.append(p)
 parts.append('</svg>')

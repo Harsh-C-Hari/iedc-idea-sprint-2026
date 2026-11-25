@@ -31,11 +31,11 @@ const eventConfig = {
   timezone: 'Asia/Kolkata',
 
   /**
-   * Event window (plan section F Q2: confirmed 20 Nov 5:00 PM – 21 Nov 5:00 PM)
+   * Event window: confirmed 20 Dec 5:00 PM – 21 Dec 5:00 PM
    * ISO 8601 with explicit +05:30 so the countdown is correct everywhere.
    */
-  startISO: '2026-11-20T17:00:00+05:30',
-  endISO: '2026-11-21T17:00:00+05:30',
+  startISO: '2026-12-20T17:00:00+05:30',
+  endISO: '2026-12-21T17:00:00+05:30',
 
   registration: {
     /**
@@ -49,10 +49,10 @@ const eventConfig = {
 
     /**
      * Registration deadline ISO string.
-     * Provisional: 18 Nov end-of-day (plan section F Q2 fallback).
+     * Provisional: 18 Dec end-of-day.
      * Confirm date AND time with organizers.
      */
-    deadlineISO: '2026-11-18T23:59:00+05:30',
+    deadlineISO: '2026-12-18T23:59:00+05:30',
     provisional_deadlineISO: true,
 
     /**
